@@ -1,0 +1,131 @@
+{
+  "game": "Zika Fighter",
+  "fighters": [
+    {
+      "id": 1,
+      "name": "Pascal",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 2,
+      "name": "Micka",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 3,
+      "name": "Emma",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 4,
+      "name": "Julie",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 5,
+      "name": "Antho",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 6,
+      "name": "Fabrice",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 7,
+      "name": "Sandy",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 8,
+      "name": "Fabienne 1",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 9,
+      "name": "Fabienne 2",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 10,
+      "name": "Billy",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 11,
+      "name": "Ludo",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 12,
+      "name": "Ju",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 13,
+      "name": "Béné",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 14,
+      "name": "Kév",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 15,
+      "name": "Loïc",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 16,
+      "name": "Laura",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 17,
+      "name": "Val",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 18,
+      "name": "Victor",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 19,
+      "name": "Élo",
+      "concept": true,
+      "spriteReady": false
+    },
+    {
+      "id": 20,
+      "name": "Djo",
+      "concept": true,
+      "spriteReady": false
+    }
+  ],
+  "bonus": {
+    "name": "Zika",
+    "unlockable": true,
+    "spriteReady": false
+  },
+  "note": "Deux Fabienne distinctes, comme confirmé par l'organisateur. Les fiches illustrées ne sont pas encore des sprites animés."
+}
