@@ -148,3 +148,15 @@
 /* Reflet ZIKACOM final : balaye les lettres, non le fond noir. */
 #zf-intro .zf-zikacom-shine{z-index:2;mix-blend-mode:screen!important;filter:brightness(4.5) saturate(.1) contrast(1.35)!important;will-change:opacity,clip-path}
 #zf-intro .zf-zikacom-official{z-index:1;filter:brightness(calc(1 + var(--zf-logo-glow,0)))!important}
+
+/* Palette animée du reflet CAPCOM : or -> jaune pâle/blanc -> ambre.
+   Le fond noir est intact, seul le logo reçoit cette modulation. */
+#zf-intro .zf-zikacom-official{
+  filter:brightness(calc(1 + var(--zf-logo-glow,0)))
+    saturate(calc(1 - var(--zf-logo-desaturate,0)))
+    hue-rotate(calc(var(--zf-logo-hue,0) * 1deg))
+    contrast(var(--zf-logo-contrast,1))!important;
+}
+#zf-intro .zf-zikacom-shine{
+  filter:brightness(4.2) saturate(.3) contrast(1.18)!important;
+}
