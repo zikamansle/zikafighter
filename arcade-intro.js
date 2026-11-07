@@ -171,7 +171,7 @@
   const mctx=movie.getContext('2d',{alpha:false});
   const titleSprite=new Image();
   titleSprite.src='./assets/zika-fighter-title.png';
-  let titleSpriteCanvas=null, mosaic=null, giantLetters=null;
+  let titleSpriteCanvas=null, mosaic=null, giantLetters=null, coarseSprites=[];
   const makeCanvas=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
   function prepareTitleSprite(){
     try{
@@ -190,6 +190,15 @@
       sc.imageSmoothingEnabled=true;sc.imageSmoothingQuality='high';
       sc.drawImage(src,0,0,144,72);
       mosaic=sc.getImageData(0,0,144,72);
+      // Résolutions successives observées : quelques gros blocs,
+      // puis un logo de plus en plus détaillé durant la rotation.
+      coarseSprites=[[8,5],[14,7],[24,12],[48,24],[96,48]].map(([ww,hh])=>{
+        const layer=makeCanvas(ww,hh),layerCtx=layer.getContext('2d');
+        layerCtx.imageSmoothingEnabled=true;
+        layerCtx.imageSmoothingQuality='high';
+        layerCtx.drawImage(src,0,0,ww,hh);
+        return layer;
+      });
       // La séquence TURBO d'origine affiche de très grandes lettres sans contour,
       // en dégradé rouge -> orange -> jaune -> ivoire.
       giantLetters=makeCanvas(850,150);
@@ -282,36 +291,31 @@
     }
     // La bande bleue est limitée au tiers central, comme dans la vidéo.
     ctx.fillStyle='#1852ae';ctx.fillRect(0,54,320,72);
-    if(t<3.21&&mosaic){
-      const p=ease((t-2.2)/1.01);
-      const theta=(1-p)*Math.PI*2.25;
-      const ca=Math.cos(theta),sa=Math.sin(theta);
-      const roll=-.72*(1-p);
-      const cr=Math.cos(roll),sr=Math.sin(roll);
-      const sx=(p<.5?80+90*p:110+130*p)/144;
-      const sy=(p<.5?55+45*p:70+42*p)/72;
-      const d=mosaic.data;
-      // Le logo tourne et se reforme de gros pixels rose/jaune.
-      // Chaque carré est tiré de la couleur réelle du logo.
-      const blocks=[];
-      for(let yy=0;yy<72;yy+=2)for(let xx=0;xx<144;xx+=2){
-        const i=(yy*144+xx)*4;
-        if(d[i+3]<55)continue;
-        const lx=(xx-72)*sx,ly=(yy-36)*sy;
-        const depth=1+(lx/110)*sa*.48;
-        const X=(lx*ca)/depth,Y=ly/depth;
-        const scatter=(1-p)*6;
-        const dx=Math.sin(xx*19.13+yy*7.17+Math.floor(t*30)*.63)*scatter;
-        const dy=Math.cos(xx*11.9-yy*5.31+Math.floor(t*30)*.51)*scatter;
-        const px=160+(X*cr-Y*sr)+dx;
-        const py=90+(X*sr+Y*cr)+dy;
-        blocks.push({z:depth,x:px,y:py,r:d[i],g:d[i+1],b:d[i+2],size:Math.max(1.2,(1.8+2.1*p)/depth)});
-      }
-      blocks.sort((a,b)=>b.z-a.z);
-      for(const b of blocks){
-        ctx.fillStyle='rgb('+b.r+','+b.g+','+b.b+')';
-        ctx.fillRect(b.x,b.y,b.size,b.size);
-      }
+    if(t<2.31){
+      // Très court retour du petit logo, visible sur fond noir juste avant le ruban.
+      drawLogo(160,43,82,42);
+      return;
+    }
+    if(t<3.30){
+      const p=ease((t-2.31)/.99);
+      // La référence va de gros blocs très rares (2.3-2.7)
+      // à une image tournée détaillée (2.9-3.2), puis frontale (3.3).
+      const lod=p<.29?0:p<.46?1:p<.62?2:p<.76?3:4;
+      const image=coarseSprites[lod]||sprite;
+      const turn=(1-p)*Math.PI*2.52;
+      const flip=Math.cos(turn);
+      const sx=Math.sign(flip||1)*Math.max(.055,Math.abs(flip));
+      const roll=-.8*(1-p)+.09*Math.sin(p*Math.PI*5)*(1-p);
+      const ww=62+192*p;
+      const hh=ww*.48;
+      const bob=Math.sin(turn)*22*(1-p);
+      ctx.save();
+      ctx.translate(160,90+bob);
+      ctx.rotate(roll);
+      ctx.scale(sx,1);
+      ctx.imageSmoothingEnabled=false;
+      ctx.drawImage(image,-ww/2,-hh/2,ww,hh);
+      ctx.restore();
       return;
     }
     drawLogo(160,90,247,123);
