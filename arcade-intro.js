@@ -10,7 +10,7 @@
   overlay.setAttribute('aria-label','Introduction Zika Fighter');
   overlay.innerHTML=[
     '<div class="zf-screen zf-legal" id="zf-legal" aria-label="Crédits de lancement ZIKAPCOM">',
-      '<canvas id="zf-legal-canvas" width="1280" height="960" aria-hidden="true"></canvas>',
+      '<canvas id="zf-legal-canvas" width="1448" height="1086" aria-hidden="true"></canvas>',
     '</div>',
     '<div class="zf-screen zf-splash" id="zf-splash" hidden>',
       '<div class="zf-zikacom-official" aria-label="ZIKAPCOM"><img id="zf-zikapcom-logo" src="./assets/zikapcom-logo.png" alt="ZIKAPCOM"></div>',
@@ -26,7 +26,7 @@
       '<button type="button" class="zf-start" id="zf-start" aria-label="Menu du jeu">MENU</button>',
     '</div>',
     '<div class="zf-screen zf-options" id="zf-options" hidden aria-label="Option Mode">',
-      '<canvas id="zf-options-canvas" width="1280" height="960" aria-label="Options de Zika Fighter"></canvas>',
+      '<canvas id="zf-options-canvas" width="1448" height="1086" aria-label="Options de Zika Fighter"></canvas>',
     '</div>'
   ].join('');
   document.body.appendChild(overlay);
@@ -117,7 +117,8 @@
   const legalCanvas=document.getElementById('zf-legal-canvas');
   const legalCtx=legalCanvas.getContext('2d',{alpha:false});
   const approvedLegal=new Image();
-  approvedLegal.src='./assets/approved-legal.svg?v=1';
+  approvedLegal.src='https://static.wixstatic.com/media/685632_10295a3ce7ed4ea392f845c0a243472f~mv2.png';
+  approvedLegal.onerror=()=>{if(!approvedLegal.src.includes('approved-legal.svg'))approvedLegal.src='./assets/approved-legal.svg';};
   approvedLegal.addEventListener('load',()=>{if(phase==='legal')drawLegalFrame((performance.now()-legalStartedAt)/1000);});
   const splash=document.getElementById('zf-splash');
   const title=document.getElementById('zf-title');
@@ -125,7 +126,8 @@
   const optionsCanvas=document.getElementById('zf-options-canvas');
   const optionsCtx=optionsCanvas.getContext('2d',{alpha:false});
   const approvedOptions=new Image();
-  approvedOptions.src='./assets/approved-options.svg?v=1';
+  approvedOptions.src='https://static.wixstatic.com/media/685632_9ffbfcbed80e4abfac3914d16b94a23e~mv2.png';
+  approvedOptions.onerror=()=>{if(!approvedOptions.src.includes('approved-options.svg'))approvedOptions.src='./assets/approved-options.svg';};
   approvedOptions.addEventListener('load',()=>{if(phase==='options')renderOptions();});
   optionsCanvas.setAttribute('tabindex','0');
   optionsCanvas.setAttribute('role','application');
@@ -452,79 +454,92 @@
   const effectChoices=['move','confirm','punch','kick','hit','special','ko'];
   const clampPreset=n=>(n+3)%3;
 
-  // Le menu de référence est une image figée. Ne plus recréer les caractères
-  // ou repositionner le logo : seule la navigation modifie les pixels utiles.
-  const optionsBitmap=document.createElement('canvas');
-  optionsBitmap.width=320;optionsBitmap.height=240;
-  const ob=optionsBitmap.getContext('2d',{willReadFrequently:true});
+
+  // Les captures fournies (1448×1086) sont les images affichées. Les polices,
+  // le logo, les couleurs et les placements NE sont JAMAIS redessinés au chargement.
   const optionLabelBoxes=[
-    [34,33,118,47], [34,51,115,64], [34,67,100,81],
-    [34,84,123,98], [23,165,130,180], [23,183,118,196], [23,199,116,214]
+    [153,151,384,52], [152,223,368,54], [153,295,252,50],
+    [153,365,378,54], [103,755,485,53], [106,828,384,55],
+    [109,900,324,52]
   ];
+  const optionTemp=document.createElement('canvas');
+  const optionTempCtx=optionTemp.getContext('2d');
+  function recolorOriginalLabel(ctx,index){
+    const [x,y,w,h]=optionLabelBoxes[index];
+    optionTemp.width=w;optionTemp.height=h;
+    optionTempCtx.globalCompositeOperation='source-over';
+    optionTempCtx.clearRect(0,0,w,h);
+    optionTempCtx.drawImage(approvedOptions,x,y,w,h,0,0,w,h);
+    if(index===0){
+      // Quand le curseur quitte DIFFICULTY, remplacer son rouge par blanc.
+      optionTempCtx.globalCompositeOperation='multiply';
+      optionTempCtx.fillStyle='#ffffff';
+      optionTempCtx.fillRect(0,0,w,h);
+      optionTempCtx.globalCompositeOperation='source-over';
+      optionTempCtx.filter='grayscale(1) brightness(3.5) contrast(1.7)';
+      ctx.save();ctx.fillStyle='#000';ctx.fillRect(x,y,w,h);
+      ctx.drawImage(optionTemp,x,y);
+      ctx.restore();optionTempCtx.filter='none';
+    }else{
+      // Multiplier le texte blanc par un rouge : le noir du fond reste noir.
+      optionTempCtx.globalCompositeOperation='multiply';
+      optionTempCtx.fillStyle='#ef444b';
+      optionTempCtx.fillRect(0,0,w,h);
+      optionTempCtx.globalCompositeOperation='source-over';
+      ctx.drawImage(optionTemp,x,y);
+    }
+  }
   function renderOptions(){
     if(!optionsCtx)return;
-    const ctx=optionsCtx;
-    ctx.setTransform(1,0,0,1,0,0);
-    ctx.fillStyle='#000';ctx.fillRect(0,0,1280,960);
+    const c=optionsCtx;
+    c.setTransform(1,0,0,1,0,0);
+    c.imageSmoothingEnabled=false;
+    c.fillStyle='#000';c.fillRect(0,0,1448,1086);
     if(!approvedOptions.complete||!approvedOptions.naturalWidth)return;
+    c.drawImage(approvedOptions,0,0,1448,1086);
 
-    ob.setTransform(1,0,0,1,0,0);
-    ob.imageSmoothingEnabled=false;
-    ob.clearRect(0,0,320,240);
-    ob.drawImage(approvedOptions,0,0,320,240);
-    const frame=ob.getImageData(0,0,320,240),pixels=frame.data;
-
-    // Laisser la typographie d'origine intacte ; changer uniquement sa couleur.
-    const recolor=(box,mode)=>{
-      for(let y=box[1];y<box[3];y++){
-        for(let x=box[0];x<box[2];x++){
-          const i=(y*320+x)*4,r=pixels[i],g=pixels[i+1],b=pixels[i+2];
-          const red=(r>110&&r>g*1.55&&r>b*1.25);
-          const white=(r>168&&g>168&&b>168&&Math.abs(r-g)<45&&Math.abs(g-b)<45);
-          if(mode==='white'&&red){pixels[i]=pixels[i+1]=pixels[i+2]=Math.max(r,230);}
-          if(mode==='red'&&white){pixels[i]=Math.round(r*.92);pixels[i+1]=Math.round(g*.23);pixels[i+2]=Math.round(b*.27);}
-        }
-      }
-    };
-    // Première ligne rouge dans la capture ; les autres lignes deviennent
-    // rouges seulement quand on les sélectionne avec le curseur.
-    if(optionSelection!==0)recolor(optionLabelBoxes[0],'white');
-    if(optionSelection>0)recolor(optionLabelBoxes[optionSelection],'red');
-    ob.putImageData(frame,0,0);
-
-    // Conserver le véritable Z de la capture, et seulement le déplacer.
-    ob.fillStyle='#000';ob.fillRect(7,31,26,19);
-    ob.drawImage(approvedOptions,11,31,20,19,11,Math.round(optionRows[optionSelection]/(1086/240))-11,20,19);
-
-    // Valeurs dynamiques, sur des zones extrêmement limitées.
-    const value=(text,x,y,width=36,color='#fff000')=>{
-      ob.fillStyle='#000';ob.fillRect(x,y-11,width,16);
-      ob.textAlign='center';ob.textBaseline='alphabetic';
-      ob.font='900 11px "Rockwell Extra Bold",Rockwell,Georgia,serif';
-      ob.fillStyle=color;ob.fillText(text,x+width/2,y, width);
-    };
-    if(settings.timeLimit!==true)value('NO',134,60,38);
-    if(settings.players===2){
-      const box=ob.getImageData(215,68,65,13),a=box.data;
-      for(let i=0;i<a.length;i+=4){
-        if(a[i]>185&&a[i+1]>185&&a[i+2]>185){a[i]=255;a[i+1]=237;a[i+2]=0;}
-      }
-      ob.putImageData(box,215,68);
+    // Sur le premier état, il n'y a AUCUN dessin par-dessus l'image de référence.
+    if(optionSelection!==0){
+      c.fillStyle='#000';c.fillRect(48,141,94,63);
+      c.drawImage(approvedOptions,53,144,82,61,53,optionRows[optionSelection]-51,82,61);
+      recolorOriginalLabel(c,0);
+      recolorOriginalLabel(c,optionSelection);
     }
-    if(settings.musicTest!==10)value(String(settings.musicTest).padStart(2,'0'),136,193,26);
-    if(settings.seTest!==0)value(String(settings.seTest).padStart(2,'0'),135,209,27);
 
-    // Reconstruire les cinq étoiles depuis les vrais glyphes de la capture.
-    // La capture de base contient trois étoiles pleines et deux contours.
+    // Les changements de difficulté reprennent les vrais pixels des étoiles.
     if(settings.difficulty!==3){
-      ob.fillStyle='#000';ob.fillRect(174,31,64,16);
+      c.fillStyle='#000';c.fillRect(791,147,273,61);
       for(let i=0;i<5;i++){
-        const src=i<settings.difficulty?174:210;
-        ob.drawImage(approvedOptions,src,31,14,16,174+i*13,31,14,16);
+        const filled=i<settings.difficulty;
+        c.drawImage(approvedOptions,filled?793:951,147,51,57,793+i*53,147,51,57);
       }
     }
-    ctx.imageSmoothingEnabled=false;
-    ctx.drawImage(optionsBitmap,0,0,1280,960);
+
+    // Valeurs variables : elles ne sont jamais ajoutées au menu d'origine.
+    if(!settings.timeLimit){
+      c.fillStyle='#000';c.fillRect(615,215,140,65);
+      c.font='900 52px Georgia,serif';c.textBaseline='alphabetic';
+      c.fillStyle='#f8e800';c.fillText('NO',626,263);
+    }
+    if(settings.players===2){
+      c.fillStyle='#000';c.fillRect(616,290,256,62);
+      c.fillStyle='#ffff00';c.font='900 50px Georgia,serif';
+      c.fillText('1PLAYER',622,336);
+    }
+    if(settings.musicTest!==10){
+      c.fillStyle='#000';c.fillRect(613,826,105,57);
+      if(settings.musicTest===0){
+        c.drawImage(approvedOptions,610,895,84,51,622,825,84,51);
+      }else{
+        c.drawImage(approvedOptions,612,899,42,44,624,830,42,44);
+        c.drawImage(approvedOptions,617,828,39,49,663,830,39,49);
+      }
+    }
+    if(settings.seTest!==0){
+      c.fillStyle='#000';c.fillRect(607,896,110,55);
+      c.fillStyle='#fff000';c.font='900 50px Georgia,serif';
+      c.fillText(String(settings.seTest).padStart(2,'0'),610,941);
+    }
   }
   // Test only real tracks and the exact supplied sounds plus implemented game FX.
   function playMusicTest(){
@@ -743,17 +758,16 @@
   // magenta reste délibérément rogné dans l'angle inférieur droit.
 
 
+
   function drawLegalFrame(t){
     if(!legalCtx)return;
-    const c=legalCtx;
-    c.setTransform(1,0,0,1,0,0);
-    c.fillStyle=t<.19?'#120b98':'#000';
-    c.fillRect(0,0,1280,960);
+    const c=legalCtx;c.setTransform(1,0,0,1,0,0);
+    c.fillStyle=t<.19?'#120b98':'#000';c.fillRect(0,0,1448,1086);
     if(t<.33||!approvedLegal.complete||!approvedLegal.naturalWidth)return;
-    const opacity=Math.min(1,Math.max(0,(t-.33)/.22),Math.max(0,(5.2-t)/.18));
-    c.save();c.globalAlpha=opacity;
+    c.save();
+    c.globalAlpha=Math.min(1,Math.max(0,(t-.33)/.22),Math.max(0,(5.2-t)/.18));
     c.imageSmoothingEnabled=false;
-    c.drawImage(approvedLegal,0,0,1280,960);
+    c.drawImage(approvedLegal,0,0,1448,1086);
     c.restore();
   }
   function legalTick(now){
