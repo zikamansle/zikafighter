@@ -725,6 +725,46 @@
   document.addEventListener('pointerdown',()=>{
     if((phase==='title'||phase==='options')&&titleMusic.paused)playTitleMusic();
   },{capture:true});
+  // Prise en charge des manettes du navigateur : croix, sticks, A et B.
+  // Le futur portage émulateur natif sera traité séparément.
+  let padHeld='',padLastActionAt=0;
+  function pollArcadePad(now){
+    if(closed||!overlay.isConnected)return;
+    let pads=[];
+    try{pads=navigator.getGamepads?Array.from(navigator.getGamepads()):[];}catch(_){}
+    const pad=pads.find(Boolean);
+    let action='';
+    if(pad&&(phase==='title'||phase==='options')){
+      const pressed=n=>Boolean(pad.buttons&&pad.buttons[n]&&pad.buttons[n].pressed);
+      const ax=pad.axes&&pad.axes[0]||0,ay=pad.axes&&pad.axes[1]||0;
+      if(pressed(12)||ay<-.6)action='up';
+      else if(pressed(13)||ay>.6)action='down';
+      else if(pressed(14)||ax<-.6)action='left';
+      else if(pressed(15)||ax>.6)action='right';
+      else if(pressed(1)||pressed(8))action='back';
+      else if(pressed(0)||pressed(9))action='select';
+      if(action&&(action!==padHeld||now-padLastActionAt>230)){
+        padLastActionAt=now;
+        if(phase==='title'){
+          if(action==='up')titleSelection=(titleSelection+2)%3;
+          else if(action==='down')titleSelection=(titleSelection+1)%3;
+          else if(action==='left'&&titleSelection===0){settings.turbo=clamp(settings.turbo-1,0,8);persistSettings();}
+          else if(action==='right'&&titleSelection===0){settings.turbo=clamp(settings.turbo+1,0,8);persistSettings();}
+          else if(action==='select')activateTitleSelection();
+        }else if(phase==='options'){
+          if(action==='up'){optionSelection=(optionSelection+5)%6;renderOptions();}
+          else if(action==='down'){optionSelection=(optionSelection+1)%6;renderOptions();}
+          else if(action==='left')adjustOption(-1);
+          else if(action==='right')adjustOption(1);
+          else if(action==='back')closeOptions();
+          else if(action==='select'){if(optionSelection===5)playMusicTest();else adjustOption(1);}
+        }
+      }
+    }
+    padHeld=action;
+    requestAnimationFrame(pollArcadePad);
+  }
+  requestAnimationFrame(pollArcadePad);
   fade(0);
   legalFrame=requestAnimationFrame(legalTick);
   // Réessayer automatiquement au retour sur l'application (sans remplacer l'interaction exigée par certains navigateurs).
