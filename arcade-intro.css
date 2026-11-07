@@ -28,7 +28,7 @@
 #zf-intro.zf-title-ready .zf-title{background:#080eac url("./assets/zika-fighter-title.png") center center/contain no-repeat}
 #zf-intro.zf-title-ready .zf-title:before{display:none}
 #zf-intro.zf-title-ready .zf-title .zf-mark,#zf-intro.zf-title-ready .zf-title .zf-press,#zf-intro.zf-title-ready .zf-title .zf-copyright,#zf-intro.zf-title-ready .zf-title .zf-credits{visibility:hidden}
-#zf-intro.zf-splash-ready .zf-splash{background:#0825ba url("./assets/zikacom-splash.png") center center/contain no-repeat}
+#zf-intro.zf-splash-ready .zf-splash{background:#0712b8!important}
 #zf-intro.zf-splash-ready .zf-splash .zf-publisher{visibility:hidden}
 
 #zf-intro .zf-title #zf-audio{visibility:visible!important}
@@ -42,6 +42,6 @@
 #zf-intro .zf-splash{background:#0712b8!important;animation:none!important}
 #zf-intro .zf-splash .zf-publisher{opacity:0!important}
 #zf-intro.zf-splash-ready .zf-splash{background:#0712b8!important}
-#zf-intro .zf-splash .zf-logo-entrance{position:absolute;inset:0;background:url("./assets/zikacom-splash.png") center/contain no-repeat;opacity:var(--zf-logo-opacity,0);transform:scale(var(--zf-logo-scale,1.35));filter:brightness(var(--zf-logo-brightness,1));clip-path:inset(0 calc((1 - var(--zf-logo-reveal,0))*50%) 0 calc((1 - var(--zf-logo-reveal,0))*50%));will-change:opacity,transform,clip-path;pointer-events:none}
-#zf-intro:not(.zf-splash-ready) .zf-splash .zf-publisher{opacity:var(--zf-logo-opacity,0)!important;visibility:visible;transform:scale(var(--zf-logo-scale,1.35));animation:none!important}
+#zf-intro .zf-splash .zf-logo-entrance{position:absolute;inset:0;background:url("./assets/zikacom-splash.png") center/contain no-repeat;opacity:var(--zf-logo-opacity,0);transform:none;filter:none;clip-path:none;transition:none;pointer-events:none;will-change:opacity}
+#zf-intro:not(.zf-splash-ready) .zf-splash .zf-publisher{opacity:var(--zf-logo-opacity,0)!important;visibility:visible;transform:none;animation:none!important}
 #zf-intro:not(.zf-splash-ready) .zf-splash .zf-logo-entrance{display:none}
