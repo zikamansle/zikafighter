@@ -10,8 +10,8 @@
   overlay.setAttribute('aria-label','Introduction Zika Fighter');
   overlay.innerHTML=[
     '<div class="zf-screen zf-splash" id="zf-splash">',
-      '<div class="zf-zikacom-official" aria-label="ZIKACOM"><img src="./assets/zikacom-pixel-logo.svg" alt="" width="280" height="50"></div>',
-      '<div class="zf-zikacom-shine" aria-hidden="true"><img src="./assets/zikacom-pixel-logo.svg" alt="" width="280" height="50"></div>',
+      '<div class="zf-zikacom-official" aria-label="ZIKACOM"><img src="./assets/zikacom-pixel-logo.svg?v=2" alt="" width="280" height="50"></div>',
+      '<div class="zf-zikacom-shine" aria-hidden="true"><img src="./assets/zikacom-pixel-logo.svg?v=2" alt="" width="280" height="50"></div>',
       '<button type="button" class="zf-unlock-sound" id="zf-unlock-sound" hidden>ACTIVER LE SON POUR LANCER LE JEU</button>',
       '<p id="zf-sound-error" class="zf-sound-error" hidden>Jingle introuvable : assets/zikacom-intro.mp3</p>',
     '</div>',
@@ -59,6 +59,7 @@
     try{const p=titleMusic.play();if(p&&typeof p.catch==='function')p.catch(()=>{});}catch(_){}
   }
   let phase='splash',status='pending',closed=false,raf=0;
+  const visualStartedAt=performance.now();
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
   function fade(seconds){
     // Séquence ZIKACOM sur fond noir : logo fixe, fondu doux, tenue, fondu de sortie.
@@ -126,6 +127,7 @@
     if(phase!=='splash')return;
     // Le fondu n'avance que lorsque le MP3 avance réellement.
     if(status==='playing')fade(audio.currentTime);
+    else fade(Math.min(3,(performance.now()-visualStartedAt)/1000));
     if(audio.ended){showTitle();return;}
     raf=requestAnimationFrame(update);
   }
