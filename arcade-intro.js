@@ -27,7 +27,6 @@
     '</div>',
     '<div class="zf-screen zf-options" id="zf-options" hidden aria-label="Option Mode">',
       '<canvas id="zf-options-canvas" width="1280" height="960" aria-label="Options de Zika Fighter"></canvas>',
-      '<button type="button" class="zf-options-back" id="zf-options-back" aria-label="Retour aux titres">RETOUR</button>',
     '</div>'
   ].join('');
   document.body.appendChild(overlay);
@@ -128,7 +127,9 @@
   const approvedOptions=new Image();
   approvedOptions.src='./assets/approved-options.svg?v=1';
   approvedOptions.addEventListener('load',()=>{if(phase==='options')renderOptions();});
-  const optionsBack=document.getElementById('zf-options-back');
+  optionsCanvas.setAttribute('tabindex','0');
+  optionsCanvas.setAttribute('role','application');
+  optionsCanvas.setAttribute('aria-label','Options Zika Fighter : flèches pour naviguer, gauche/droite pour régler, Entrée pour tester et Échap pour revenir');
   const titleCanvas=document.getElementById('zf-title-canvas');
   const titleCtx=titleCanvas.getContext('2d',{alpha:false});
   const OPTIONS_STORAGE_KEY='zikafighter-options-v2';
@@ -447,86 +448,93 @@
   }
   // High-resolution native Canvas: no 260x195 raster stretched to full-screen.
   // Pixel-era serif styling, precise positions and fully dynamic values.
-  const optionRows=[52,73,94,114,184,197,210,224,237];
+  const optionRows=[47,69,89,108,176,190,203,217,231];
   const musicChoices=[0,1,10]; // only existing recordings
   const effectChoices=['move','confirm','punch','kick','hit','special','ko'];
+  // OPTION MODE : vrai rendu Canvas 1280×960 en 4:3.
+  // Typographie haute définition sur 320×240 coordonnées logiques, sans
+  // images miniatures agrandies ni boutons superposés.
   function renderOptions(){
     if(!optionsCtx)return;
     const ctx=optionsCtx;
     ctx.setTransform(4,0,0,4,0,0);
     ctx.clearRect(0,0,320,240);
-    ctx.fillStyle='#000';ctx.fillRect(0,0,320,240);
+    ctx.fillStyle='#020203';ctx.fillRect(0,0,320,240);
     ctx.textBaseline='alphabetic';
-    // Only the existing Zika Fighter logotype, dimmed in grayscale.
     if(titleSpriteCanvas){
       ctx.save();
-      ctx.globalAlpha=.32;
-      ctx.filter='grayscale(1) brightness(.64)';
+      ctx.globalAlpha=.28;
+      ctx.filter='grayscale(1) brightness(.75)';
       ctx.imageSmoothingEnabled=true;
       ctx.imageSmoothingQuality='high';
-      ctx.drawImage(titleSpriteCanvas,35,34,250,140);
+      ctx.drawImage(titleSpriteCanvas,35,34,252,142);
       ctx.restore();
     }
-    const txt=(value,x,y,size=11,color='#f0f0ef',align='left')=>{
-      ctx.save();ctx.font='900 '+size+'px Georgia,"Times New Roman",serif';
-      ctx.textAlign=align;ctx.lineJoin='round';ctx.lineWidth=.55;
-      ctx.strokeStyle='#211722';ctx.strokeText(value,x+.5,y+.5);
-      ctx.fillStyle=color;ctx.fillText(value,x,y);ctx.restore();
+    // Texte sérif à relief, contraste proche des menus console 16 bits.
+    const txt=(value,x,y,size=11,color='#ecebea',align='left')=>{
+      ctx.save();
+      ctx.font='900 '+size+'px Georgia,"Times New Roman",serif';
+      ctx.textAlign=align;
+      ctx.textBaseline='alphabetic';
+      ctx.lineJoin='round';
+      ctx.strokeStyle='#16121d';
+      ctx.lineWidth=1.1;
+      ctx.strokeText(value,x+.3,y+.6);
+      ctx.fillStyle=color;
+      ctx.fillText(value,x,y);
+      ctx.restore();
     };
-    // Small isolated Z, rather than the whole ZikaTeam wordmark.
+    const label=(name,index,y,size=11)=>txt(name,26,y,size,optionSelection===index?'#dd4f59':'#ececee');
+    // Le Z isolé validé est conservé comme curseur.
     const z=(x,y)=>{
       ctx.save();ctx.translate(x,y);
-      ctx.beginPath();
-      ctx.moveTo(1,1);ctx.bezierCurveTo(5,0,17,-2,19,-4);
-      ctx.lineTo(13,1);ctx.lineTo(7,10);
-      ctx.bezierCurveTo(12,8,16,9,19,7);
+      ctx.beginPath();ctx.moveTo(1,1);ctx.bezierCurveTo(5,0,17,-2,19,-4);
+      ctx.lineTo(13,1);ctx.lineTo(7,10);ctx.bezierCurveTo(12,8,16,9,19,7);
       ctx.lineTo(16,12);ctx.bezierCurveTo(10,17,3,15,-1,18);
-      ctx.lineTo(5,13);ctx.lineTo(13,3);
-      ctx.bezierCurveTo(8,4,4,6,-1,6);ctx.closePath();
-      ctx.strokeStyle='#83418b';ctx.lineWidth=2.1;ctx.lineJoin='round';
-      ctx.stroke();ctx.fillStyle='#fff';ctx.fill();ctx.restore();
+      ctx.lineTo(5,13);ctx.lineTo(13,3);ctx.bezierCurveTo(8,4,4,6,-1,6);
+      ctx.closePath();ctx.strokeStyle='#83418b';ctx.lineWidth=2.1;
+      ctx.lineJoin='round';ctx.stroke();ctx.fillStyle='#fff';ctx.fill();ctx.restore();
     };
-    const coloredLabel=(label,idx,y,size=11)=>txt(label,25,y,size,optionSelection===idx?'#e44b58':'#f1f0f1');
-    txt('OPTION MODE',160,24,20,'#729fee','center');
-    txt('EASY',143,40,11);
-    txt('HARD',288,40,11,'#f0f0f1','right');
-    coloredLabel('DIFFICULTY',0,52,11);
-    for(let i=0;i<8;i++)txt('★',157+i*15,54,13,i<settings.difficulty?'#f0e82e':'#64656b','center');
-    coloredLabel('TIME LIMIT',1,73);
-    txt('YES',164,73,11,settings.timeLimit?'#f0e62a':'#eee','center');
-    txt('NO',264,73,11,!settings.timeLimit?'#f0e62a':'#eee','center');
-    coloredLabel('CONFIG.',2,94);
-    txt('1PLAYER',160,94,11,settings.players===1?'#f0e62a':'#eee','center');
-    txt('2PLAYER',264,94,11,settings.players===2?'#f0e62a':'#eee','center');
-    coloredLabel('CPS FIGHTER',3,114);
-    txt('SET',164,114,11,'#f0e62a','center');txt('SET',267,114,11,'#f0e62a','center');
+    txt('OPTION MODE',160,23,20,'#80a8f0','center');
+    txt('EASY',146,34,10,'#f2f2f2','center');
+    txt('HARD',287,34,10,'#f2f2f2','right');
+    label('DIFFICULTY',0,47,11);
+    for(let i=0;i<8;i++)txt('★',155+i*16,48,13,i<settings.difficulty?'#f1e22f':'#53535a','center');
+    label('TIME LIMIT',1,69,11);
+    txt('YES',163,69,11,settings.timeLimit?'#f2e431':'#ddd','center');
+    txt('NO',267,69,11,!settings.timeLimit?'#f2e431':'#ddd','center');
+    label('CONFIG.',2,89,11);
+    txt('1PLAYER',163,89,11,settings.players===1?'#f2e431':'#eee','center');
+    txt('2PLAYER',265,89,11,settings.players===2?'#f2e431':'#eee','center');
+    label('CPS FIGHTER',3,108,11);
+    txt('SET',164,108,11,settings.controlPreset!==2?'#f2e431':'#eee','center');
+    txt('SET',266,108,11,settings.controlPreset===2?'#f2e431':'#eee','center');
     const mapping=['Y','X','L','B','A','R'];
-    ['L. PUNCH','M. PUNCH','H. PUNCH','L. KICK','M. KICK','H. KICK'].forEach((label,i)=>{
-      const y=125+i*9;
-      txt(label,45,y,9);
-      txt(mapping[(i+settings.controlPreset*2)%6],165,y,10,'#eee','center');
-      txt(mapping[i],267,y,10,'#eee','center');
+    ['L. PUNCH','M. PUNCH','H. PUNCH','L. KICK','M. KICK','H. KICK'].forEach((name,i)=>{
+      const y=120+i*8.6;
+      txt(name,43,y,9.7);
+      txt(mapping[(i+settings.controlPreset*2)%6],164,y,10,'#f0efef','center');
+      txt(mapping[i],266,y,10,'#f0efef','center');
     });
-    coloredLabel('STEREO',4,184);
-    txt('STEREO',176,184,11,settings.stereo?'#f0e62a':'#eee','center');
-    txt('MONAURAL',294,184,11,!settings.stereo?'#f0e62a':'#eee','right');
-    coloredLabel('MUSIC VOL',5,197,10);
-    coloredLabel('SFX VOL',6,210,10);
-    const drawLevel=(val,y)=>{
+    label('STEREO',4,176,11);
+    txt('STEREO',170,176,11,settings.stereo?'#f4e632':'#ddd','center');
+    txt('MONAURAL',293,176,10.5,!settings.stereo?'#f4e632':'#ddd','right');
+    label('MUSIC VOL',5,190,10);
+    label('SFX VOL',6,203,10);
+    const level=(value,y)=>{
       for(let i=0;i<10;i++){
-        ctx.fillStyle=i<val?'#e9db2c':'#3a3641';
-        ctx.fillRect(147+i*10,y-8,8,6);
+        ctx.fillStyle=i<value?'#e6d736':'#514c56';
+        ctx.fillRect(145+i*10,y-7,8,5);
       }
-      txt(String(val).padStart(2,'0'),278,y,10,'#f1e731','center');
+      txt(String(value).padStart(2,'0'),276,y,10,'#f4e632','center');
     };
-    drawLevel(settings.musicVolume,197);
-    drawLevel(settings.fxVolume,210);
-    coloredLabel('MUSIC TEST',7,224,11);
-    txt(String(settings.musicTest).padStart(2,'0'),157,224,12,'#f0e62a','center');
-    txt(settings.musicTest===1?'JINGLE':settings.musicTest===10?'TITRE':'STOP',229,224,9,'#ddd','center');
-    coloredLabel('S.E. TEST',8,237,11);
-    txt(String(settings.seTest).padStart(2,'0'),157,237,12,'#f0e62a','center');
-    txt(effectChoices[settings.seTest]?.toUpperCase()||'—',237,237,9,'#ddd','center');
+    level(settings.musicVolume,190);level(settings.fxVolume,203);
+    label('MUSIC TEST',7,217,10.5);
+    txt(String(settings.musicTest).padStart(2,'0'),164,217,11,'#f4e632','center');
+    txt(settings.musicTest===1?'JINGLE':settings.musicTest===10?'TITRE':'STOP',244,217,9,'#eee','center');
+    label('S.E. TEST',8,231,10.5);
+    txt(String(settings.seTest).padStart(2,'0'),164,231,11,'#f4e632','center');
+    txt(effectChoices[settings.seTest]?.toUpperCase()||'—',250,231,9,'#eee','center');
     z(5,optionRows[optionSelection]-15);
   }
   // Test only real tracks and the exact supplied sounds plus implemented game FX.
@@ -579,7 +587,7 @@
     if(titleFrame)cancelAnimationFrame(titleFrame);
     phase='options';
     title.hidden=true;optionsScreen.hidden=false;
-    optionSelection=0;optionsBack.focus({preventScroll:true});
+    optionSelection=0;optionsCanvas.focus({preventScroll:true});
     renderOptions();
   }
   function closeOptions(){
@@ -884,26 +892,53 @@
     }
     activateTitleSelection();
   });
-  optionsBack.addEventListener('click',event=>{
+  optionsCanvas.addEventListener('click',event=>{
     if(phase!=='options')return;
     const rect=optionsCanvas.getBoundingClientRect();
     const x=(event.clientX-rect.left)/Math.max(1,rect.width)*320;
     const y=(event.clientY-rect.top)/Math.max(1,rect.height)*240;
-    if(y<15||x>300&&y>222){closeOptions();return;}
-    const beforeSelection=optionSelection;
-    optionSelection=optionRows.reduce((best,v,i)=>Math.abs(v-y)<Math.abs(optionRows[best]-y)?i:best,0);
-    if(beforeSelection!==optionSelection)cursorMove();
-    if((optionSelection===5||optionSelection===6)&&x>=145&&x<=248){
-      const key=optionSelection===5?'musicVolume':'fxVolume';
-      const next=clamp(Math.floor((x-145)/10)+1,0,10);
-      if(settings[key]!==next){
-        settings[key]=next;persistSettings();renderOptions();cursorMove();
+    if(x<0||x>320||y<0||y>240)return;
+    optionsCanvas.focus({preventScroll:true});
+    const previous=optionSelection;
+    optionSelection=optionRows.reduce(
+      (best,v,i)=>Math.abs(v-y)<Math.abs(optionRows[best]-y)?i:best,0);
+    if(previous!==optionSelection)cursorMove();
+    let next;
+    switch(optionSelection){
+      case 0:
+        if(x>=145){
+          next=clamp(Math.floor((x-147)/16)+1,1,8);
+          if(settings.difficulty!==next){settings.difficulty=next;cursorMove();}
+        }
+        break;
+      case 1:
+        if(x>=135){settings.timeLimit=x<213;cursorMove();}
+        break;
+      case 2:
+        if(x>=130){settings.players=x<215?1:2;cursorMove();}
+        break;
+      case 3:
+        if(x>=128){settings.controlPreset=x<213?((settings.controlPreset+1)%2):2;cursorMove();}
+        break;
+      case 4:
+        if(x>=138){settings.stereo=x<225;cursorMove();}
+        break;
+      case 5:
+      case 6:{
+        const key=optionSelection===5?'musicVolume':'fxVolume';
+        next=x>=141&&x<=248?clamp(Math.floor((x-145)/10)+1,0,10):
+          clamp(settings[key]+(x<141?-1:1),0,10);
+        if(settings[key]!==next){settings[key]=next;cursorMove();}
+        break;
       }
-      return;
+      case 7:
+        if(x>203){cursorConfirm();playMusicTest();return;}
+        adjustOption(x<165?-1:1);return;
+      case 8:
+        if(x>203){playSfxTest();return;}
+        adjustOption(x<165?-1:1);return;
     }
-    if(optionSelection===7&&x>205){cursorConfirm();playMusicTest();return;}
-    if(optionSelection===8&&x>205){playSfxTest();return;}
-    adjustOption(x<154?-1:1);
+    persistSettings();renderOptions();
   });
   document.addEventListener('keydown',event=>{
     if(closed||!overlay.isConnected)return;
