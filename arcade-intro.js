@@ -456,171 +456,227 @@
   const clampPreset=n=>(n+3)%3;
 
 
-  // Tous les éléments graphiques proviennent de la capture validée.
-  // Seuls les pixels des options modifiées changent ; le reste ne bouge pas.
-  const WOPT=1448,HOPT=1086;
-  const optionsSource=document.createElement('canvas');
-  optionsSource.width=WOPT;optionsSource.height=HOPT;
-  const optionsSourceCtx=optionsSource.getContext('2d',{willReadFrequently:true});
-  let optionsPixels=null;
+
+  // OPTION MODE : image de référence inchangée ; sprites extraits à leurs
+  // coordonnées réelles (1448 × 1086). Aucune police HTML sur les 6 touches.
+  const OPT_W=1448,OPT_H=1086;
+  const optionPicture=document.createElement('canvas');
+  optionPicture.width=OPT_W;optionPicture.height=OPT_H;
+  const optionPictureCtx=optionPicture.getContext('2d',{willReadFrequently:true});
   const optionLabelBoxes=[
-    [153,151,384,52],[152,223,368,54],[153,295,252,50],
-    [153,365,378,54],[103,755,485,53],[106,828,384,55],[109,900,324,52]
+    [152,148,380,58],[153,220,373,58],[151,294,255,57],
+    [151,362,376,55],[104,754,487,66],[104,825,385,66],[106,895,343,68]
   ];
-  const controlYs=[450,497,544,591,638,685];
-  const controlKeys=['Y','X','L','B','A','R'];
-  let optionSnapshot=null;
-  const pixelAt=(data,x,y)=>(y*WOPT+x)*4;
-  function getOptionPixels(){
-    if(optionsPixels)return optionsPixels;
+  const keyOriginals=[
+    [730,450,32,32],[730,497,32,32],[733,543,30,33],
+    [732,591,31,32],[732,638,34,33],[732,686,32,32]
+  ];
+  const keySecond=[
+    [1114,450,33,32],[1114,497,31,32],[1112,544,32,32],
+    [1113,591,32,32],[1111,638,35,33],[1112,686,32,33]
+  ];
+  const keyNames=['Y','X','L','B','A','R'];
+  let optionRaw=null,optionClear=null;
+  const keySprites={};
+  const optionDigitSprites={};
+  const isWhite=(r,g,b)=>Math.min(r,g,b)>139&&Math.max(r,g,b)-Math.min(r,g,b)<47;
+  const isYellow=(r,g,b)=>r>120&&g>90&&b<135&&r>g*.88&&g>b*1.55;
+  function getOptionSource(){
+    if(optionRaw)return optionRaw;
     if(!approvedOptions.complete||!approvedOptions.naturalWidth)return null;
     try{
-      optionsSourceCtx.drawImage(approvedOptions,0,0,WOPT,HOPT);
-      optionsPixels=optionsSourceCtx.getImageData(0,0,WOPT,HOPT);
+      optionPictureCtx.clearRect(0,0,OPT_W,OPT_H);
+      optionPictureCtx.drawImage(approvedOptions,0,0,OPT_W,OPT_H);
+      optionRaw=optionPictureCtx.getImageData(0,0,OPT_W,OPT_H);
+      return optionRaw;
     }catch(err){
-      // Si un hébergeur interdit les pixels, conserver l'image sans crash.
-      console.warn('Zika Fighter : sprites Options indisponibles',err);
+      console.warn('Zika Fighter : capture dynamique des sprites indisponible',err);
       return null;
     }
-    return optionsPixels;
   }
-  function eachPixel(data,box,fn){
-    const x0=Math.max(0,box[0]),y0=Math.max(0,box[1]),
-      x1=Math.min(WOPT,x0+box[2]),y1=Math.min(HOPT,y0+box[3]);
-    for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++)fn(pixelAt(data,x,y),x,y);
-  }
-  function recolorOption(data,box,from,to){
-    eachPixel(data,box,(i)=>{
-      const r=data[i],g=data[i+1],b=data[i+2];
-      const isWhite=Math.min(r,g,b)>155&&Math.abs(r-g)<50&&Math.abs(g-b)<50;
-      const isRed=r>110&&r>g*1.55&&r>b*1.25;
-      const isYellow=r>120&&g>95&&r>b*1.8&&g>b*1.6;
-      if((from==='white'&&isWhite)||(from==='red'&&isRed)||(from==='yellow'&&isYellow)){
-        const brightness=Math.min(1,Math.max(.45,Math.max(r,g,b)/255));
-        const dest=to==='red'?[239,64,72]:to==='yellow'?[255,235,0]:[245,245,245];
-        data[i]=dest[0]*brightness;data[i+1]=dest[1]*brightness;data[i+2]=dest[2]*brightness;
+  function originalSprite(rect,predicate,color){
+    const source=getOptionSource();
+    if(!source)return null;
+    const [x,y,w,h]=rect,cv=document.createElement('canvas');
+    cv.width=w;cv.height=h;
+    const out=cv.getContext('2d').createImageData(w,h);
+    for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){
+      const a=((y+yy)*OPT_W+x+xx)*4,b=(yy*w+xx)*4;
+      const r=source.data[a],g=source.data[a+1],bl=source.data[a+2];
+      if(predicate(r,g,bl)){
+        out.data[b]=color?color[0]:r;
+        out.data[b+1]=color?color[1]:g;
+        out.data[b+2]=color?color[2]:bl;
+        out.data[b+3]=255;
       }
-    });
+    }
+    cv.getContext('2d').putImageData(out,0,0);
+    return cv;
   }
-  function eraseOptionInk(data,box,mode='white'){
-    // Remplacer seulement les pixels de l'encre, sans toucher au logo gris.
-    eachPixel(data,box,(i)=>{
-      const r=data[i],g=data[i+1],b=data[i+2];
-      const isWhite=Math.min(r,g,b)>146&&Math.abs(r-g)<43&&Math.abs(g-b)<43;
-      const isYellow=r>120&&g>90&&r>b*1.8&&g>b*1.55;
-      if((mode==='white'&&isWhite)||(mode==='yellow'&&isYellow)){
-        const gray=Math.min(79,Math.max(0,Math.round((r+g+b)/15)));
-        data[i]=gray;data[i+1]=gray;data[i+2]=gray;
+  function getKeySprite(key){
+    const i=keyNames.indexOf(key);
+    if(i<0)return null;
+    if(!keySprites[key])keySprites[key]=originalSprite(keyOriginals[i],isWhite,[248,248,248]);
+    return keySprites[key];
+  }
+  function maskedBackground(rect,kind){
+    const source=getOptionSource();
+    if(!source)return null;
+    const [x,y,w,h]=rect,cv=document.createElement('canvas');
+    cv.width=w;cv.height=h;
+    const patch=cv.getContext('2d').createImageData(w,h);
+    const data=source.data;
+    const masked=(r,g,b)=>kind==='yellow'?isYellow(r,g,b):isWhite(r,g,b);
+    for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){
+      const idx=((y+yy)*OPT_W+x+xx)*4,dst=(yy*w+xx)*4;
+      let r=data[idx],g=data[idx+1],b=data[idx+2];
+      if(masked(r,g,b)){
+        // Reconstruction du logo derrière chaque caractère, par voisins.
+        let rr=0,gg=0,bb=0,sum=0;
+        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+          for(let dist=1;dist<=18;dist++){
+            const ax=x+xx+dx*dist,ay=y+yy+dy*dist;
+            if(ax<0||ax>=OPT_W||ay<0||ay>=OPT_H)break;
+            const at=(ay*OPT_W+ax)*4,pr=data[at],pg=data[at+1],pb=data[at+2];
+            if(!masked(pr,pg,pb)){
+              const weight=1/(dist+.1);
+              rr+=pr*weight;gg+=pg*weight;bb+=pb*weight;sum+=weight;
+              break;
+            }
+          }
+        }
+        if(sum){r=rr/sum;g=gg/sum;b=bb/sum;}
+        else r=g=b=0;
       }
-    });
+      patch.data[dst]=r;patch.data[dst+1]=g;patch.data[dst+2]=b;patch.data[dst+3]=255;
+    }
+    cv.getContext('2d').putImageData(patch,0,0);
+    return cv;
+  }
+  function getCleanKeys(){
+    if(optionClear)return optionClear;
+    const source=getOptionSource();
+    if(!source)return null;
+    optionClear=document.createElement('canvas');
+    optionClear.width=OPT_W;optionClear.height=OPT_H;
+    const c=optionClear.getContext('2d');
+    c.putImageData(source,0,0);
+    for(const rect of [...keyOriginals,...keySecond]){
+      const patchRect=[rect[0]-2,rect[1]-2,rect[2]+4,rect[3]+4];
+      const patch=maskedBackground(patchRect,'white');
+      if(patch)c.drawImage(patch,patchRect[0],patchRect[1]);
+    }
+    return optionClear;
+  }
+  function replaceLabelTint(ctx,rect,from,to){
+    const [x,y,w,h]=rect,raw=ctx.getImageData(x,y,w,h),d=raw.data;
+    for(let k=0;k<d.length;k+=4){
+      const r=d[k],g=d[k+1],b=d[k+2];
+      const match=from==='red'?(r>107&&r>g*1.55&&r>b*1.35):from==='yellow'?isYellow(r,g,b):isWhite(r,g,b);
+      if(!match)continue;
+      const luminance=Math.max(.52,Math.min(1,Math.max(r,g,b)/255));
+      const c=to==='red'?[235,62,69]:to==='yellow'?[255,233,0]:[246,246,246];
+      d[k]=c[0]*luminance;d[k+1]=c[1]*luminance;d[k+2]=c[2]*luminance;
+    }
+    ctx.putImageData(raw,x,y);
+  }
+  function drawNumber(ctx,value,x,y){
+    const digits=String(value).padStart(2,'0');
+    const digitFont={
+      '0':['01110','10001','10011','10101','11001','10001','01110'],
+      '1':['00100','01100','00100','00100','00100','00100','01110'],
+      '2':['01110','10001','00001','00010','00100','01000','11111'],
+      '3':['11110','00001','00001','01110','00001','00001','11110'],
+      '4':['10010','10010','10010','11111','00010','00010','00010'],
+      '5':['11111','10000','10000','11110','00001','00001','11110'],
+      '6':['01111','10000','10000','11110','10001','10001','01110'],
+      '7':['11111','00001','00010','00100','00100','00100','00100'],
+      '8':['01110','10001','10001','01110','10001','10001','01110'],
+      '9':['01110','10001','10001','01111','00001','00001','11110']
+    };
+    // Chiffres d'origine pour 0 et 1 ; police bitmap seulement pour 2–9.
+    const existing={
+      '0':[674,861,31,34],
+      '1':[643,861,22,34]
+    };
+    ctx.save();ctx.imageSmoothingEnabled=false;
+    for(let i=0;i<2;i++){
+      const d=digits[i],xx=x+i*40;
+      if(existing[d]){
+        if(!optionDigitSprites[d])optionDigitSprites[d]=originalSprite(existing[d],isYellow,[255,235,0]);
+        if(optionDigitSprites[d]){ctx.drawImage(optionDigitSprites[d],xx+(d==='1'?5:0),y);continue;}
+      }
+      const pattern=digitFont[d];
+      ctx.fillStyle='#f9e900';
+      for(let row=0;row<7;row++)for(let col=0;col<5;col++)
+        if(pattern[row][col]==='1')ctx.fillRect(xx+col*6,y+row*5,6,5);
+    }
+    ctx.restore();
   }
   function renderOptions(){
-    if(!optionsCtx||!approvedOptions.complete||!approvedOptions.naturalWidth)return;
-    const c=optionsCtx;
-    c.setTransform(1,0,0,1,0,0);c.imageSmoothingEnabled=false;
-    c.clearRect(0,0,WOPT,HOPT);
-    c.drawImage(approvedOptions,0,0,WOPT,HOPT);
-    // La référence originale est toujours conservée pour l'état par défaut.
-    const original=getOptionPixels();
-    if(original){
-      const data=new ImageData(new Uint8ClampedArray(original.data),WOPT,HOPT);
-      if(optionSelection!==0){
-        // Nettoyer le Z initial, recolorer la ligne quittée et la nouvelle.
-        // Fond noir uni à cet endroit ; ne laisser aucun fantôme du Z.
-        eachPixel(data,[48,139,92,69],(i)=>{
-          const r=data[i],g=data[i+1],b=data[i+2];
-          if(Math.min(r,g,b)>130&&Math.abs(r-g)<65&&Math.abs(g-b)<65){
-            data[i]=0;data[i+1]=0;data[i+2]=0;
-          }
-        });
-        recolorOption(data,optionLabelBoxes[0],'red','white');
-        recolorOption(data,optionLabelBoxes[optionSelection],'white','red');
-      }
-      if(!settings.stereo){
-        recolorOption(data,[638,755,250,57],'yellow','white');
-        recolorOption(data,[986,755,349,59],'white','yellow');
-      }
-      if(settings.players===2){
-        recolorOption(data,[999,289,303,59],'white','yellow');
-      }
-      c.putImageData(data,0,0);
-    }
-    // Extraire le Z de la capture plutôt qu'en dessiner un autre.
+    const ctx=optionsCtx;
+    if(!ctx||!approvedOptions.complete||!approvedOptions.naturalWidth)return;
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.imageSmoothingEnabled=false;
+    ctx.drawImage(approvedOptions,0,0,OPT_W,OPT_H);
+    const raw=getOptionSource();
+    if(!raw)return;
+    // Déplacement du Z : enlever le Z d'origine, puis utiliser ses pixels.
     if(optionSelection!==0){
-      if(original){
-        const z=document.createElement('canvas');z.width=96;z.height=75;
-        const zc=z.getContext('2d');
-        const crop=optionsSourceCtx.getImageData(45,137,96,75);
-        for(let i=0;i<crop.data.length;i+=4){
-          const r=crop.data[i],g=crop.data[i+1],b=crop.data[i+2];
-          crop.data[i+3]=(Math.min(r,g,b)>145&&Math.abs(r-g)<60&&Math.abs(g-b)<60)?255:0;
-        }
-        zc.putImageData(crop,0,0);
-        c.drawImage(z,45,137+optionRows[optionSelection]-optionRows[0]);
-      }else{
-        c.fillStyle='#fff';c.font='italic bold 62px Georgia,serif';
-        c.fillText('Z',56,optionRows[optionSelection]);
-      }
+      ctx.fillStyle='#000';ctx.fillRect(46,136,103,72);
+      replaceLabelTint(ctx,optionLabelBoxes[0],'red','white');
+      replaceLabelTint(ctx,optionLabelBoxes[optionSelection],'white','red');
+      if(!keySprites.cursor)keySprites.cursor=originalSprite([48,136,102,71],isWhite,[250,250,250]);
+      if(keySprites.cursor)ctx.drawImage(keySprites.cursor,48,136+optionRows[optionSelection]-optionRows[0]);
     }
-    const fillBlack=(x,y,w,h)=>{c.fillStyle='#000';c.fillRect(x,y,w,h);};
-    // Les valeurs variables utilisent des zones fixes : pas de nouveau bouton.
-    function pixelNumber(n,x,y){
-      const v=String(n).padStart(2,'0');
-      c.fillStyle='#f9ed00';c.font='900 51px Georgia,serif';
-      c.textAlign='left';c.textBaseline='alphabetic';
-      c.fillText(v,x,y);
-    }
+    // Étoiles complètes : source réelle aux colonnes 822, 876, 930, 985, 1039.
     if(settings.difficulty!==3){
-      // La difficulté est limitée aux cinq étoiles de l'écran d'origine.
-      fillBlack(792,146,272,63);
-      for(let i=0;i<5;i++){
-        const filled=i<settings.difficulty;
-        c.drawImage(approvedOptions,filled?797:954,147,46,55,797+53*i,147,46,55);
+      ctx.fillStyle='#000';ctx.fillRect(816,153,276,50);
+      for(let n=0;n<5;n++){
+        const srcX=n<settings.difficulty?821:984;
+        ctx.drawImage(approvedOptions,srcX,155,50,46,821+n*54,155,50,46);
       }
+    }
+    if(settings.players===2)replaceLabelTint(ctx,[1002,294,310,55],'white','yellow');
+    if(!settings.stereo){
+      replaceLabelTint(ctx,[637,754,257,65],'yellow','white');
+      replaceLabelTint(ctx,[984,754,364,67],'white','yellow');
     }
     if(!settings.timeLimit){
-      fillBlack(618,213,148,67);
-      c.fillStyle='#f9ed00';c.font='900 54px Georgia,serif';
-      c.fillText('NO',631,266);
-    }
-    if(settings.musicTest!==10){
-      fillBlack(615,818,111,69);pixelNumber(settings.musicTest,625,875);
-    }
-    if(settings.seTest!==0){
-      fillBlack(608,892,117,68);pixelNumber(settings.seTest,615,941);
-    }
-    // L'association des boutons doit correspondre aux deux colonnes SET.
-    if(settings.controlPreset!==0||(settings.controlPresetP2||0)!==0){
-      // Calculer la suppression des anciennes lettres une seule fois.
-      // Ne pas recopier 12 fois une image de 6 Mo à chaque touche.
-      if(original){
-        const keysClean=new ImageData(new Uint8ClampedArray(original.data),WOPT,HOPT);
-        for(let player=0;player<2;player++){
-          const preset=player===0?settings.controlPreset:(settings.controlPresetP2||0);
-          if(!preset)continue;
-          const x=player===0?686:1056;
-          for(let i=0;i<6;i++)eraseOptionInk(keysClean,[x,controlYs[i]-32,98,43],'white');
-        }
-        for(let player=0;player<2;player++){
-          const preset=player===0?settings.controlPreset:(settings.controlPresetP2||0);
-          if(!preset)continue;
-          const x=player===0?686:1056;
-          c.putImageData(keysClean,0,0,x,controlYs[0]-32,98,controlYs[5]-controlYs[0]+43);
-        }
+      const clear=maskedBackground([636,229,128,50],'yellow');
+      if(clear)ctx.drawImage(clear,636,229);
+      if(!keySprites.noN)keySprites.noN=originalSprite([1110,786,39,35],isWhite,[255,235,0]);
+      if(!keySprites.noO)keySprites.noO=originalSprite([1071,786,34,35],isWhite,[255,235,0]);
+      if(keySprites.noN&&keySprites.noO){
+        ctx.drawImage(keySprites.noN,651,238);
+        ctx.drawImage(keySprites.noO,698,238);
       }
+    }
+    // Les touches des deux colonnes sont nettoyées AVANT le remplacement :
+    // plus aucun fantôme de la lettre précédente.
+    if(settings.controlPreset!==0||(settings.controlPresetP2||0)!==0){
+      const clear=getCleanKeys();
       for(let player=0;player<2;player++){
         const preset=player===0?settings.controlPreset:(settings.controlPresetP2||0);
         if(!preset)continue;
-        const x=player===0?686:1056;
-        for(let i=0;i<6;i++){
-          if(!original)fillBlack(x,controlYs[i]-34,96,46);
-          c.fillStyle='#f5f5f5';c.font='900 48px Georgia,serif';
-          c.textAlign='center';c.textBaseline='alphabetic';
-          c.fillText(controlKeys[(i+preset*2)%6],x+48,controlYs[i]);
+        const positions=player===0?keyOriginals:keySecond;
+        for(let j=0;j<6;j++){
+          const rect=positions[j],cleanRect=[rect[0]-2,rect[1]-2,rect[2]+4,rect[3]+4];
+          if(clear)ctx.drawImage(clear,...cleanRect,...cleanRect);
+          const next=keyNames[(j+preset*2)%6],sprite=getKeySprite(next);
+          if(sprite)ctx.drawImage(sprite,rect[0]+Math.floor((rect[2]-sprite.width)/2),rect[1]);
         }
       }
     }
-    optionSnapshot={...settings,selection:optionSelection};
+    // Chiffres 2 digits sans empilement ni débordement.
+    if(settings.musicTest!==10){
+      ctx.fillStyle='#000';ctx.fillRect(623,856,98,48);
+      drawNumber(ctx,settings.musicTest,633,861);
+    }
+    if(settings.seTest!==0){
+      ctx.fillStyle='#000';ctx.fillRect(619,928,99,48);
+      drawNumber(ctx,settings.seTest,633,933);
+    }
   }
   // Test only real tracks and the exact supplied sounds plus implemented game FX.
   function playMusicTest(){
