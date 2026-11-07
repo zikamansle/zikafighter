@@ -9,14 +9,8 @@
   overlay.setAttribute('role','dialog');
   overlay.setAttribute('aria-label','Introduction Zika Fighter');
   overlay.innerHTML=[
-    '<div class="zf-screen zf-legal" id="zf-legal" aria-label="Crédits de lancement">',
-      '<div class="zf-legal-content">',
-        '<div class="zf-legal-head">HYPER FIGHTING</div>',
-        '<div class="zf-legal-rights">© ZIKAPCOM 2027</div>',
-        '<div class="zf-legal-studio">ZIKAMANSLE · 2027</div>',
-        '<div class="zf-legal-license">PRÉSENTÉ PAR ZIKAMANSLE</div>',
-        '<div class="zf-legal-mark" aria-hidden="true">ZIKA FIGHTER</div>',
-      '</div>',
+    '<div class="zf-screen zf-legal" id="zf-legal" aria-label="Crédits de lancement ZIKAPCOM">',
+      '<canvas id="zf-legal-canvas" width="742" height="378" aria-hidden="true"></canvas>',
     '</div>',
     '<div class="zf-screen zf-splash" id="zf-splash" hidden>',
       '<div class="zf-zikacom-official" aria-label="ZIKAPCOM"><img id="zf-zikapcom-logo" src="./assets/zikapcom-logo.png" alt="ZIKAPCOM"></div>',
@@ -117,6 +111,8 @@
     paletteCtx.putImageData(out,0,0);
   }
   const legal=document.getElementById('zf-legal');
+  const legalCanvas=document.getElementById('zf-legal-canvas');
+  const legalCtx=legalCanvas.getContext('2d',{alpha:false});
   const splash=document.getElementById('zf-splash');
   const title=document.getElementById('zf-title');
   const titleCanvas=document.getElementById('zf-title-canvas');
