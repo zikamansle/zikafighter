@@ -37,3 +37,11 @@
 /* Écran ZIKACOM : démarrage au geste utilisateur, synchronisé sur le MP3. */
 #zf-intro .zf-play-prompt{position:absolute;bottom:6%;font:700 clamp(12px,1.8vw,23px) "Courier New",monospace;letter-spacing:.055em;color:white;text-shadow:2px 2px #070c53;animation:zf-blink 1s steps(1) infinite;cursor:pointer}
 #zf-intro.zf-splash-ready .zf-splash .zf-play-prompt{visibility:visible}
+
+/* Animation ZIKACOM synchronisée au MP3, uniquement sur le splash. */
+#zf-intro .zf-splash{background:#0712b8!important;animation:none!important}
+#zf-intro .zf-splash .zf-publisher{opacity:0!important}
+#zf-intro.zf-splash-ready .zf-splash{background:#0712b8!important}
+#zf-intro .zf-splash .zf-logo-entrance{position:absolute;inset:0;background:url("./assets/zikacom-splash.png") center/contain no-repeat;opacity:var(--zf-logo-opacity,0);transform:scale(var(--zf-logo-scale,1.35));filter:brightness(var(--zf-logo-brightness,1));clip-path:inset(0 calc((1 - var(--zf-logo-reveal,0))*50%) 0 calc((1 - var(--zf-logo-reveal,0))*50%));will-change:opacity,transform,clip-path;pointer-events:none}
+#zf-intro:not(.zf-splash-ready) .zf-splash .zf-publisher{opacity:var(--zf-logo-opacity,0)!important;visibility:visible;transform:scale(var(--zf-logo-scale,1.35));animation:none!important}
+#zf-intro:not(.zf-splash-ready) .zf-splash .zf-logo-entrance{display:none}
