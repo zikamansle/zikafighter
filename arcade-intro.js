@@ -397,7 +397,7 @@
     if(titleFrame)cancelAnimationFrame(titleFrame);
     phase='options';
     title.hidden=true;optionsScreen.hidden=false;
-    optionSelection=0;
+    optionSelection=0;optionsBack.focus({preventScroll:true});
     renderOptions();
   }
   function closeOptions(){
@@ -407,6 +407,7 @@
     // Le titre reprend sur son menu stable, pas au début de la rotation.
     titleVisualStartedAt=performance.now()-7000;
     titleFrame=requestAnimationFrame(drawTitleFrame);
+    startButton.focus({preventScroll:true});
   }
   function activateTitleSelection(){
     if(phase!=='title')return;
@@ -646,15 +647,69 @@
       document.querySelector('[data-player]')?.focus({preventScroll:true});
     },390);
   }
-  startButton.addEventListener('click',launch);
-  // Si le navigateur avait bloqué le son, une touche ou un clic sur l'écran-titre peut le déverrouiller.
-  document.addEventListener('pointerdown',()=>{if(phase==='title'&&titleMusic.paused)playTitleMusic();},{capture:true});
+  // Navigation arcade, utilisable au clavier, à la manette mappée en touches,
+  // et au clic sur l'écran. Aucun passage automatique au combat.
+  startButton.addEventListener('click',event=>{
+    if(phase!=='title')return;
+    const rect=titleCanvas.getBoundingClientRect();
+    const y=(event.clientY-rect.top)/Math.max(1,rect.height)*180;
+    if(y>=136&&y<=178){
+      const rows=[145,157,169];
+      titleSelection=rows.reduce((best,v,i)=>Math.abs(v-y)<Math.abs(rows[best]-y)?i:best,0);
+      if(titleSelection===0&&event.clientX>rect.left+rect.width*.63){
+        settings.turbo=clamp(settings.turbo+1,0,8);persistSettings();
+        return;
+      }
+    }
+    activateTitleSelection();
+  });
+  optionsBack.addEventListener('click',event=>{
+    if(phase!=='options')return;
+    const rect=optionsCanvas.getBoundingClientRect();
+    const x=(event.clientX-rect.left)/Math.max(1,rect.width)*320;
+    const y=(event.clientY-rect.top)/Math.max(1,rect.height)*180;
+    if(y<25||x>288&&y>158){closeOptions();return;}
+    const rows=[48,64,81,97,151,171];
+    optionSelection=rows.reduce((best,v,i)=>Math.abs(v-y)<Math.abs(rows[best]-y)?i:best,0);
+    if(optionSelection===5&&x>205){playMusicTest();return;}
+    adjustOption(x<154?-1:1);
+  });
   document.addEventListener('keydown',event=>{
-    if(phase!=='title'||closed||!overlay.isConnected)return;
-    if(['Enter','Space','NumpadEnter'].includes(event.code)){
-      event.preventDefault();event.stopImmediatePropagation();launch();
+    if(closed||!overlay.isConnected)return;
+    if(phase==='title'){
+      if(['ArrowUp','KeyW','KeyZ'].includes(event.code)){
+        titleSelection=(titleSelection+2)%3;
+      }else if(['ArrowDown','KeyS'].includes(event.code)){
+        titleSelection=(titleSelection+1)%3;
+      }else if(['ArrowLeft','ArrowRight','KeyA','KeyD'].includes(event.code)){
+        if(titleSelection===0){
+          settings.turbo=clamp(settings.turbo+(['ArrowLeft','KeyA'].includes(event.code)?-1:1),0,8);
+          persistSettings();
+        }
+      }else if(['Enter','Space','NumpadEnter'].includes(event.code)){
+        activateTitleSelection();
+      }else return;
+      event.preventDefault();event.stopImmediatePropagation();
+    }else if(phase==='options'){
+      if(['Escape','Backspace','KeyB'].includes(event.code)){
+        closeOptions();
+      }else if(['ArrowUp','KeyW','KeyZ'].includes(event.code)){
+        optionSelection=(optionSelection+5)%6;renderOptions();
+      }else if(['ArrowDown','KeyS'].includes(event.code)){
+        optionSelection=(optionSelection+1)%6;renderOptions();
+      }else if(['ArrowLeft','ArrowRight','KeyA','KeyD'].includes(event.code)){
+        adjustOption(['ArrowLeft','KeyA'].includes(event.code)?-1:1);
+      }else if(['Enter','Space','NumpadEnter'].includes(event.code)){
+        if(optionSelection===5)playMusicTest();
+        else adjustOption(1);
+      }else return;
+      event.preventDefault();event.stopImmediatePropagation();
     }
   },true);
+  // Réactivation du son sur geste explicite, en respectant les règles du navigateur.
+  document.addEventListener('pointerdown',()=>{
+    if((phase==='title'||phase==='options')&&titleMusic.paused)playTitleMusic();
+  },{capture:true});
   fade(0);
   legalFrame=requestAnimationFrame(legalTick);
   // Réessayer automatiquement au retour sur l'application (sans remplacer l'interaction exigée par certains navigateurs).
