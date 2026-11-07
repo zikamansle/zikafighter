@@ -258,3 +258,15 @@
  image-rendering:auto!important;
  margin:auto;
 }
+
+/* Zika Fighter 2026-11-07 : aucun bouton invisible sur l'écran OPTIONS.
+   Canvas haute résolution 4:3, contrôles cliquables directement. */
+#zf-intro #zf-options-canvas{
+  pointer-events:auto!important;
+  cursor:default;
+  outline:none;
+  image-rendering:auto!important;
+}
+#zf-intro #zf-options-canvas:focus-visible{outline:0!important}
+#zf-intro .zf-options-back{display:none!important;pointer-events:none!important}
+#zf-intro #zf-legal-canvas{image-rendering:auto!important}
