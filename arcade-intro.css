@@ -186,3 +186,27 @@
 
 /* Affichage plus fin de l'introduction ZIKA FIGHTER uniquement. */
 #zf-intro #zf-cinematic-canvas{image-rendering:auto!important;}
+
+/* ÉCRAN DE CRÉDITS - d'après la référence 132457 : bleu initial, noir et or,
+   tenue silencieuse puis fondu vers ZIKAPCOM. Aucune fausse licence Nintendo. */
+#zf-intro .zf-legal{background:#000!important;isolation:isolate}
+#zf-intro .zf-legal::before{content:"";position:absolute;inset:0;
+  background:#10179e;opacity:var(--zf-legal-blue,1);z-index:2;pointer-events:none}
+#zf-intro .zf-legal-content{position:relative;width:min(96vw,960px);
+  height:min(100vh,440px);font-family:"Courier New",monospace;
+  text-align:center;opacity:var(--zf-legal-opacity,0);font-weight:900;
+  text-shadow:1px 1px #6a242b;overflow:hidden}
+#zf-intro .zf-legal-head{position:absolute;top:4%;left:0;right:0;
+  font:bold clamp(15px,2.5vw,28px) "Courier New",monospace;
+  letter-spacing:.07em;color:#f0a053}
+#zf-intro .zf-legal-rights{position:absolute;top:33%;left:0;right:0;
+  font:bold clamp(15px,2.6vw,26px) "Courier New",monospace;
+  color:#d98c54;letter-spacing:.035em}
+#zf-intro .zf-legal-studio{position:absolute;top:45%;left:0;right:0;
+  font:bold clamp(13px,2.2vw,23px) "Courier New",monospace;
+  color:#da8853;white-space:nowrap}
+#zf-intro .zf-legal-license{position:absolute;top:66%;left:0;right:0;
+  color:#ffbd52;white-space:nowrap;font:bold clamp(14px,2.45vw,25px) Georgia,serif}
+#zf-intro .zf-legal-mark{position:absolute;bottom:-8%;width:100%;
+  font:bold italic clamp(25px,5vw,58px) Impact,sans-serif;color:#d54c9b;
+  transform:skew(-12deg);clip-path:inset(0 0 76% 0);opacity:.92}
