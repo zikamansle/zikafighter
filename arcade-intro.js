@@ -395,6 +395,11 @@
       m.fillStyle='#fff';
       m.textBaseline='alphabetic';
       m.fillText(text,6,size+1);
+      const dark=document.createElement('canvas');
+      dark.width=mask.width;dark.height=mask.height;
+      const dc=dark.getContext('2d');
+      dc.fillStyle='#502531';dc.fillRect(0,0,dark.width,dark.height);
+      dc.globalCompositeOperation='destination-in';dc.drawImage(mask,0,0);
       const colored=document.createElement('canvas');
       colored.width=mask.width;colored.height=mask.height;
       const c=colored.getContext('2d');
@@ -404,11 +409,11 @@
       gr.addColorStop(1,'#602c3a');
       c.fillStyle=gr;c.fillRect(0,0,colored.width,colored.height);
       c.globalCompositeOperation='destination-in';c.drawImage(mask,0,0);
-      glyph={mask,colored};creditGlyphs.set(key,glyph);
+      glyph={mask,colored,dark};creditGlyphs.set(key,glyph);
     }
     const left=Math.round(x-w/2);
     ctx.save();ctx.imageSmoothingEnabled=false;
-    ctx.globalAlpha=.5;ctx.drawImage(glyph.mask,left+1,y+1,w,h);
+    ctx.globalAlpha=.9;ctx.drawImage(glyph.dark,left+1,y+1,w,h);
     ctx.globalAlpha=1;ctx.drawImage(glyph.colored,left,y,w,h);
     ctx.restore();
   }
