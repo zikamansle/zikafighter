@@ -20,6 +20,7 @@
       '<div class="zf-press" aria-hidden="true">PUSH START</div>',
       '<div class="zf-copyright">© 2027 ZIKACOM<br>ALL RIGHTS RESERVED</div>',
       '<div class="zf-credits">CREDIT 00</div>',
+      '<div class="zf-title-flash" aria-hidden="true"></div>',
       '<button type="button" class="zf-start" id="zf-start" aria-label="Commencer Zika Fighter">COMMENCER</button>',
     '</div>'
   ].join('');
