@@ -77,18 +77,30 @@
       const t=(seconds-start)/(end-start);
       // Référence CAPCOM : ligne lumineuse horizontale qui REMONTE
       // du bas vers le haut, puis REDESCEND vers le bas.
-      // Un aller-retour complet sur l'accent du jingle (1.62–2.10 s).
+      // Un aller-retour complet sur la dernière note du jingle (2,46–3,03 s).
       const travel=t<.5 ? smooth(t*2) : smooth((1-t)*2);
       const y=110-120*travel;
       const top=y-12, bottom=y+12;
       const glow=Math.min(1,smooth(t/.12),smooth((1-t)/.12));
       shine.style.opacity=String(glow*.95);
       shine.style.clipPath='polygon(0 '+top+'%,100% '+top+'%,100% '+bottom+'%,0 '+bottom+'%)';
-      overlay.style.setProperty('--zf-logo-glow',String(.08+.24*glow));
+      // La palette du logo change AVEC la lumière :
+      // or chaud en montée, jaune pâle/blanc au sommet, or ambré en descente.
+      const crest=1-Math.abs(2*t-1);
+      const pale=smooth((crest-.28)/.72)*glow;
+      const warmth=(t<.5 ? (1-crest)*.45 : (1-crest)*.85)*glow;
+      overlay.style.setProperty('--zf-logo-glow',String(.08+.36*glow+.14*pale));
+      overlay.style.setProperty('--zf-logo-desaturate',String(.42*pale));
+      overlay.style.setProperty('--zf-logo-hue',String(-9*warmth));
+      overlay.style.setProperty('--zf-shine-gold',String(t<.5 ? 0 : 1));
+      overlay.style.setProperty('--zf-logo-contrast',String(1+.12*glow));
     }else{
       shine.style.opacity='0';
       shine.style.clipPath='none';
       overlay.style.setProperty('--zf-logo-glow','0');
+      overlay.style.setProperty('--zf-logo-desaturate','0');
+      overlay.style.setProperty('--zf-logo-hue','0');
+      overlay.style.setProperty('--zf-logo-contrast','1');
     }
   }
   function finishCinematic(){
