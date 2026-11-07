@@ -753,6 +753,9 @@
   // Crisp vector text at 1280x960, in the same 4:3 frame as the reference.
   // 4:3 SNES credits: rows and relative sizes measured against the reference.
   // Render the actual lettering sharply, never a tiny screenshot enlarged.
+  // Crédits 16 bits : composition de la capture de référence au format 4:3.
+  // Les cinq niveaux de texte occupent des hauteurs différentes ; le logo
+  // magenta reste délibérément rogné dans l'angle inférieur droit.
   function drawLegalFrame(t){
     if(!legalCtx)return;
     const ctx=legalCtx;
@@ -763,36 +766,50 @@
     if(t<.33)return;
     const opacity=Math.min(1,Math.max(0,(t-.33)/.22),Math.max(0,(5.2-t)/.18));
     ctx.globalAlpha=opacity;
-    const write=(value,y,size)=>{
+    const write=(value,y,size,maxWidth=310)=>{
       ctx.save();
+      ctx.textAlign='center';
+      ctx.textBaseline='alphabetic';
       ctx.font='900 '+size+'px Georgia,"Times New Roman",serif';
-      ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.lineJoin='round';
-      const gradient=ctx.createLinearGradient(0,y-size,0,y+1);
-      gradient.addColorStop(0,'#f6d16d');
-      gradient.addColorStop(.35,'#d99452');
-      gradient.addColorStop(.65,'#9e5038');
-      gradient.addColorStop(1,'#eda850');
-      ctx.strokeStyle='#3d1930';ctx.lineWidth=.8;
-      ctx.strokeText(value,160,y+.7);
-      ctx.fillStyle=gradient;ctx.fillText(value,160,y);
+      ctx.lineJoin='round';
+      // Reflet cuivre/bronze dans les traits, ombre 16-bit en dessous.
+      const color=ctx.createLinearGradient(0,y-size*1.05,0,y+2);
+      color.addColorStop(0,'#f5d995');
+      color.addColorStop(.18,'#d6935f');
+      color.addColorStop(.42,'#ac583e');
+      color.addColorStop(.63,'#dc9456');
+      color.addColorStop(.82,'#f6b66a');
+      color.addColorStop(1,'#6d3141');
+      ctx.lineWidth=1.45;
+      ctx.strokeStyle='#27112c';
+      ctx.strokeText(value,160,y+1.1,maxWidth);
+      ctx.fillStyle=color;
+      ctx.fillText(value,160,y,maxWidth);
+      ctx.globalAlpha=.18;
+      ctx.fillStyle='#fff1a4';
+      ctx.fillText(value,160,y-.5,maxWidth);
       ctx.restore();
     };
-    write('ZIKA FIGHTER TURBO',30,16);
-    write('HYPER FIGHTING',57,12);
-    write('© ZIKAPCOM 2027',91,12);
-    write('© ZIKAPCOM - MANSLE-LES-FONTAINES - 2027',107,9);
-    write('PRÉSENTÉ PAR ZIKAMANSLE',144,15);
+    // Mesures de la référence : titre vers 12%, second titre vers 26%,
+    // copyrights vers 40-49%, présentation vers 64% de l'écran.
+    write('ZIKA FIGHTER TURBO',34,19,232);
+    write('HYPER FIGHTING',65,14,150);
+    write('© ZIKAPCOM 2027',103,15,225);
+    write('© ZIKAPCOM · MANSLE-LES-FONTAINES · 2027',123,10.2,296);
+    write('PRÉSENTÉ PAR ZIKAMANSLE',158,16.5,269);
     ctx.save();
-    ctx.beginPath();ctx.rect(174,162,146,78);ctx.clip();
+    ctx.beginPath();ctx.rect(175,177,145,63);ctx.clip();
     const logo=legalPinkSprite||titleSpriteCanvas;
     if(logo){
-      ctx.shadowColor='#270e29';ctx.shadowBlur=1.5;
-      ctx.drawImage(logo,180,163,155,78);
+      ctx.shadowColor='#391039';ctx.shadowBlur=1.4;
+      ctx.imageSmoothingEnabled=true;
+      ctx.imageSmoothingQuality='high';
+      ctx.drawImage(logo,183,179,164,83);
     }else{
-      ctx.textAlign='center';ctx.translate(248,216);ctx.rotate(-.10);
+      ctx.translate(250,221);ctx.rotate(-.12);
       ctx.font='italic 900 37px Impact,"Arial Black",sans-serif';
-      ctx.fillStyle='#e84fb1';ctx.fillText('ZIKA',0,-13);
-      ctx.fillText('FIGHTER',0,24);
+      ctx.fillStyle='#d745a8';ctx.fillText('ZIKA',-53,-12);
+      ctx.fillText('FIGHTER',-77,22);
     }
     ctx.restore();
     ctx.globalAlpha=1;
@@ -1039,7 +1056,7 @@
     drawLegalFrame(1.5);
   }else if(previewScreen==='options'){
     legal.hidden=true;optionsScreen.hidden=false;phase='options';
-    renderOptions();
+    renderOptions();optionsCanvas.focus({preventScroll:true});
   }else if(previewScreen==='title'){
     legal.hidden=true;title.hidden=false;phase='title';
     titleVisualStartedAt=performance.now()-7000;
