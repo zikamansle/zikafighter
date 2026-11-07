@@ -1,11 +1,9 @@
-/* Intro ZIKACOM : démarrage automatique + animation synchronisée sur le MP3.
-   Le son automatique exige un runtime console autorisant l'autoplay;
-   sur navigateur verrouillé, l'animation reste automatique et un geste utilisateur déverrouille l'audio. */
+/* Zika Fighter - jingle ZIKACOM automatiquement joué si le moteur l'autorise.
+   Le fondu suit audio.currentTime. Un navigateur qui bloque autoplay affiche un déblocage explicite,
+   au lieu de sauter silencieusement le jingle. */
 (() => {
   'use strict';
-  if (document.getElementById('zf-intro')) return;
-  const AUDIO_SRC='./assets/zikacom-intro.mp3';
-  const NOMINAL_DURATION=5.695; // secondes, source MP3 fournie
+  if(document.getElementById('zf-intro')) return;
   const overlay=document.createElement('div');
   overlay.id='zf-intro';
   overlay.setAttribute('role','dialog');
@@ -14,6 +12,8 @@
     '<div class="zf-screen zf-splash" id="zf-splash">',
       '<div class="zf-publisher">ZIKACOM</div>',
       '<div class="zf-logo-entrance" aria-hidden="true"></div>',
+      '<button type="button" class="zf-unlock-sound" id="zf-unlock-sound" hidden>ACTIVER LE SON POUR LANCER LE JEU</button>',
+      '<p id="zf-sound-error" class="zf-sound-error" hidden>Jingle introuvable : assets/zikacom-intro.mp3</p>',
     '</div>',
     '<div class="zf-screen zf-title" id="zf-title" hidden>',
       '<div class="zf-mark" aria-label="Zika Fighter"><span>ZIKA</span><span>FIGHTER</span></div>',
@@ -32,74 +32,80 @@
   const splash=document.getElementById('zf-splash');
   const title=document.getElementById('zf-title');
   const startButton=document.getElementById('zf-start');
-  const player=new Audio(AUDIO_SRC);
-  player.preload='auto';
-  player.volume=1;
-  player.loop=false;
-  let phase='splash',closed=false,raf=0,startedAt=performance.now(),hasSound=false;
-  let duration=NOMINAL_DURATION;
+  const unblock=document.getElementById('zf-unlock-sound');
+  const errorText=document.getElementById('zf-sound-error');
+  const audio=new Audio('./assets/zikacom-intro.mp3');
+  audio.preload='auto';
+  audio.volume=1;
   const music=window.ZikaArcadeAudio;
-  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
-
-  function revealAt(seconds){
-    // Fondu CAPCOM : logo invisible au départ, apparition douce sur les notes,
-    // maintien net jusqu'à la fin du jingle. Aucun zoom, volet ni balayage.
-    const fade=clamp((seconds-0.20)/1.85,0,1);
-    const smooth=fade*fade*(3-2*fade);
-    overlay.style.setProperty('--zf-logo-opacity',String(smooth));
+  let phase='splash',status='pending',closed=false,raf=0;
+  const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
+  function fade(seconds){
+    const t=clamp((seconds-.2)/1.85,0,1);
+    overlay.style.setProperty('--zf-logo-opacity',String(t*t*(3-2*t)));
   }
   function showTitle(){
-    if(closed||phase!=='splash')return;
+    if(phase!=='splash'||closed)return;
     phase='title';
     cancelAnimationFrame(raf);
-    player.pause();
+    unblock.hidden=true;
+    audio.pause();
     splash.hidden=true;
     title.hidden=false;
-    if(hasSound)music?.startTitle();
+    music?.startTitle();
     startButton.focus({preventScroll:true});
   }
-  function frame(now){
+  function update(){
     if(phase!=='splash')return;
-    const elapsed=(now-startedAt)/1000;
-    // Si le son est autorisé, son temps réel pilote l'animation.
-    const position=(hasSound&&!player.paused)?player.currentTime:elapsed;
-    revealAt(position);
-    // La fin réelle du MP3 est prioritaire; durée connue pour le mode sans son.
-    if(!hasSound&&elapsed>=duration) {showTitle();return;}
-    if(hasSound&&player.ended){showTitle();return;}
-    // Protection contre média qui ne démarre ou ne se termine jamais.
-    if(elapsed>Math.max(duration+2,12)){showTitle();return;}
-    raf=requestAnimationFrame(frame);
+    // Le fondu n'avance que lorsque le MP3 avance réellement.
+    if(status==='playing')fade(audio.currentTime);
+    if(audio.ended){showTitle();return;}
+    raf=requestAnimationFrame(update);
   }
-  function tryAudio(){
-    if(phase!=='splash'||closed)return;
-    try {
-      const result=player.play();
-      if(result&&typeof result.then==='function'){
-        result.then(()=>{hasSound=true;}).catch(()=>{hasSound=false;});
-      } else hasSound=!player.paused;
-    }catch(_){hasSound=false;}
-  }
-  player.addEventListener('loadedmetadata',()=>{
-    if(Number.isFinite(player.duration)&&player.duration>0&&player.duration<30) duration=player.duration;
-  });
-  player.addEventListener('ended',showTitle);
-  player.addEventListener('error',()=>{hasSound=false;});
-  function unlockOnGesture(){
-    if(phase==='splash'&&!hasSound&&player.paused){
-      // Un navigateur peut exiger ce geste. Sur console configurée, rien à faire.
-      const seconds=(performance.now()-startedAt)/1000;
-      if(seconds<duration-.15){
-        player.currentTime=Math.min(seconds,Math.max(0,(player.duration||duration)-.2));
-        tryAudio();
-      }
+  function attemptPlayback(){
+    if(phase!=='splash'||status==='playing')return;
+    unblock.hidden=true;
+    errorText.hidden=true;
+    status='pending';
+    // Lorsqu'il est autorisé, cette lecture commence automatiquement au démarrage.
+    let promise;
+    try{promise=audio.play();}
+    catch(err){onFailure(err);return;}
+    if(promise&&typeof promise.then==='function'){
+      promise.then(()=>{
+        if(phase!=='splash')return;
+        status='playing';
+        unblock.hidden=true;
+      }).catch(onFailure);
+    }else{
+      status=audio.paused?'blocked':'playing';
+      unblock.hidden=status==='playing';
     }
   }
-  document.addEventListener('pointerdown',unlockOnGesture,{capture:true});
-  document.addEventListener('keydown',unlockOnGesture,{capture:true});
+  function onFailure(err){
+    if(phase!=='splash')return;
+    if(err?.name==='NotAllowedError'){
+      // Un navigateur ordinaire impose une interaction. Un mode console/kiosque permissif ne l'affiche jamais.
+      status='blocked';
+      unblock.hidden=false;
+      unblock.textContent='ACTIVER LE SON POUR LANCER LE JEU';
+    }else{
+      status='error';
+      errorText.hidden=false;
+      unblock.hidden=false;
+      unblock.textContent='RÉESSAYER LE JINGLE';
+    }
+  }
+  audio.addEventListener('ended',showTitle);
+  audio.addEventListener('error',()=>onFailure(new Error('Jingle indisponible')));
+  unblock.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();attemptPlayback();});
+  document.addEventListener('keydown',event=>{
+    if(phase==='splash'&&status==='blocked'&&['Enter','Space','NumpadEnter'].includes(event.code)){
+      event.preventDefault();event.stopImmediatePropagation();attemptPlayback();
+    }
+  },true);
   function launch(){
-    if(phase==='splash')return; // l'introduction se termine seule
-    if(closed)return;
+    if(phase!=='title'||closed)return;
     closed=true;
     music?.select();
     overlay.classList.add('zf-fade');
@@ -110,14 +116,12 @@
   }
   startButton.addEventListener('click',launch);
   document.addEventListener('keydown',event=>{
-    if(closed||!overlay.isConnected||phase!=='title')return;
+    if(phase!=='title'||closed||!overlay.isConnected)return;
     if(['Enter','Space','NumpadEnter'].includes(event.code)){
       event.preventDefault();event.stopImmediatePropagation();launch();
     }
   },true);
-  // Démarrage sans interaction dès le chargement de l'interface.
-  startedAt=performance.now();
-  revealAt(0);
-  raf=requestAnimationFrame(frame);
-  tryAudio();
+  fade(0);
+  raf=requestAnimationFrame(update);
+  attemptPlayback();
 })();
