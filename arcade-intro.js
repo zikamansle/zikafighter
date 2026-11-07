@@ -36,6 +36,8 @@
   const errorText=document.getElementById('zf-sound-error');
   const audio=new Audio('./assets/zikacom-intro.mp3');
   audio.preload='auto';
+  audio.autoplay=true;
+  audio.load();
   audio.volume=1;
   const music=window.ZikaArcadeAudio;
   let phase='splash',status='pending',closed=false,raf=0;
@@ -123,5 +125,12 @@
   },true);
   fade(0);
   raf=requestAnimationFrame(update);
+  // Réessayer automatiquement au retour sur l'application (sans remplacer l'interaction exigée par certains navigateurs).
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden && phase==='splash' && status==='blocked')attemptPlayback();
+  });
+  window.addEventListener('pageshow',()=>{
+    if(phase==='splash' && status==='blocked')attemptPlayback();
+  });
   attemptPlayback();
 })();
