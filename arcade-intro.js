@@ -16,7 +16,7 @@
       '<p id="zf-sound-error" class="zf-sound-error" hidden>Jingle introuvable : assets/zikacom-intro.mp3</p>',
     '</div>',
     '<div class="zf-screen zf-cinematic" id="zf-cinematic" hidden aria-label="Animation du titre Zika Fighter">',
-      '<canvas id="zf-cinematic-canvas" width="320" height="180" aria-hidden="true"></canvas>',
+      '<canvas id="zf-cinematic-canvas" width="640" height="360" aria-hidden="true"></canvas>',
     '</div>',
     '<div class="zf-screen zf-title" id="zf-title" hidden>',
       '<div class="zf-mark" aria-label="Zika Fighter"><span>ZIKA</span><span>FIGHTER</span></div>',
@@ -162,19 +162,21 @@
   const makeCanvas=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
   function prepareTitleSprite(){
     try{
-      const src=makeCanvas(240,120),cx=src.getContext('2d',{willReadFrequently:true});
+      const src=makeCanvas(480,240),cx=src.getContext('2d',{willReadFrequently:true});
       // Ne découper QUE les deux lignes du vrai logo (sans PUSH START).
-      cx.drawImage(titleSprite,125,40,1200,570,0,0,240,120);
-      const pixels=cx.getImageData(0,0,240,120);
+      cx.imageSmoothingQuality='high';
+      cx.drawImage(titleSprite,125,40,1200,570,0,0,480,240);
+      const pixels=cx.getImageData(0,0,480,240);
       for(let p=0;p<pixels.data.length;p+=4){
         const r=pixels.data[p],g=pixels.data[p+1],b=pixels.data[p+2];
         const isBlue=(b>45&&b>r*1.25&&b>g*1.22);
         if(isBlue)pixels.data[p+3]=0;
       }
       cx.putImageData(pixels,0,0);titleSpriteCanvas=src;
-      const sm=makeCanvas(72,36),sc=sm.getContext('2d',{willReadFrequently:true});
-      sc.imageSmoothingEnabled=false;sc.drawImage(src,0,0,72,36);
-      mosaic=sc.getImageData(0,0,72,36);
+      const sm=makeCanvas(144,72),sc=sm.getContext('2d',{willReadFrequently:true});
+      sc.imageSmoothingEnabled=true;sc.imageSmoothingQuality='high';
+      sc.drawImage(src,0,0,144,72);
+      mosaic=sc.getImageData(0,0,144,72);
       // La séquence TURBO d'origine affiche de très grandes lettres sans contour,
       // en dégradé rouge -> orange -> jaune -> ivoire.
       giantLetters=makeCanvas(850,150);
@@ -200,9 +202,12 @@
   function renderCinematic(seconds){
     if(!mctx)return;
     const ctx=mctx,w=320,h=180;
+    // Dessiner à 2x pour garder l'esthétique arcade sans énormes carrés.
+    ctx.setTransform(2,0,0,2,0,0);
     // Cadence SNES : 30 images effectives/s, sans interpolation moderne.
     const t=Math.floor(Math.max(0,seconds)*30)/30;
-    ctx.imageSmoothingEnabled=false;
+    ctx.imageSmoothingEnabled=true;
+    ctx.imageSmoothingQuality='high';
     ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
     const sprite=titleSpriteCanvas;
     if(!sprite)return;
@@ -227,29 +232,29 @@
       const ca=Math.cos(theta),sa=Math.sin(theta);
       const roll=-.72*(1-p);
       const cr=Math.cos(roll),sr=Math.sin(roll);
-      const sx=(p<.5?80+90*p:110+130*p)/72;
-      const sy=(p<.5?55+45*p:70+42*p)/36;
+      const sx=(p<.5?80+90*p:110+130*p)/144;
+      const sy=(p<.5?55+45*p:70+42*p)/72;
       const d=mosaic.data;
       // Le logo tourne et se reforme de gros pixels rose/jaune.
       // Chaque carré est tiré de la couleur réelle du logo.
       const blocks=[];
-      for(let yy=0;yy<36;yy+=2)for(let xx=0;xx<72;xx+=2){
-        const i=(yy*72+xx)*4;
+      for(let yy=0;yy<72;yy+=2)for(let xx=0;xx<144;xx+=2){
+        const i=(yy*144+xx)*4;
         if(d[i+3]<55)continue;
-        const lx=(xx-36)*sx,ly=(yy-18)*sy;
+        const lx=(xx-72)*sx,ly=(yy-36)*sy;
         const depth=1+(lx/110)*sa*.48;
         const X=(lx*ca)/depth,Y=ly/depth;
-        const scatter=(1-p)*12;
+        const scatter=(1-p)*6;
         const dx=Math.sin(xx*19.13+yy*7.17+Math.floor(t*30)*.63)*scatter;
         const dy=Math.cos(xx*11.9-yy*5.31+Math.floor(t*30)*.51)*scatter;
         const px=160+(X*cr-Y*sr)+dx;
         const py=90+(X*sr+Y*cr)+dy;
-        blocks.push({z:depth,x:px,y:py,r:d[i],g:d[i+1],b:d[i+2],size:Math.max(2,(2.3+2*p)/depth)});
+        blocks.push({z:depth,x:px,y:py,r:d[i],g:d[i+1],b:d[i+2],size:Math.max(1.2,(1.8+2.1*p)/depth)});
       }
       blocks.sort((a,b)=>b.z-a.z);
       for(const b of blocks){
         ctx.fillStyle='rgb('+b.r+','+b.g+','+b.b+')';
-        ctx.fillRect(Math.round(b.x),Math.round(b.y),Math.ceil(b.size),Math.ceil(b.size));
+        ctx.fillRect(b.x,b.y,b.size,b.size);
       }
       return;
     }
