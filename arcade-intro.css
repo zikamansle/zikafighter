@@ -175,3 +175,11 @@
 #zf-intro.zf-palette-ready .zf-zikacom-shine{display:none!important}
 
 #zf-intro.zf-palette-ready #zf-zikapcom-logo{display:none!important}
+
+/* Nouvelle cinématique titre : rendue sur Canvas à 640×360, style SNES.
+   Seules les images du titre sont animées, sans toucher à l'intro ZIKAPCOM. */
+#zf-intro #zf-cinematic{background:#000!important}
+#zf-intro #zf-cinematic-canvas{
+ display:block;width:100%;height:100%;object-fit:contain;
+ image-rendering:pixelated;pointer-events:none;
+}
