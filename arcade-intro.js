@@ -254,8 +254,7 @@
       ctx.font='italic bold 34px Impact,sans-serif';ctx.fillText('ZIKA FIGHTER',160,85);
     }
     // Le sous-titre reste au même endroit que sur les captures.
-    ctx.textAlign='center';ctx.fillStyle='#f1a566';
-    ctx.font='bold 10px Georgia,serif';ctx.fillText('HYPER FIGHTING',160,129);
+    pixelSerif(ctx,'HYPER FIGHTING',160,122,132,13,17);
     ctx.font='bold 6px "Courier New",monospace';
     ctx.fillStyle='#d99a70';ctx.fillText('© ZIKAPCOM 2027',160,178);
     if(t>=6.28){
@@ -337,7 +336,7 @@
     paint(sprite,160,61,222+14*p,100+10*p,-.19*(1-p),.8+.2*p);
     if(t>=3.30){
       ctx.textAlign='center';ctx.fillStyle='#f0a45b';
-      ctx.font='bold 10px Georgia,serif';ctx.fillText('HYPER FIGHTING',160,130);
+      pixelSerif(ctx,'HYPER FIGHTING',160,122,132,13,17);
       ctx.font='bold 6px "Courier New",monospace';ctx.fillStyle='#ca8655';
       ctx.fillText('© ZIKAPCOM 2027',160,178);
     }
@@ -379,23 +378,73 @@
   // La vidéo utilisateur commence par une page de crédits SANS musique.
   // Corrélation spectrale avec la vidéo de référence : début du MP3 à 5.20s.
   // Le MP3 commence par un court silence ; la première note est donc plus tardive.
+
+  // Crédits reproduits en 371x189 pixels natifs, agrandis x2 comme sur SNES.
+  // Les noms de l'éditeur et du festival remplacent les fausses licences.
+  const creditGlyphs=new Map();
+  function pixelSerif(ctx,text,x,y,w,h,size){
+    const key=text+':'+size;
+    let glyph=creditGlyphs.get(key);
+    if(!glyph){
+      const mask=document.createElement('canvas');
+      const m=mask.getContext('2d');
+      m.font='bold '+size+'px Georgia,serif';
+      mask.width=Math.ceil(m.measureText(text).width)+12;
+      mask.height=size+10;
+      m.font='bold '+size+'px Georgia,serif';
+      m.fillStyle='#fff';
+      m.textBaseline='alphabetic';
+      m.fillText(text,6,size+1);
+      const colored=document.createElement('canvas');
+      colored.width=mask.width;colored.height=mask.height;
+      const c=colored.getContext('2d');
+      const gr=c.createLinearGradient(0,0,0,colored.height);
+      gr.addColorStop(0,'#ffe7a0');gr.addColorStop(.2,'#f0b36b');
+      gr.addColorStop(.5,'#a8503a');gr.addColorStop(.7,'#eba15b');
+      gr.addColorStop(1,'#602c3a');
+      c.fillStyle=gr;c.fillRect(0,0,colored.width,colored.height);
+      c.globalCompositeOperation='destination-in';c.drawImage(mask,0,0);
+      glyph={mask,colored};creditGlyphs.set(key,glyph);
+    }
+    const left=Math.round(x-w/2);
+    ctx.save();ctx.imageSmoothingEnabled=false;
+    ctx.globalAlpha=.5;ctx.drawImage(glyph.mask,left+1,y+1,w,h);
+    ctx.globalAlpha=1;ctx.drawImage(glyph.colored,left,y,w,h);
+    ctx.restore();
+  }
+  function drawLegalFrame(t){
+    if(!legalCtx)return;
+    const ctx=legalCtx;
+    ctx.setTransform(2,0,0,2,0,0);
+    ctx.imageSmoothingEnabled=false;
+    ctx.fillStyle=t<.19?'#1009ac':'#000';
+    ctx.fillRect(0,0,371,189);
+    if(t<.33)return;
+    ctx.globalAlpha=Math.min(1,Math.max(0,(t-.33)/.22),Math.max(0,(5.20-t)/.18));
+    // Positions tirées des captures vidéo : rangées 7, 58, 82 et 122.
+    pixelSerif(ctx,'HYPER FIGHTING',185.5,7,193,18,19);
+    pixelSerif(ctx,'© ZIKAPCOM 2027',185.5,58,264,16,16);
+    pixelSerif(ctx,'ZIKAPCOM · MANSLE-LES-FONTAINES · 2027',185.5,82,384,15,16);
+    pixelSerif(ctx,'PRÉSENTÉ PAR ZIKAMANSLE',185.5,122,279,21,21);
+    ctx.save();
+    ctx.beginPath();ctx.rect(187,172,126,17);ctx.clip();
+    ctx.font='italic bold 31px Georgia,serif';
+    ctx.fillStyle='#d348a5';ctx.strokeStyle='#78265c';
+    ctx.lineWidth=2;ctx.translate(206,194);ctx.transform(1,0,-.2,1,0,0);
+    ctx.strokeText('ZIKA',0,0);ctx.fillText('ZIKA',0,0);
+    ctx.restore();
+    ctx.globalAlpha=1;
+  }
   function legalTick(now){
     if(phase!=='legal')return;
     const t=Math.max(0,(now-legalStartedAt)/1000);
-    const smooth=p=>{p=clamp(p,0,1);return p*p*(3-2*p);};
-    legal.style.setProperty('--zf-legal-opacity',
-      String(smooth((t-.42)/.50)*(1-smooth((t-4.73)/.47))));
-    legal.style.setProperty('--zf-legal-blue',
-      String(1-smooth((t-.06)/.22)));
+    drawLegalFrame(t);
     if(t>=5.20){
       cancelAnimationFrame(legalFrame);
-      legal.hidden=true;
-      splash.hidden=false;
-      phase='splash';
+      legal.hidden=true;splash.hidden=false;phase='splash';
       visualStartedAt=performance.now();
       raf=requestAnimationFrame(update);
-      attemptPlayback();
-      return;
+      attemptPlayback();return;
     }
     legalFrame=requestAnimationFrame(legalTick);
   }
