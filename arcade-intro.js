@@ -272,11 +272,8 @@
     // Les éclairs sont des changements du FOND, pas des flashes blancs.
     const flicker=(t>=5.82&&t<6.13)?Math.sin(Math.PI*(t-5.82)/.31)*.72:0;
     if(flicker>0){ctx.fillStyle='rgba(0,0,0,'+flicker+')';ctx.fillRect(0,0,w,h);}
-    // Dans la référence, l'écran entier s'assombrit avant la sélection.
-    if(t>=7.64&&t<8.02){
-      const opacity=Math.min(1,(t-7.64)/.38);
-      ctx.fillStyle='rgba(0,0,0,'+opacity+')';ctx.fillRect(0,0,w,h);
-    }
+    // Le fondu vers le menu/options est déclenché uniquement par START,
+    // comme sur la console : il ne doit jamais se produire tout seul.
   }
   function drawTitleFrame(){
     if(phase!=='title'||closed)return;
