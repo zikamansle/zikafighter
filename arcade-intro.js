@@ -9,7 +9,16 @@
   overlay.setAttribute('role','dialog');
   overlay.setAttribute('aria-label','Introduction Zika Fighter');
   overlay.innerHTML=[
-    '<div class="zf-screen zf-splash" id="zf-splash">',
+    '<div class="zf-screen zf-legal" id="zf-legal" aria-label="Crédits de lancement">',
+      '<div class="zf-legal-content">',
+        '<div class="zf-legal-head">HYPER FIGHTING</div>',
+        '<div class="zf-legal-rights">© ZIKAPCOM 2027</div>',
+        '<div class="zf-legal-studio">ZIKAMANSLE · 2027</div>',
+        '<div class="zf-legal-license">PRÉSENTÉ PAR ZIKAMANSLE</div>',
+        '<div class="zf-legal-mark" aria-hidden="true">ZIKA FIGHTER</div>',
+      '</div>',
+    '</div>',
+    '<div class="zf-screen zf-splash" id="zf-splash" hidden>',
       '<div class="zf-zikacom-official" aria-label="ZIKAPCOM"><img id="zf-zikapcom-logo" src="./assets/zikapcom-logo.png" alt="ZIKAPCOM"></div>',
       '<div class="zf-zikacom-shine" aria-hidden="true"><img src="./assets/zikapcom-logo.png" alt=""></div>',
       '<button type="button" class="zf-unlock-sound" id="zf-unlock-sound" hidden>ACTIVER LE SON POUR LANCER LE JEU</button>',
@@ -111,6 +120,7 @@
     }
     paletteCtx.putImageData(out,0,0);
   }
+  const legal=document.getElementById('zf-legal');
   const splash=document.getElementById('zf-splash');
   const title=document.getElementById('zf-title');
   const cinematic=document.getElementById('zf-cinematic');
@@ -121,7 +131,6 @@
   const errorText=document.getElementById('zf-sound-error');
   const audio=new Audio('./assets/zikacom-intro.mp3');
   audio.preload='auto';
-  audio.autoplay=true;
   audio.load();
   audio.volume=1;
   const music=window.ZikaArcadeAudio;
@@ -135,8 +144,10 @@
     if(!titleMusicAvailable)return;
     try{const p=titleMusic.play();if(p&&typeof p.catch==='function')p.catch(()=>{});}catch(_){}
   }
-  let phase='splash',status='pending',closed=false,raf=0;
-  const visualStartedAt=performance.now();
+  let phase='legal',status='pending',closed=false,raf=0;
+  let visualStartedAt=0;
+  const legalStartedAt=performance.now();
+  let legalFrame=0;
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
   function fade(seconds){
     const smooth=n=>{const t=clamp(n,0,1);return t*t*(3-2*t)};
@@ -297,6 +308,29 @@
     if(audio.ended){showTitle();return;}
     raf=requestAnimationFrame(update);
   }
+  // La vidéo utilisateur commence par une page de crédits SANS musique.
+  // Jingle CAPCOM à 5,8s dans la capture : le MP3 contient 0,4s de silence initial.
+  // Démarrage du fichier au temps 5,4s, donc première note vers 5,8s.
+  function legalTick(now){
+    if(phase!=='legal')return;
+    const t=Math.max(0,(now-legalStartedAt)/1000);
+    const smooth=p=>{p=clamp(p,0,1);return p*p*(3-2*p);};
+    legal.style.setProperty('--zf-legal-opacity',
+      String(smooth((t-.42)/.50)*(1-smooth((t-4.83)/.52))));
+    legal.style.setProperty('--zf-legal-blue',
+      String(1-smooth((t-.06)/.22)));
+    if(t>=5.40){
+      cancelAnimationFrame(legalFrame);
+      legal.hidden=true;
+      splash.hidden=false;
+      phase='splash';
+      visualStartedAt=performance.now();
+      raf=requestAnimationFrame(update);
+      attemptPlayback();
+      return;
+    }
+    legalFrame=requestAnimationFrame(legalTick);
+  }
   function attemptPlayback(){
     if(phase!=='splash'||status==='playing')return;
     unblock.hidden=true;
@@ -362,7 +396,7 @@
     }
   },true);
   fade(0);
-  raf=requestAnimationFrame(update);
+  legalFrame=requestAnimationFrame(legalTick);
   // Réessayer automatiquement au retour sur l'application (sans remplacer l'interaction exigée par certains navigateurs).
   document.addEventListener('visibilitychange',()=>{
     if(!document.hidden && phase==='splash' && status==='blocked')attemptPlayback();
@@ -370,5 +404,5 @@
   window.addEventListener('pageshow',()=>{
     if(phase==='splash' && status==='blocked')attemptPlayback();
   });
-  attemptPlayback();
+  // Lancement du jingle déclenché à la fin de l'écran de crédits.
 })();
