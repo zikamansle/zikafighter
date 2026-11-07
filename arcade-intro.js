@@ -906,6 +906,9 @@
     if(titleMusic.paused)playTitleMusic();
     if(titleFrame)cancelAnimationFrame(titleFrame);
     titleFrame=requestAnimationFrame(drawTitleFrame);
+    // Dessiner immédiatement l'écran de destination, sans une frame de
+    // l'animation précédente après la pression de START.
+    renderTitleFrame(7);
     startButton.focus({preventScroll:true});
     return true;
   }
@@ -1129,11 +1132,7 @@
   audio.addEventListener('ended',showTitle);
   audio.addEventListener('error',()=>onFailure(new Error('Jingle indisponible')));
   unblock.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();attemptPlayback();});
-  document.addEventListener('keydown',event=>{
-    if(phase==='splash'&&status==='blocked'&&['Enter','Space','NumpadEnter'].includes(event.code)){
-      event.preventDefault();event.stopImmediatePropagation();skipIntroToPressStart();
-    }
-  },true);
+  // La commande START de l'introduction est capturée une seule fois, sur window.
   function launch(){
     if(phase!=='title'||closed)return;
     closed=true;
@@ -1205,21 +1204,32 @@
     if(changed){cursorConfirm();persistSettings();}
     renderOptions();
   });
+  // Un seul appui physique = une seule transition. Ecouter en phase capture
+  // depuis window, avant les contrôles généraux et le bouton de déblocage audio.
+  const heldTitleStarts=new Set();
+  const isStartKey=code=>['Enter','Space','NumpadEnter'].includes(code);
+  window.addEventListener('keydown',event=>{
+    if(closed||!overlay.isConnected||!isStartKey(event.code))return;
+    const relevant=['legal','splash','cinematic'].includes(phase)||(phase==='title'&&!titleMenuOpen);
+    if(!relevant)return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    if(event.repeat||heldTitleStarts.has(event.code))return;
+    heldTitleStarts.add(event.code);
+    if(['legal','splash','cinematic'].includes(phase)){
+      skipIntroToPressStart();
+    }else if(phase==='title'&&!titleMenuOpen){
+      openTitleMenu();
+    }
+  },true);
+  window.addEventListener('keyup',event=>{
+    if(isStartKey(event.code))heldTitleStarts.delete(event.code);
+  },true);
+  window.addEventListener('blur',()=>heldTitleStarts.clear());
+
   document.addEventListener('keydown',event=>{
     if(closed||!overlay.isConnected)return;
-    const isStart=['Enter','Space','NumpadEnter'].includes(event.code);
-    if(isStart&&['legal','splash','cinematic'].includes(phase)){
-      event.preventDefault();event.stopImmediatePropagation();
-      skipIntroToPressStart();
-      return;
-    }
-    if(phase==='title'&&!titleMenuOpen){
-      if(isStart){
-        event.preventDefault();event.stopImmediatePropagation();
-        openTitleMenu();
-      }
-      return;
-    }
+    if(phase==='title'&&!titleMenuOpen)return;
     if(phase==='title'){
       const oldSelection=titleSelection,oldTurbo=settings.turbo;
       if(['ArrowUp','KeyW','KeyZ'].includes(event.code)){
@@ -1267,7 +1277,7 @@
   },{capture:true});
   // Prise en charge des manettes du navigateur : croix, sticks, A et B.
   // Le futur portage émulateur natif sera traité séparément.
-  let padHeld='',padLastActionAt=0;
+  let padHeld='',padLastActionAt=0,padStartHeld=false;
   function pollArcadePad(now){
     if(closed||!overlay.isConnected)return;
     let pads=[];
@@ -1276,13 +1286,27 @@
     let action='';
     if(pad&&['legal','splash','cinematic','title','options'].includes(phase)){
       const pressed=n=>Boolean(pad.buttons&&pad.buttons[n]&&pad.buttons[n].pressed);
+      // SNES START / bouton validation : un nouveau front d'appui seulement.
+      // En phase ZIKAPCOM cela saute TOUT le générique et le logo défilant.
+      const startDown=pressed(9)||pressed(0);
+      const startEdge=startDown&&!padStartHeld;
+      padStartHeld=startDown;
+      if(startEdge){
+        if(['legal','splash','cinematic'].includes(phase))skipIntroToPressStart();
+        else if(phase==='title'&&!titleMenuOpen)openTitleMenu();
+        else if(phase==='title')activateTitleSelection();
+        else if(phase==='options'){
+          if(optionSelection===6)playSfxTest();
+          else{cursorConfirm();if(optionSelection===5)playMusicTest();else adjustOption(1);}
+        }
+      }
       const ax=pad.axes&&pad.axes[0]||0,ay=pad.axes&&pad.axes[1]||0;
       if(pressed(12)||ay<-.6)action='up';
       else if(pressed(13)||ay>.6)action='down';
       else if(pressed(14)||ax<-.6)action='left';
       else if(pressed(15)||ax>.6)action='right';
       else if(pressed(1)||pressed(8))action='back';
-      else if(pressed(0)||pressed(9))action='select';
+      // Le bouton START/A est déjà traité par startEdge ; jamais deux fois.
       const repeatDirection=['up','down','left','right'].includes(action);
       // START se déclenche sur un NOUVEL appui, jamais par maintien.
       if(action&&(action!==padHeld||(repeatDirection&&now-padLastActionAt>230))){
@@ -1308,6 +1332,8 @@
           else if(action==='select'){if(optionSelection===6)playSfxTest();else{cursorConfirm();if(optionSelection===5)playMusicTest();else adjustOption(1);}}
         }
       }
+    }else{
+      padStartHeld=false;
     }
     padHeld=action;
     requestAnimationFrame(pollArcadePad);
