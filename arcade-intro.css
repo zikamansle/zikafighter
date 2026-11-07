@@ -129,3 +129,18 @@
 #zf-intro .zf-zikacom-shine{opacity:0;filter:brightness(1.55) saturate(.75);mix-blend-mode:screen}
 #zf-intro .zf-zikacom-official svg,
 #zf-intro .zf-zikacom-shine svg{display:block;width:100%;height:100%;overflow:visible}
+
+/* Version officielle ZIKACOM - texture dorée pixellisée choisie par l'utilisateur. */
+#zf-intro .zf-splash,#zf-intro.zf-splash-ready .zf-splash{background:#000!important}
+#zf-intro .zf-zikacom-official,#zf-intro .zf-zikacom-shine{
+  width:min(38vw,530px)!important;
+  aspect-ratio:280/50!important;
+  left:50%!important;top:50%!important;
+  transform:translate(-50%,-50%)!important;
+}
+#zf-intro .zf-zikacom-official img,
+#zf-intro .zf-zikacom-shine img{
+  width:100%;height:100%;display:block;
+  image-rendering:pixelated;
+}
+#zf-intro .zf-zikacom-shine{filter:brightness(1.65) saturate(.6)!important}
