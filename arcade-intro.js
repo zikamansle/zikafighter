@@ -153,7 +153,7 @@
   };
   persistSettings();
   let titleSelection=0,optionSelection=0,optionsFrame=0;
-  let musicTestAudio=null;
+  let musicTestAudio=null,seTestAudio=null;
 
   let titleFrame=0;
   const cinematic=document.getElementById('zf-cinematic');
@@ -451,8 +451,18 @@
   }
 
   // Option Mode, dessin natif 4:3 selon capture approuvée 1448 x 1086.
-  const optionRows=[195,264,337,405,801,870,940],musicChoices=[0,1,10];
-  const effectChoices=['move','confirm','punch','kick','hit','special','ko'];
+  const optionRows=[195,264,337,405,801,870,940];
+  // Fichiers fournis par l'utilisateur : pack local assets/audio, non publié sur GitHub.
+  const userMusicFiles=[null,"Capcom (SNES) - Logo Intro(1).mp3","Street Fighter II Turbo Snes Music - Opening Theme(1).mp3","3-character-select.mp3","4-versus.mp3","5-ryu-s-theme.mp3","6-ken-s-theme.mp3","7-chun-li-s-theme.mp3","8-guile-s-theme.mp3","9-victory-screen.mp3","10-bonus-stage.mp3","11-zangief-s-theme.mp3","12-blanka-s-theme.mp3","13-pause.mp3","14-dhalsim-s-theme.mp3","15-e-honda-s-theme.mp3","16-here-comes-a-new-challenger.mp3","17-m-bison-s-theme.mp3","18-balrog-s-theme.mp3","19-sagat-s-theme.mp3","20-continue.mp3","21-game-over.mp3","22-high-score.mp3","23-vega-s-theme.mp3","24-ryu-s-ending-the-fight-is-all.mp3"];
+  const userEffectFiles=["2.mp3","2ah.mp3","2bh.mp3","2ch.mp3","2dh.mp3","2eh.mp3","2fh.mp3","3.mp3","3bh.mp3","3ch.mp3","3dh.mp3","4.mp3","5.mp3","6.mp3","7.mp3","8.mp3","8ah.mp3","8b.mp3","9.mp3","20h.mp3","21h.mp3","22h.mp3","23h.mp3","fight.mp3","final.mp3","grab-1.mp3","hadouken.mp3","luz.mp3","perfect.mp3","round.mp3","ya.mp3","you-lose.mp3","you-win-street-fighter.mp3"];
+  const musicChoices=userMusicFiles.map((_,i)=>i);
+  const effectChoices=userEffectFiles;
+  const testAsset=(name)=>'./assets/audio/'+encodeURIComponent(name);
+  window.ZikaFighterSoundBank={
+    music:userMusicFiles.slice(),effects:userEffectFiles.slice(),
+    musicCount:userMusicFiles.length-1,effectCount:userEffectFiles.length,
+    directory:'assets/audio'
+  };
   const clampPreset=n=>(n+3)%3;
 
 
@@ -678,31 +688,73 @@
       drawNumber(ctx,settings.seTest,633,933);
     }
   }
-  // Test only real tracks and the exact supplied sounds plus implemented game FX.
+  // Le son chargé par MUSIC TEST est celui du fichier correspondant au numéro.
+  // En l'absence de pack, uniquement les deux sons déjà livrés restent disponibles.
   function playMusicTest(){
     if(musicTestAudio){musicTestAudio.pause();musicTestAudio.currentTime=0;musicTestAudio=null;}
-    if(settings.musicTest===0){if(phase==='options')playTitleMusic();return;}
-    const src=settings.musicTest===1?'./assets/zikacom-intro.mp3':
-      settings.musicTest===10?'./assets/zika-title-theme.mp3':null;
-    if(!src)return;
+    if(settings.musicTest===0){
+      if(phase==='options')playTitleMusic();
+      return;
+    }
+    const selected=userMusicFiles[settings.musicTest];
+    if(!selected)return;
+    const fallback=settings.musicTest===1?'./assets/zikacom-intro.mp3':
+      settings.musicTest===2?'./assets/zika-title-theme.mp3':null;
     titleMusic.pause();
-    musicTestAudio=new Audio(src);
-    musicTestAudio.volume=.70*Math.max(0,Math.min(10,settings.musicVolume))/10;
-    musicTestAudio.addEventListener('ended',()=>{
-      musicTestAudio=null;
+    const chosen=new Audio(testAsset(selected));
+    chosen.preload='auto';
+    chosen.volume=.70*Math.max(0,Math.min(10,settings.musicVolume))/10;
+    musicTestAudio=chosen;
+    let retried=false;
+    const failed=()=>{
+      if(musicTestAudio!==chosen||retried)return;
+      retried=true;
+      if(!fallback){
+        console.warn('Zika Fighter : piste absente. Installez le pack assets/audio :',selected);
+        musicTestAudio=null;
+        if(phase==='options')playTitleMusic();
+        return;
+      }
+      const other=new Audio(fallback);
+      musicTestAudio=other;
+      other.volume=chosen.volume;
+      other.addEventListener('ended',()=>{
+        if(musicTestAudio===other)musicTestAudio=null;
+        if(phase==='options')playTitleMusic();
+      },{once:true});
+      void other.play().catch(err=>console.warn('Zika Fighter : MUSIC TEST secours',err));
+    };
+    chosen.addEventListener('error',failed,{once:true});
+    chosen.addEventListener('ended',()=>{
+      if(musicTestAudio===chosen)musicTestAudio=null;
       if(phase==='options')playTitleMusic();
     },{once:true});
-    const p=musicTestAudio.play();
-    if(p&&p.catch)p.catch(e=>console.warn('Zika Fighter : MUSIC TEST',e));
+    const p=chosen.play();
+    if(p&&p.catch)p.catch(failed);
   }
   function playSfxTest(){
-    const type=effectChoices[settings.seTest];
-    if(!type)return;
-    if(type==='move')playMenuSfx('move');
-    else if(type==='confirm')playMenuSfx('confirm');
-    else window.ZikaArcadeAudio?.playEffect(type);
+    if(seTestAudio){seTestAudio.pause();seTestAudio.currentTime=0;seTestAudio=null;}
+    const file=userEffectFiles[settings.seTest];
+    if(!file)return;
+    const effect=new Audio(testAsset(file));
+    effect.preload='auto';
+    effect.volume=Math.max(0,Math.min(10,settings.fxVolume))/10;
+    seTestAudio=effect;
+    let failedOnce=false;
+    const failed=()=>{
+      if(failedOnce||seTestAudio!==effect)return;
+      failedOnce=true;seTestAudio=null;
+      console.warn('Zika Fighter : effet absent. Installez assets/audio :',file);
+      // Vérification audible même sans le pack, sans se faire passer pour l'original.
+      const legacy=['move','confirm','punch','kick','hit','special','ko'][settings.seTest%7];
+      if(legacy==='move'||legacy==='confirm')playMenuSfx(legacy);
+      else window.ZikaArcadeAudio?.playEffect(legacy);
+    };
+    effect.addEventListener('error',failed,{once:true});
+    effect.addEventListener('ended',()=>{if(seTestAudio===effect)seTestAudio=null;},{once:true});
+    const p=effect.play();
+    if(p&&p.catch)p.catch(failed);
   }
-
   function adjustOption(direction){
     const previous=JSON.stringify(settings),d=direction<0?-1:1;
     switch(optionSelection){
@@ -730,6 +782,7 @@
   function closeOptions(){
     if(phase!=='options')return;
     if(musicTestAudio){musicTestAudio.pause();musicTestAudio=null;}
+    if(seTestAudio){seTestAudio.pause();seTestAudio=null;}
     optionsScreen.hidden=true;title.hidden=false;phase='title';
     if(titleMusic.paused)playTitleMusic();
     // Le titre reprend sur son menu stable, pas au début de la rotation.
