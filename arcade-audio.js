@@ -96,6 +96,24 @@
       default:note(525,.085,0,'square',.13);
     }
   }
+  // Effets vocaux originaux du pack personnel, joués uniquement si installés.
+  // Le dépôt public n'embarque pas les pistes protégées.
+  const voiceFiles={
+    round:'round.mp3',fight:'fight.mp3',win:'you-win-street-fighter.mp3',
+    lose:'you-lose.mp3',perfect:'perfect.mp3',hadouken:'hadouken.mp3',
+    grab:'grab-1.mp3',ya:'ya.mp3',final:'final.mp3'
+  };
+  function playVoice(kind){
+    const filename=voiceFiles[kind];if(!filename)return false;
+    try{
+      const sound=new Audio('./assets/audio/'+encodeURIComponent(filename));
+      sound.preload='auto';
+      sound.volume=clamp(settings.fxVolume,0,10)/10;
+      const attempt=sound.play();
+      if(attempt?.catch)attempt.catch(()=>{});
+      return true;
+    }catch(_){return false;}
+  }
   function logo(){if(!unlock())return;[392,523.25,659.25,1046.5].forEach((f,i)=>note(f,.16,i*.11,'square',.12));}
   function select(){playEffect('confirm');}
   function transition(){if(!unlock())return;[392,466,587,784].forEach((f,i)=>note(f,.08,i*.065,'sawtooth',.09));}
@@ -104,7 +122,7 @@
   window.addEventListener('zika:settings-changed',event=>setSettings(event.detail));
   window.ZikaArcadeAudio={
     unlock,logo,startTitle,stop,select,transition,isRunning,volume,
-    setLevels,setSettings,playEffect,
+    setLevels,setSettings,playEffect,playVoice,
     getSettings:()=>({...settings})
   };
 })();
