@@ -10,8 +10,8 @@
   overlay.setAttribute('aria-label','Introduction Zika Fighter');
   overlay.innerHTML=[
     '<div class="zf-screen zf-splash" id="zf-splash">',
-      '<div class="zf-zikacom-official" aria-label="ZIKACOM"><svg viewBox="135 401 1180 250" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs><filter id="zf-zikacom-key-base" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0.015 0 0 0 -1.2"/></filter></defs><image href="./assets/zikacom-splash.png" width="1448" height="1086" filter="url(#zf-zikacom-key-base)"/></svg></div>',
-      '<div class="zf-zikacom-shine" aria-hidden="true"><svg viewBox="135 401 1180 250" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs><filter id="zf-zikacom-key-shine" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0.015 0 0 0 -1.2"/></filter></defs><image href="./assets/zikacom-splash.png" width="1448" height="1086" filter="url(#zf-zikacom-key-shine)"/></svg></div>',
+      '<div class="zf-zikacom-official" aria-label="ZIKACOM"><img src="./assets/zikacom-pixel-logo.svg" alt="" width="280" height="50"></div>',
+      '<div class="zf-zikacom-shine" aria-hidden="true"><img src="./assets/zikacom-pixel-logo.svg" alt="" width="280" height="50"></div>',
       '<button type="button" class="zf-unlock-sound" id="zf-unlock-sound" hidden>ACTIVER LE SON POUR LANCER LE JEU</button>',
       '<p id="zf-sound-error" class="zf-sound-error" hidden>Jingle introuvable : assets/zikacom-intro.mp3</p>',
     '</div>',
