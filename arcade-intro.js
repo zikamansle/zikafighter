@@ -115,7 +115,7 @@
   const title=document.getElementById('zf-title');
   const cinematic=document.getElementById('zf-cinematic');
   let cinematicFrame=null;
-  const CINEMATIC_LENGTH=3.42;
+  const CINEMATIC_LENGTH=3.62;
   const startButton=document.getElementById('zf-start');
   const unblock=document.getElementById('zf-unlock-sound');
   const errorText=document.getElementById('zf-sound-error');
@@ -149,32 +149,37 @@
     shine.style.opacity='0';
     overlay.style.setProperty('--zf-palette-pulse','0');
   }
-  // Animation d'après la vidéo fournie : petit titre, zoom géant,
-  // bande bleue, pixels en rotation, titre entier stabilisé.
+  // Reconstitution séquencée à partir de la vidéo fournie (30 images/s).
+  // Petit titre fixe -> lettrage géant -> titre retourné en perspective et morcelé
+  // sur une bande bleue -> stabilisation, sans autre texte ajouté.
   const movie=document.getElementById('zf-cinematic-canvas');
   const mctx=movie.getContext('2d',{alpha:false});
   const titleSprite=new Image();
   let titleSpriteCanvas=null;
+  let fighterHalf=null;
   titleSprite.src='./assets/zika-fighter-title.png';
   function prepareTitleSprite(){
     try{
+      // Le vrai logo se situe dans la partie HAUTE du PNG.
+      // L'ancien découpage englobait PUSH START et enlaidissait la rotation.
+      const cw=480,ch=242;
       const src=document.createElement('canvas');
-      src.width=420;src.height=206;
+      src.width=cw;src.height=ch;
       const cx=src.getContext('2d',{willReadFrequently:true});
-      cx.drawImage(titleSprite,110,60,1230,590,0,0,420,206);
-      const data=cx.getImageData(0,0,420,206);
+      cx.drawImage(titleSprite,110,32,1200,585,0,0,cw,ch);
+      const data=cx.getImageData(0,0,cw,ch);
       for(let p=0;p<data.data.length;p+=4){
         const r=data.data[p],g=data.data[p+1],b=data.data[p+2];
-        // Retirer le fond bleu uni tout en gardant les contours noirs, rouges et or.
-        if(b>65 && b>r*1.33 && b>g*1.25){
-          data.data[p+3]=0;
-        }
+        if(b>70&&b>r*1.28&&b>g*1.22)data.data[p+3]=0;
       }
       cx.putImageData(data,0,0);
       titleSpriteCanvas=src;
-    }catch(_){titleSpriteCanvas=null;}
+      fighterHalf=document.createElement('canvas');
+      fighterHalf.width=cw;fighterHalf.height=145;
+      fighterHalf.getContext('2d').drawImage(src,0,97,cw,145,0,0,cw,145);
+    }catch(_){titleSpriteCanvas=null;fighterHalf=null;}
   }
-  if(titleSprite.complete && titleSprite.naturalWidth)prepareTitleSprite();
+  if(titleSprite.complete&&titleSprite.naturalWidth)prepareTitleSprite();
   else titleSprite.addEventListener('load',prepareTitleSprite,{once:true});
   const easeOut=x=>1-Math.pow(1-clamp(x,0,1),3);
   const easeInOut=x=>{const t=clamp(x,0,1);return t*t*(3-2*t)};
@@ -188,64 +193,66 @@
   }
   function renderCinematic(t){
     if(!mctx)return;
-    const w=movie.width,h=movie.height;
-    mctx.imageSmoothingEnabled=false;
-    mctx.fillStyle='#000';
-    mctx.fillRect(0,0,w,h);
+    const w=movie.width,h=movie.height,ctx=mctx;
+    ctx.imageSmoothingEnabled=false;
+    ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
     const sprite=titleSpriteCanvas;
     if(!sprite){
-      // Fallback lorsque l'image est encore en cours de chargement.
-      mctx.fillStyle='#ffe024';
-      mctx.font='italic bold 38px Impact,sans-serif';
-      mctx.textAlign='center';
-      mctx.fillText('ZIKA FIGHTER',w/2,h/2);
-      return;
+      ctx.fillStyle='#ffd726';ctx.font='italic bold 38px Impact,sans-serif';
+      ctx.textAlign='center';ctx.fillText('ZIKA FIGHTER',w/2,h*.3);return;
     }
-    const paint=(x,y,ww,hh,angle=0,flip=1)=>{
-      mctx.save();
-      mctx.translate(x,y);
-      mctx.rotate(angle);
-      mctx.scale(flip,1);
-      mctx.drawImage(sprite,-ww/2,-hh/2,ww,hh);
-      mctx.restore();
+    const paint=(image,x,y,ww,hh,rotation=0,flipX=1,alpha=1)=>{
+      ctx.save();ctx.translate(x,y);ctx.rotate(rotation);ctx.scale(flipX,1);
+      ctx.globalAlpha=alpha;ctx.drawImage(image,-ww/2,-hh/2,ww,hh);ctx.restore();
     };
-    if(t<1.22){
-      // Titre minuscule et immobile sur fond noir.
-      paint(w/2,h*.29,142,70);
+    if(t<1.37){
+      // Identique à l'ouverture vidéo : très petit et au tiers supérieur du noir.
+      paint(sprite,w*.5,h*.22,160,80);
       return;
     }
-    if(t<2.19){
-      // Zoom énorme, comme les lettres TURBO qui remplissent l'écran
-      // dans la vidéo ; ici le mot animé est exclusivement ZIKA FIGHTER.
-      const p=easeOut((t-1.22)/.97);
-      paint(w*.50,h*.48,175+1770*p,85+860*p,-.08*p);
+    if(t<2.22){
+      // Grand lettrage envahissant l'écran : aucune rotation de l'image entière.
+      const p=easeOut((t-1.37)/.85);
+      paint(fighterHalf||sprite,w*.5,h*.47,330+1620*p,105+530*p);
       return;
     }
-    // Bande bleue centrale ; les zones supérieure et inférieure restent noires.
-    mctx.fillStyle='#1b4fb4';
-    mctx.fillRect(0,114,w,133);
-    if(t<2.97){
-      // Le logo se retourne autour d'un axe vertical et pivote.
-      const p=easeInOut((t-2.19)/.78);
-      const angle=p*Math.PI*2.0;
-      const perspective=Math.cos(angle);
-      const zoom=0.35+1.03*p;
-      // Pixelisation temporaire pour reproduire les fragments SNES.
-      const size=165+310*p;
-      const hh=size*.49;
-      paint(w/2,h/2,size,hh,Math.sin(angle)*.48,Math.sign(perspective||1)*Math.max(.08,Math.abs(perspective)));
+    // Le fond n'est PAS tout bleu : c'est uniquement une bande centrale.
+    ctx.fillStyle='#2558b7';
+    ctx.fillRect(0,109,w,145);
+    if(t<3.37){
+      // Effet SNES : rotation Y simulée par écrasement horizontal,
+      // mouvement de bascule et séparation temporaire en colonnes.
+      const p=easeInOut((t-2.22)/1.15);
+      const turn=(1-p)*Math.PI*2.3;
+      const y=h*.50+Math.sin(turn)*30*(1-p);
+      const size=150+305*p;
+      const flip=Math.cos(turn);
+      const sx=Math.sign(flip||1)*Math.max(.06,Math.abs(flip));
+      const tilt=Math.sin(turn)*.22*(1-p);
+      if(p<.56){
+        // Éclats colorés organisés selon les morceaux de l'image,
+        // et non des rectangles jaunes inventés.
+        const columns=10;
+        for(let k=0;k<columns;k++){
+          const sw=sprite.width/columns;
+          const dw=size/columns;
+          const offset=Math.sin(k*2.2+turn)*65*(1-p/.56);
+          ctx.save();
+          ctx.translate(w*.5,y);
+          ctx.rotate(tilt);
+          ctx.scale(sx,1);
+          ctx.drawImage(sprite,k*sw,0,sw,sprite.height,-size/2+k*dw,offset-size*.25,dw+1,size*.5);
+          ctx.restore();
+        }
+      }else{
+        paint(sprite,w*.5,y,size,size*.5,tilt,sx);
+      }
       return;
     }
-    if(t<3.30){
-      // Dernière rotation complète puis arrêt net sur le titre.
-      const p=easeOut((t-2.97)/.33);
-      paint(w/2,h*.46,450,220,(1-p)*Math.PI*.5,Math.max(.12,p));
-      return;
-    }
-    paint(w/2,h*.46,450,220);
+    paint(sprite,w*.5,h*.5,455,227);
   }
   function animateCinematic(startedAt){
-    // L'horloge musicale reste prioritaire si le titre se joue réellement.
+    // Le temps réel de la musique pilote cette seconde introduction.
     const tick=now=>{
       if(phase!=='cinematic'||closed)return;
       const t=(!titleMusic.paused&&titleMusic.currentTime>0)
