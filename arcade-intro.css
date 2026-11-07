@@ -144,3 +144,7 @@
   image-rendering:pixelated;
 }
 #zf-intro .zf-zikacom-shine{filter:brightness(1.65) saturate(.6)!important}
+
+/* Reflet ZIKACOM final : balaye les lettres, non le fond noir. */
+#zf-intro .zf-zikacom-shine{z-index:2;mix-blend-mode:screen!important;filter:brightness(4.5) saturate(.1) contrast(1.35)!important;will-change:opacity,clip-path}
+#zf-intro .zf-zikacom-official{z-index:1;filter:brightness(calc(1 + var(--zf-logo-glow,0)))!important}
