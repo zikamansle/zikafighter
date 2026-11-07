@@ -213,9 +213,9 @@
   function playMenuSfx(kind){
     prepareMenuSfx();
     window.ZikaMenuAudioState[kind+'Plays']++;
-    const buffer=menuBuffers[kind];
     const context=menuContext;
-    if(context&&buffer){
+    const playBuffer=(buffer)=>{
+      if(!context||!buffer)return;
       try{
         const source=context.createBufferSource();
         const gain=context.createGain();
@@ -223,28 +223,27 @@
         gain.gain.value=kind==='move'?9:6.5;
         source.connect(gain);gain.connect(context.destination);
         source.start(context.currentTime);
-        return;
-      }catch(e){window.ZikaMenuAudioState.lastError=String(e);}
-    }
-    // First key after load: schedule playback as soon as decoding completes.
-    const pending=menuPending[kind];
-    if(pending){
-      pending.then(decoded=>{
-        if(!decoded||!menuContext)return;
-        if(menuContext.state==='suspended')return;
-        const source=menuContext.createBufferSource();
-        const gain=menuContext.createGain();
-        source.buffer=decoded;
-        gain.gain.value=kind==='move'?9:6.5;
-        source.connect(gain);gain.connect(menuContext.destination);
-        source.start();
-      }).catch(e=>{window.ZikaMenuAudioState.lastError=String(e);});
+      }catch(err){
+        window.ZikaMenuAudioState.lastError=String(err);
+        console.warn('Zika Fighter : lecture audio du menu',kind,err);
+      }
+    };
+    if(context){
+      const decoded=menuBuffers[kind] ? Promise.resolve(menuBuffers[kind]) : menuPending[kind];
+      const resumed=context.state==='running'?Promise.resolve():context.resume();
+      Promise.all([decoded,resumed]).then(([buffer])=>{
+        if(buffer&&context.state==='running')playBuffer(buffer);
+        else window.ZikaMenuAudioState.lastError='Contexte audio non activé';
+      }).catch(err=>{
+        window.ZikaMenuAudioState.lastError=String(err);
+        console.warn('Zika Fighter : impossible d’activer le son',err);
+      });
     }else{
-      // Fallback for environments without WebAudio support.
-      const element=menuMedia[kind];
-      element.currentTime=0;
-      const p=element.play();
-      if(p&&p.catch)p.catch(e=>{window.ZikaMenuAudioState.lastError=String(e);});
+      // Fallback direct if WebAudio is unavailable.
+      const el=menuMedia[kind];
+      try{el.currentTime=0;const p=el.play();
+        if(p&&p.catch)p.catch(e=>{window.ZikaMenuAudioState.lastError=String(e);});
+      }catch(e){window.ZikaMenuAudioState.lastError=String(e);}
     }
   }
   let cursorSoundAt=0;
