@@ -89,3 +89,38 @@
   57%,60%{opacity:.24;background:#71ff38}
   95%,100%{opacity:.13;background:#fff}
 }
+
+/* Séquence inspirée de la vidéo fournie : noir -> petit titre -> zoom violent ->
+   bande bleue à fragments pixel -> écran titre stable.
+   N'affecte pas la musique ni le fondu ZIKACOM déjà validés. */
+#zf-intro .zf-cinematic{background:#000;isolation:isolate}
+#zf-intro .zf-cine-logo{position:absolute;left:50%;top:50%;width:80%;text-align:center;line-height:.76;transform:translate(-50%,-50%) scale(.11);opacity:0;filter:drop-shadow(4px 8px #150d2a)}
+#zf-intro .zf-cine-logo span{display:block;font:italic 1000 clamp(75px,15vw,210px)/.85 Impact,"Arial Black",sans-serif;letter-spacing:-.07em;background:linear-gradient(180deg,#f82085 10%,#f64eac 30%,#ffdb46 72%,#ffdc05 90%);color:#ffce28;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;-webkit-text-stroke:2px #f3a142;text-shadow:5px 7px #1c0838}
+#zf-intro .zf-cine-logo span:last-child{margin-left:4%;font-size:clamp(67px,13vw,190px)}
+#zf-intro .zf-blue-band{position:absolute;left:0;right:0;top:34%;height:33%;background:#2855bb;opacity:0;transform:scaleX(.01);overflow:hidden;border-block:2px solid #629bff}
+#zf-intro .zf-pixel-burst{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 17px,#f8e03e 17px 24px,#a53f96 24px 30px,transparent 30px 48px);opacity:.5;clip-path:polygon(39% 0,62% 0,56% 100%,43% 100%)}
+#zf-intro .zf-cinematic-play .zf-cine-logo{animation:zf-cine-zoom 4.2s linear both}
+#zf-intro .zf-cinematic-play .zf-blue-band{animation:zf-cine-band 4.2s linear both}
+#zf-intro .zf-cinematic-play .zf-pixel-burst{animation:zf-cine-pixels 4.2s steps(6,end) both}
+@keyframes zf-cine-zoom{
+  0%,9%{opacity:0;transform:translate(-50%,-50%) scale(.11)}
+  13%{opacity:1;transform:translate(-50%,-50%) scale(.15)}
+  29%{opacity:1;transform:translate(-50%,-50%) scale(.62)}
+  40%{opacity:1;transform:translate(-50%,-50%) scale(2.8)}
+  46%{opacity:0;transform:translate(-50%,-50%) scale(5.8)}
+  100%{opacity:0}
+}
+@keyframes zf-cine-band{
+  0%,45%{opacity:0;transform:scaleX(.01)}
+  49%{opacity:1;transform:scaleX(.01)}
+  57%,84%{opacity:1;transform:scaleX(1)}
+  94%,100%{opacity:0;transform:scaleX(1)}
+}
+@keyframes zf-cine-pixels{
+  0%,46%{opacity:0}
+  53%,81%{opacity:.7}
+  91%,100%{opacity:0}
+}
+/* La vidéo ne fait pas clignoter tout le fond : neutraliser les stroboscopes précédents. */
+#zf-intro.zf-title-ready .zf-title{animation:none!important;filter:none!important}
+#zf-intro.zf-title-ready .zf-title-flash{animation:none!important;opacity:0!important}
