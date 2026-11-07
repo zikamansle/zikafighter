@@ -137,6 +137,9 @@
   titleMusic.preload='auto';
   titleMusic.loop=true;
   titleMusic.volume=0.8;
+  // Décalage établi par comparaison spectrale avec la vidéo de référence :
+  // le thème MP3 est avancé de 0.64 s par rapport aux images du titre.
+  const TITLE_MUSIC_OFFSET=0.64;
   let titleMusicAvailable=true;
   titleMusic.addEventListener('error',()=>{titleMusicAvailable=false;});
   function playTitleMusic(){
@@ -249,7 +252,7 @@
   }
   function drawTitleFrame(){
     if(phase!=='title'||closed)return;
-    renderTitleFrame(titleMusic.currentTime||0);
+    renderTitleFrame(Math.max(0,(titleMusic.currentTime||0)-TITLE_MUSIC_OFFSET));
     titleFrame=requestAnimationFrame(drawTitleFrame);
   }
   function renderCinematic(seconds){
@@ -321,8 +324,9 @@
   function animateCinematic(startedAt){
     const tick=now=>{
       if(phase!=='cinematic'||closed)return;
-      const t=(!titleMusic.paused&&titleMusic.currentTime>0)
-        ? titleMusic.currentTime : Math.max(0,(now-startedAt)/1000);
+      const t=(!titleMusic.paused && titleMusic.currentTime>=TITLE_MUSIC_OFFSET)
+        ? titleMusic.currentTime-TITLE_MUSIC_OFFSET
+        : Math.max(0,(now-startedAt)/1000);
       renderCinematic(t);
       if(t>=CINEMATIC_LENGTH){finishCinematic();return;}
       cinematicFrame=requestAnimationFrame(tick);
@@ -337,7 +341,7 @@
     audio.pause();
     splash.hidden=true;
     cinematic.hidden=false;
-    titleMusic.currentTime=0;
+    titleMusic.currentTime=TITLE_MUSIC_OFFSET;
     // On garde le thème fourni par l'utilisateur dès cette première scène.
     playTitleMusic();
     animateCinematic(performance.now());
