@@ -408,11 +408,9 @@
     ctx.font='bold 6px "Courier New",monospace';
     ctx.fillStyle='#d99a70';ctx.fillText('© ZIKAPCOM 2027',160,178);
     if(t>=6.28){
-      const rows=[145,157,169];
-      menuText(ctx,'TURBO '+('★'.repeat(settings.turbo)),150,rows[0],10,titleSelection===0?'#b9b33d':'#aeb0b2');
-      menuText(ctx,'NORMAL',150,rows[1],10,titleSelection===1?'#b9b33d':'#b7b7b7');
-      menuText(ctx,'OPTIONS',150,rows[2],10,titleSelection===2?'#b9b33d':'#b7b7b7');
-      drawZCursor(ctx,116,rows[titleSelection]);
+      // Les trois lignes sont découpées de la capture fournie.
+      // Conserver les lignes, les sons et la commande du mode OPTION.
+      drawTitleChoices(ctx);
     }
     // Les éclairs sont des changements du FOND, pas des flashes blancs.
     const flicker=(t>=5.82&&t<6.13)?Math.sin(Math.PI*(t-5.82)/.31)*.72:0;
@@ -448,6 +446,85 @@
     ctx.fillStyle='#17161a';ctx.fillText(text,x+1,y+1);
     ctx.fillStyle=color;ctx.fillText(text,x,y);
     ctx.restore();
+  }
+
+
+  // Trois libellés 16 bits provenant du visuel choisi par l'utilisateur.
+  // Les caractères ne sont pas remplacés par une police web.
+  const titleChoicesReference=new Image();
+  titleChoicesReference.crossOrigin='anonymous';
+  titleChoicesReference.decoding='async';
+  const titleChoiceSlices={
+    turbo:[770,659,179,36],
+    normal:[766,719,199,39],
+    option:[762,783,216,45],
+    star:[969,658,42,37],
+    cursor:[668,781,53,50]
+  };
+  const titleChoiceTop=[133,146,159];
+  const titleChoiceLeft=116;
+  let titleChoiceSprites=null;
+  function cropTitleChoice(rect){
+    const [sx,sy,sw,sh]=rect;
+    const img=titleChoicesReference;
+    const widthScale=img.naturalWidth/1897,heightScale=img.naturalHeight/892;
+    const cv=document.createElement('canvas');cv.width=sw;cv.height=sh;
+    const c=cv.getContext('2d',{willReadFrequently:true});
+    c.drawImage(img,sx*widthScale,sy*heightScale,sw*widthScale,sh*heightScale,0,0,sw,sh);
+    const frame=c.getImageData(0,0,sw,sh),d=frame.data;
+    for(let i=0;i<d.length;i+=4){
+      const r=d[i],g=d[i+1],b=d[i+2],v=Math.max(r,g,b);
+      // Dégradé original conservé, fond presque noir rendu transparent.
+      const isWarm=r>g+11&&r>b+16;
+      const isHighlight=v>128&&r>g*.95&&g>=b*.8;
+      d[i+3]=(isWarm||isHighlight)?Math.max(0,Math.min(255,(v-27)*4.8)):0;
+    }
+    c.putImageData(frame,0,0);
+    return cv;
+  }
+  function prepareTitleChoices(){
+    if(!titleChoicesReference.complete||!titleChoicesReference.naturalWidth)return;
+    try{
+      const sprites={};
+      for(const name of Object.keys(titleChoiceSlices))
+        sprites[name]=cropTitleChoice(titleChoiceSlices[name]);
+      titleChoiceSprites=sprites;
+    }catch(err){
+      titleChoiceSprites=null;
+      console.warn('Zika Fighter : image de référence du menu indisponible',err);
+    }
+  }
+  titleChoicesReference.addEventListener('load',prepareTitleChoices);
+  titleChoicesReference.src='https://static.wixstatic.com/media/685632_e25b7adc382240fcbed0222e97844c63~mv2.png';
+  if(titleChoicesReference.complete&&titleChoicesReference.naturalWidth)prepareTitleChoices();
+  function drawTitleChoices(ctx){
+    const oldSmooth=ctx.imageSmoothingEnabled;
+    ctx.save();ctx.imageSmoothingEnabled=false;
+    const names=['turbo','normal','option'];
+    if(titleChoiceSprites){
+      names.forEach((name,i)=>{
+        const sprite=titleChoiceSprites[name];
+        const w=sprite.width*.27,h=sprite.height*.25;
+        ctx.drawImage(sprite,titleChoiceLeft,titleChoiceTop[i],w,h);
+      });
+      // Les étoiles Turbo font partie de la capture et restent réglables 0–4.
+      const star=titleChoiceSprites.star;
+      for(let i=0;i<settings.turbo;i++){
+        ctx.drawImage(star,169+i*11,titleChoiceTop[0]-1,11,9);
+      }
+      // Le curseur conserve les pixels du lettrage arcade, à chaque ligne.
+      const cursor=titleChoiceSprites.cursor;
+      ctx.drawImage(cursor,92,titleChoiceTop[titleSelection]-4,14,13);
+    }else{
+      // Secours hors connexion : le menu reste entièrement fonctionnel.
+      menuText(ctx,'TURBO',titleChoiceLeft,titleChoiceTop[0]+9,11,'#f0a861');
+      menuText(ctx,'NORMAL',titleChoiceLeft,titleChoiceTop[1]+9,11,'#f0a861');
+      menuText(ctx,'OPTION',titleChoiceLeft,titleChoiceTop[2]+9,11,'#f0a861');
+      for(let i=0;i<settings.turbo;i++)menuText(ctx,'★',169+i*11,titleChoiceTop[0]+9,11,'#f6ba51');
+      drawZCursor(ctx,92,titleChoiceTop[titleSelection]+9);
+    }
+    ctx.restore();
+    ctx.imageSmoothingEnabled=oldSmooth;
   }
 
   // Option Mode, dessin natif 4:3 selon capture approuvée 1448 x 1086.
@@ -1040,9 +1117,9 @@
     const y=(event.clientY-rect.top)/Math.max(1,rect.height)*180;
     // Un clic sur le logo n'envoie pas directement au combat :
     // il faut sélectionner l'une des trois lignes du menu.
-    if(y<136||y>178)return;
-    if(y>=136&&y<=178){
-      const rows=[145,157,169];
+    if(y<126||y>175)return;
+    if(y>=126&&y<=175){
+      const rows=titleChoiceTop.map(v=>v+6);
       const beforeSelection=titleSelection;
       titleSelection=rows.reduce((best,v,i)=>Math.abs(v-y)<Math.abs(rows[best]-y)?i:best,0);
       if(beforeSelection!==titleSelection)cursorMove();
