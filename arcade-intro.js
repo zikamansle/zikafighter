@@ -251,7 +251,7 @@
     // "PUSH START" n'appartient plus au PNG : il clignote vraiment.
     if((t%1.1)<.63){
       ctx.font='bold 9px "Courier New",monospace';
-      ctx.fillStyle='#fff4e7';ctx.fillText('PUSH START',160,145);
+      ctx.fillStyle='#fff4e7';ctx.fillText('PUSH START',160,14);
     }
     // Très bref assombrissement du logo et de la bande dans la référence.
     let shade=0;
