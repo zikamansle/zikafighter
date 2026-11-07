@@ -244,3 +244,17 @@
   object-fit:contain;
   image-rendering:pixelated;
 }
+
+/* Correctif rendu : les captures approuvées sont bitmap ; on les met à l'échelle
+   sans déformer le 4:3 et sans forcer des pixels carrés géants sur grand écran. */
+#zf-intro .zf-legal,#zf-intro .zf-options{background:#000!important;}
+#zf-intro #zf-legal-canvas,#zf-intro #zf-options-canvas{
+ width:min(100vw,133.333333vh)!important;
+ height:min(75vw,100vh)!important;
+ max-width:100vw!important;
+ max-height:100vh!important;
+ aspect-ratio:4/3!important;
+ object-fit:contain!important;
+ image-rendering:auto!important;
+ margin:auto;
+}
