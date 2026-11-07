@@ -528,17 +528,29 @@
     txt(effectChoices[settings.seTest]?.toUpperCase()||'—',237,237,9,'#ddd','center');
     z(5,optionRows[optionSelection]-15);
   }
+  // Test only real tracks and the exact supplied sounds plus implemented game FX.
   function playMusicTest(){
-    if(musicTestAudio){musicTestAudio.pause();musicTestAudio=null;}
-    // Deux morceaux sont actuellement fournis : 01 (logo) et 10 (titre).
-    // Les autres indices peuvent être préparés sans lecture fictive.
-    if(settings.musicTest!==1&&settings.musicTest!==10)return;
-    const src=settings.musicTest===1?'./assets/zikacom-intro.mp3':'./assets/zika-title-theme.mp3';
+    if(musicTestAudio){musicTestAudio.pause();musicTestAudio.currentTime=0;musicTestAudio=null;}
+    if(settings.musicTest===0){if(phase==='options')playTitleMusic();return;}
+    const src=settings.musicTest===1?'./assets/zikacom-intro.mp3':
+      settings.musicTest===10?'./assets/zika-title-theme.mp3':null;
+    if(!src)return;
     titleMusic.pause();
-    musicTestAudio=new Audio(src);musicTestAudio.volume=.7;
-    musicTestAudio.addEventListener('ended',()=>{if(phase==='options')playTitleMusic();},{once:true});
+    musicTestAudio=new Audio(src);
+    musicTestAudio.volume=.70*Math.max(0,Math.min(10,settings.musicVolume))/10;
+    musicTestAudio.addEventListener('ended',()=>{
+      musicTestAudio=null;
+      if(phase==='options')playTitleMusic();
+    },{once:true});
     const p=musicTestAudio.play();
-    if(p&&p.catch)p.catch(()=>{});
+    if(p&&p.catch)p.catch(e=>console.warn('Zika Fighter : MUSIC TEST',e));
+  }
+  function playSfxTest(){
+    const type=effectChoices[settings.seTest];
+    if(!type)return;
+    if(type==='move')playMenuSfx('move');
+    else if(type==='confirm')playMenuSfx('confirm');
+    else window.ZikaArcadeAudio?.playEffect(type);
   }
   function adjustOption(direction){
     const before=JSON.stringify(settings);
@@ -549,8 +561,14 @@
       case 2:settings.players=settings.players===1?2:1;break;
       case 3:settings.controlPreset=(settings.controlPreset+d+3)%3;break;
       case 4:settings.stereo=!settings.stereo;break;
-      case 5:settings.musicTest=clamp(settings.musicTest+d,0,99);break;
-      case 6:settings.seTest=clamp(settings.seTest+d,0,99);break;
+      case 5:settings.musicVolume=clamp(settings.musicVolume+d,0,10);break;
+      case 6:settings.fxVolume=clamp(settings.fxVolume+d,0,10);break;
+      case 7:{
+        const i=Math.max(0,musicChoices.indexOf(settings.musicTest));
+        settings.musicTest=musicChoices[(i+d+musicChoices.length)%musicChoices.length];
+        break;
+      }
+      case 8:settings.seTest=(settings.seTest+d+effectChoices.length)%effectChoices.length;break;
     }
     if(before!==JSON.stringify(settings))cursorMove();
     persistSettings();renderOptions();
@@ -860,11 +878,19 @@
     const x=(event.clientX-rect.left)/Math.max(1,rect.width)*320;
     const y=(event.clientY-rect.top)/Math.max(1,rect.height)*240;
     if(y<15||x>300&&y>222){closeOptions();return;}
-    const rows=[52,77,98,120,201,220,237];
     const beforeSelection=optionSelection;
-    optionSelection=rows.reduce((best,v,i)=>Math.abs(v-y)<Math.abs(rows[best]-y)?i:best,0);
+    optionSelection=optionRows.reduce((best,v,i)=>Math.abs(v-y)<Math.abs(optionRows[best]-y)?i:best,0);
     if(beforeSelection!==optionSelection)cursorMove();
-    if(optionSelection===5&&x>205){cursorConfirm();playMusicTest();return;}
+    if((optionSelection===5||optionSelection===6)&&x>=145&&x<=248){
+      const key=optionSelection===5?'musicVolume':'fxVolume';
+      const next=clamp(Math.floor((x-145)/10)+1,0,10);
+      if(settings[key]!==next){
+        settings[key]=next;persistSettings();renderOptions();cursorMove();
+      }
+      return;
+    }
+    if(optionSelection===7&&x>205){cursorConfirm();playMusicTest();return;}
+    if(optionSelection===8&&x>205){cursorConfirm();playSfxTest();return;}
     adjustOption(x<154?-1:1);
   });
   document.addEventListener('keydown',event=>{
@@ -890,14 +916,15 @@
       if(['Escape','Backspace','KeyB'].includes(event.code)){
         closeOptions();
       }else if(['ArrowUp','KeyW','KeyZ'].includes(event.code)){
-        optionSelection=(optionSelection+6)%7;renderOptions();
+        optionSelection=(optionSelection+8)%9;renderOptions();
       }else if(['ArrowDown','KeyS'].includes(event.code)){
-        optionSelection=(optionSelection+1)%7;renderOptions();
+        optionSelection=(optionSelection+1)%9;renderOptions();
       }else if(['ArrowLeft','ArrowRight','KeyA','KeyD'].includes(event.code)){
         adjustOption(['ArrowLeft','KeyA'].includes(event.code)?-1:1);
       }else if(['Enter','Space','NumpadEnter'].includes(event.code)){
         cursorConfirm();
-        if(optionSelection===5)playMusicTest();
+        if(optionSelection===7)playMusicTest();
+        else if(optionSelection===8)playSfxTest();
         else adjustOption(1);
       }else return;
       if(oldSelection!==optionSelection)cursorMove();
@@ -940,12 +967,12 @@
           else if(action==='select')activateTitleSelection();
           if(priorSelection!==titleSelection||priorTurbo!==settings.turbo)cursorMove();
         }else if(phase==='options'){
-          if(action==='up'){optionSelection=(optionSelection+5)%6;renderOptions();cursorMove();}
-          else if(action==='down'){optionSelection=(optionSelection+1)%6;renderOptions();cursorMove();}
+          if(action==='up'){optionSelection=(optionSelection+8)%9;renderOptions();cursorMove();}
+          else if(action==='down'){optionSelection=(optionSelection+1)%9;renderOptions();cursorMove();}
           else if(action==='left')adjustOption(-1);
           else if(action==='right')adjustOption(1);
           else if(action==='back')closeOptions();
-          else if(action==='select'){cursorConfirm();if(optionSelection===5)playMusicTest();else adjustOption(1);}
+          else if(action==='select'){cursorConfirm();if(optionSelection===7)playMusicTest();else if(optionSelection===8)playSfxTest();else adjustOption(1);}
         }
       }
     }
