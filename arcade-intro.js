@@ -252,14 +252,14 @@
     let band=t<6.55?'#225ab4':t<6.93?'#66c83e':'#000';
     ctx.fillStyle=band;ctx.fillRect(15,15,290,89);
     if(titleSpriteCanvas){
-      ctx.drawImage(titleSpriteCanvas,42,9,236,116);
+      ctx.drawImage(titleSpriteCanvas,42,6,236,110);
     }else{
       ctx.textAlign='center';ctx.fillStyle='#ffe62a';
       ctx.font='italic bold 34px Impact,sans-serif';ctx.fillText('ZIKA FIGHTER',160,85);
     }
     // Le sous-titre reste au même endroit que sur les captures.
     ctx.textAlign='center';ctx.fillStyle='#f1a566';
-    ctx.font='bold 10px Georgia,serif';ctx.fillText('HYPER FIGHTING',160,130);
+    ctx.font='bold 10px Georgia,serif';ctx.fillText('HYPER FIGHTING',160,129);
     ctx.font='bold 6px "Courier New",monospace';
     ctx.fillStyle='#d99a70';ctx.fillText('© ZIKAPCOM 2027',160,178);
     if(t>=6.28){
@@ -341,7 +341,7 @@
     const p=ease((t-3.22)/.26);
     ctx.imageSmoothingEnabled=true;
     ctx.imageSmoothingQuality='high';
-    paint(sprite,160,67,222+14*p,110+6*p,-.19*(1-p),.8+.2*p);
+    paint(sprite,160,61,222+14*p,100+10*p,-.19*(1-p),.8+.2*p);
     if(t>=3.30){
       ctx.textAlign='center';ctx.fillStyle='#f0a45b';
       ctx.font='bold 10px Georgia,serif';ctx.fillText('HYPER FIGHTING',160,130);
