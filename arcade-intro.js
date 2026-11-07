@@ -153,6 +153,8 @@
   };
   persistSettings();
   let titleSelection=0,optionSelection=0,optionsFrame=0;
+  // Etape distincte avant le choix TURBO / NORMAL / OPTION.
+  let titleMenuOpen=false;
   let musicTestAudio=null,seTestAudio=null;
 
   let titleFrame=0;
@@ -379,6 +381,8 @@
     cinematic.hidden=true;
     title.hidden=false;
     phase='title';
+    titleMenuOpen=false;
+    titleSelection=0;
     titleFrame=requestAnimationFrame(drawTitleFrame);
     startButton.focus({preventScroll:true});
   }
@@ -407,10 +411,15 @@
     pixelSerif(ctx,'HYPER FIGHTING',160,122,132,13,17);
     ctx.font='bold 6px "Courier New",monospace';
     ctx.fillStyle='#d99a70';ctx.fillText('© ZIKAPCOM 2027',160,178);
-    if(t>=6.28){
-      // Les trois lignes sont découpées de la capture fournie.
-      // Conserver les lignes, les sons et la commande du mode OPTION.
+    if(titleMenuOpen){
+      // Les choix sont affichés après un appui sur START uniquement.
       drawTitleChoices(ctx);
+    }else if(Math.floor(performance.now()/480)%2===0){
+      // Ecran-titre SNES : PRESS START clignotant.
+      ctx.save();
+      ctx.imageSmoothingEnabled=false;
+      pixelSerif(ctx,'PRESS START',160,150,126,16,17);
+      ctx.restore();
     }
     // Les éclairs sont des changements du FOND, pas des flashes blancs.
     const flicker=(t>=5.82&&t<6.13)?Math.sin(Math.PI*(t-5.82)/.31)*.72:0;
@@ -861,11 +870,44 @@
     if(musicTestAudio){musicTestAudio.pause();musicTestAudio=null;}
     if(seTestAudio){seTestAudio.pause();seTestAudio=null;}
     optionsScreen.hidden=true;title.hidden=false;phase='title';
+    titleMenuOpen=true;
     if(titleMusic.paused)playTitleMusic();
     // Le titre reprend sur son menu stable, pas au début de la rotation.
     titleVisualStartedAt=performance.now()-7000;
     titleFrame=requestAnimationFrame(drawTitleFrame);
     startButton.focus({preventScroll:true});
+  }
+  function openTitleMenu(){
+    if(phase!=='title'||closed||titleMenuOpen)return false;
+    titleMenuOpen=true;titleSelection=0;
+    cursorConfirm();
+    return true;
+  }
+  // Un appui durant les crédits, le logo ZIKAPCOM ou la cinématique
+  // amène uniquement à PRESS START. Un nouvel appui révèle les choix.
+  function skipIntroToPressStart(){
+    if(closed||!['legal','splash','cinematic'].includes(phase))return false;
+    if(legalFrame)cancelAnimationFrame(legalFrame);
+    if(raf)cancelAnimationFrame(raf);
+    if(cinematicFrame!==null){
+      cancelAnimationFrame(cinematicFrame);
+      cinematicFrame=null;
+    }
+    audio.pause();
+    try{audio.currentTime=0;}catch(_){}
+    status='skipped';
+    unblock.hidden=true;
+    errorText.hidden=true;
+    legal.hidden=true;splash.hidden=true;cinematic.hidden=true;
+    optionsScreen.hidden=true;title.hidden=false;
+    phase='title';titleMenuOpen=false;titleSelection=0;
+    // Fin du générique visuel ; l'écran PRESS START reste stable.
+    titleVisualStartedAt=performance.now()-7000;
+    if(titleMusic.paused)playTitleMusic();
+    if(titleFrame)cancelAnimationFrame(titleFrame);
+    titleFrame=requestAnimationFrame(drawTitleFrame);
+    startButton.focus({preventScroll:true});
+    return true;
   }
   function activateTitleSelection(){
     if(phase!=='title')return;
@@ -1089,7 +1131,7 @@
   unblock.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();attemptPlayback();});
   document.addEventListener('keydown',event=>{
     if(phase==='splash'&&status==='blocked'&&['Enter','Space','NumpadEnter'].includes(event.code)){
-      event.preventDefault();event.stopImmediatePropagation();attemptPlayback();
+      event.preventDefault();event.stopImmediatePropagation();skipIntroToPressStart();
     }
   },true);
   function launch(){
@@ -1113,6 +1155,7 @@
   // et au clic sur l'écran. Aucun passage automatique au combat.
   startButton.addEventListener('click',event=>{
     if(phase!=='title')return;
+    if(!titleMenuOpen){openTitleMenu();return;}
     const rect=titleCanvas.getBoundingClientRect();
     const y=(event.clientY-rect.top)/Math.max(1,rect.height)*180;
     // Un clic sur le logo n'envoie pas directement au combat :
@@ -1164,6 +1207,19 @@
   });
   document.addEventListener('keydown',event=>{
     if(closed||!overlay.isConnected)return;
+    const isStart=['Enter','Space','NumpadEnter'].includes(event.code);
+    if(isStart&&['legal','splash','cinematic'].includes(phase)){
+      event.preventDefault();event.stopImmediatePropagation();
+      skipIntroToPressStart();
+      return;
+    }
+    if(phase==='title'&&!titleMenuOpen){
+      if(isStart){
+        event.preventDefault();event.stopImmediatePropagation();
+        openTitleMenu();
+      }
+      return;
+    }
     if(phase==='title'){
       const oldSelection=titleSelection,oldTurbo=settings.turbo;
       if(['ArrowUp','KeyW','KeyZ'].includes(event.code)){
@@ -1218,7 +1274,7 @@
     try{pads=navigator.getGamepads?Array.from(navigator.getGamepads()):[];}catch(_){}
     const pad=pads.find(Boolean);
     let action='';
-    if(pad&&(phase==='title'||phase==='options')){
+    if(pad&&['legal','splash','cinematic','title','options'].includes(phase)){
       const pressed=n=>Boolean(pad.buttons&&pad.buttons[n]&&pad.buttons[n].pressed);
       const ax=pad.axes&&pad.axes[0]||0,ay=pad.axes&&pad.axes[1]||0;
       if(pressed(12)||ay<-.6)action='up';
@@ -1227,9 +1283,15 @@
       else if(pressed(15)||ax>.6)action='right';
       else if(pressed(1)||pressed(8))action='back';
       else if(pressed(0)||pressed(9))action='select';
-      if(action&&(action!==padHeld||now-padLastActionAt>230)){
+      const repeatDirection=['up','down','left','right'].includes(action);
+      // START se déclenche sur un NOUVEL appui, jamais par maintien.
+      if(action&&(action!==padHeld||(repeatDirection&&now-padLastActionAt>230))){
         padLastActionAt=now;
-        if(phase==='title'){
+        if(['legal','splash','cinematic'].includes(phase)){
+          if(action==='select')skipIntroToPressStart();
+        }else if(phase==='title'&&!titleMenuOpen){
+          if(action==='select')openTitleMenu();
+        }else if(phase==='title'){
           const priorSelection=titleSelection, priorTurbo=settings.turbo;
           if(action==='up')titleSelection=(titleSelection+2)%3;
           else if(action==='down')titleSelection=(titleSelection+1)%3;
@@ -1262,8 +1324,9 @@
   }else if(previewScreen==='options'){
     legal.hidden=true;optionsScreen.hidden=false;phase='options';
     renderOptions();optionsCanvas.focus({preventScroll:true});
-  }else if(previewScreen==='title'){
+  }else if(previewScreen==='title'||previewScreen==='press'){
     legal.hidden=true;title.hidden=false;phase='title';
+    titleMenuOpen=previewScreen==='title';
     titleVisualStartedAt=performance.now()-7000;
     titleFrame=requestAnimationFrame(drawTitleFrame);
   }else{
