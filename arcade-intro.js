@@ -565,10 +565,10 @@
     if(t<.33)return;
     ctx.globalAlpha=Math.min(1,Math.max(0,(t-.33)/.22),Math.max(0,(5.20-t)/.18));
     // Positions tirées des captures vidéo : rangées 7, 58, 82 et 122.
-    pixelSerif(ctx,'HYPER FIGHTING',185.5,7,193,18,19);
-    pixelSerif(ctx,'© ZIKAPCOM 2027',185.5,58,264,16,16);
+    pixelSerif(ctx,'HYPER FIGHTING',176,7,193,18,19);
+    pixelSerif(ctx,'© ZIKAPCOM 2027',170,58,264,16,16);
     pixelSerif(ctx,'ZIKAPCOM · MANSLE-LES-FONTAINES · 2027',185.5,82,384,15,16);
-    pixelSerif(ctx,'PRÉSENTÉ PAR ZIKAMANSLE',185.5,122,279,21,21);
+    pixelSerif(ctx,'PRÉSENTÉ PAR ZIKAMANSLE',176,122,279,21,21);
     ctx.save();
     ctx.beginPath();ctx.rect(187,172,126,17);ctx.clip();
     ctx.font='italic bold 31px Georgia,serif';
