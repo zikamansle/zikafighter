@@ -751,9 +751,13 @@
     if(y<136||y>178)return;
     if(y>=136&&y<=178){
       const rows=[145,157,169];
+      const beforeSelection=titleSelection;
       titleSelection=rows.reduce((best,v,i)=>Math.abs(v-y)<Math.abs(rows[best]-y)?i:best,0);
+      if(beforeSelection!==titleSelection)cursorMove();
       if(titleSelection===0&&event.clientX>rect.left+rect.width*.63){
+        const previous=settings.turbo;
         settings.turbo=clamp(settings.turbo+1,0,8);persistSettings();
+        if(previous!==settings.turbo)cursorMove();
         return;
       }
     }
@@ -766,13 +770,16 @@
     const y=(event.clientY-rect.top)/Math.max(1,rect.height)*180;
     if(y<25||x>288&&y>158){closeOptions();return;}
     const rows=[48,64,81,97,151,171];
+    const beforeSelection=optionSelection;
     optionSelection=rows.reduce((best,v,i)=>Math.abs(v-y)<Math.abs(rows[best]-y)?i:best,0);
+    if(beforeSelection!==optionSelection)cursorMove();
     if(optionSelection===5&&x>205){cursorConfirm();playMusicTest();return;}
     adjustOption(x<154?-1:1);
   });
   document.addEventListener('keydown',event=>{
     if(closed||!overlay.isConnected)return;
     if(phase==='title'){
+      const oldSelection=titleSelection,oldTurbo=settings.turbo;
       if(['ArrowUp','KeyW','KeyZ'].includes(event.code)){
         titleSelection=(titleSelection+2)%3;
       }else if(['ArrowDown','KeyS'].includes(event.code)){
@@ -785,8 +792,10 @@
       }else if(['Enter','Space','NumpadEnter'].includes(event.code)){
         activateTitleSelection();
       }else return;
+      if(oldSelection!==titleSelection||oldTurbo!==settings.turbo)cursorMove();
       event.preventDefault();event.stopImmediatePropagation();
     }else if(phase==='options'){
+      const oldSelection=optionSelection;
       if(['Escape','Backspace','KeyB'].includes(event.code)){
         closeOptions();
       }else if(['ArrowUp','KeyW','KeyZ'].includes(event.code)){
@@ -800,12 +809,16 @@
         if(optionSelection===5)playMusicTest();
         else adjustOption(1);
       }else return;
+      if(oldSelection!==optionSelection)cursorMove();
       event.preventDefault();event.stopImmediatePropagation();
     }
   },true);
   // Réactivation du son sur geste explicite, en respectant les règles du navigateur.
   document.addEventListener('pointerdown',()=>{
-    if((phase==='title'||phase==='options')&&titleMusic.paused)playTitleMusic();
+    if(phase==='title'||phase==='options'){
+      prepareMenuSfx();
+      if(titleMusic.paused)playTitleMusic();
+    }
   },{capture:true});
   // Prise en charge des manettes du navigateur : croix, sticks, A et B.
   // Le futur portage émulateur natif sera traité séparément.
@@ -828,14 +841,16 @@
       if(action&&(action!==padHeld||now-padLastActionAt>230)){
         padLastActionAt=now;
         if(phase==='title'){
+          const priorSelection=titleSelection, priorTurbo=settings.turbo;
           if(action==='up')titleSelection=(titleSelection+2)%3;
           else if(action==='down')titleSelection=(titleSelection+1)%3;
           else if(action==='left'&&titleSelection===0){settings.turbo=clamp(settings.turbo-1,0,8);persistSettings();}
           else if(action==='right'&&titleSelection===0){settings.turbo=clamp(settings.turbo+1,0,8);persistSettings();}
           else if(action==='select')activateTitleSelection();
+          if(priorSelection!==titleSelection||priorTurbo!==settings.turbo)cursorMove();
         }else if(phase==='options'){
-          if(action==='up'){optionSelection=(optionSelection+5)%6;renderOptions();}
-          else if(action==='down'){optionSelection=(optionSelection+1)%6;renderOptions();}
+          if(action==='up'){optionSelection=(optionSelection+5)%6;renderOptions();cursorMove();}
+          else if(action==='down'){optionSelection=(optionSelection+1)%6;renderOptions();cursorMove();}
           else if(action==='left')adjustOption(-1);
           else if(action==='right')adjustOption(1);
           else if(action==='back')closeOptions();
