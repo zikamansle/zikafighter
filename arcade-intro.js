@@ -195,7 +195,7 @@
   const mctx=movie.getContext('2d',{alpha:false});
   const titleSprite=new Image();
   titleSprite.src='./assets/zika-fighter-title.png';
-  let titleSpriteCanvas=null, mosaic=null, giantLetters=null, coarseSprites=[];
+  let titleSpriteCanvas=null, mosaic=null, giantLetters=null, coarseSprites=[], legalPinkSprite=null;
   const makeCanvas=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
   function prepareTitleSprite(){
     try{
@@ -223,6 +223,15 @@
         }
       }
       cx.putImageData(pixels,0,0);titleSpriteCanvas=src;
+      // Version magenta du logo officiel pour l'apparition PARTIELLE en bas
+      // de l'écran de crédits SNES, sans police de substitution.
+      legalPinkSprite=makeCanvas(480,240);
+      const pc=legalPinkSprite.getContext('2d');
+      pc.drawImage(src,0,0);
+      pc.globalCompositeOperation='source-in';
+      pc.fillStyle='#d64aa7';
+      pc.fillRect(0,0,480,240);
+      pc.globalCompositeOperation='source-over';
       const sm=makeCanvas(144,72),sc=sm.getContext('2d',{willReadFrequently:true});
       sc.imageSmoothingEnabled=true;sc.imageSmoothingQuality='high';
       sc.drawImage(src,0,0,144,72);
@@ -574,10 +583,13 @@
     pixelSerif(ctx,'PRÉSENTÉ PAR ZIKAMANSLE',176,122,279,21,21);
     ctx.save();
     ctx.beginPath();ctx.rect(187,172,126,17);ctx.clip();
-    ctx.font='italic bold 31px Georgia,serif';
-    ctx.fillStyle='#d348a5';ctx.strokeStyle='#78265c';
-    ctx.lineWidth=2;ctx.translate(206,194);ctx.transform(1,0,-.2,1,0,0);
-    ctx.strokeText('ZIKA',0,0);ctx.fillText('ZIKA',0,0);
+    if(legalPinkSprite){
+      ctx.shadowColor='#542452';ctx.shadowBlur=2;
+      ctx.drawImage(legalPinkSprite,193,172,190,94);
+    }else{
+      ctx.font='italic bold 31px Georgia,serif';
+      ctx.fillStyle='#d348a5';ctx.fillText('ZIKA',206,194);
+    }
     ctx.restore();
     ctx.globalAlpha=1;
   }
