@@ -10,8 +10,8 @@
   overlay.setAttribute('aria-label','Introduction Zika Fighter');
   overlay.innerHTML=[
     '<div class="zf-screen zf-splash" id="zf-splash">',
-      '<div class="zf-publisher">ZIKACOM</div>',
-      '<div class="zf-logo-entrance" aria-hidden="true"></div>',
+      '<div class="zf-zikacom-official" aria-label="ZIKACOM"><svg viewBox="100 385 1200 260" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs><filter id="zf-zikacom-key-base" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 0 0 -0.55"/></filter></defs><image href="./assets/zikacom-splash.png" width="1408" height="1056" filter="url(#zf-zikacom-key-base)"/></svg></div>',
+      '<div class="zf-zikacom-shine" aria-hidden="true"><svg viewBox="100 385 1200 260" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs><filter id="zf-zikacom-key-shine" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 0 0 -0.55"/></filter></defs><image href="./assets/zikacom-splash.png" width="1408" height="1056" filter="url(#zf-zikacom-key-shine)"/></svg></div>',
       '<button type="button" class="zf-unlock-sound" id="zf-unlock-sound" hidden>ACTIVER LE SON POUR LANCER LE JEU</button>',
       '<p id="zf-sound-error" class="zf-sound-error" hidden>Jingle introuvable : assets/zikacom-intro.mp3</p>',
     '</div>',
@@ -61,8 +61,18 @@
   let phase='splash',status='pending',closed=false,raf=0;
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
   function fade(seconds){
-    const t=clamp((seconds-.2)/1.85,0,1);
-    overlay.style.setProperty('--zf-logo-opacity',String(t*t*(3-2*t)));
+    // Vrai écran ZIKACOM du début : noir, logo petit qui apparaît en fondu,
+    // reflet final aligné sur les dernières notes du jingle de 5,695 s.
+    const t=clamp((seconds-.32)/1.55,0,1);
+    const smooth=t*t*(3-2*t);
+    overlay.style.setProperty('--zf-logo-opacity',String(smooth));
+    const shine=document.querySelector('.zf-zikacom-shine');
+    const sparkle=clamp((seconds-4.62)/.50,0,1);
+    if(seconds>=4.62&&seconds<=5.25){
+      const x=-15+130*sparkle;
+      shine.style.opacity=String(Math.sin(Math.PI*clamp((seconds-4.62)/.63,0,1)));
+      shine.style.clipPath='polygon('+x+'% 0%,'+(x+20)+'% 0%,'+(x+4)+'% 100%,'+(x-16)+'% 100%)';
+    }else{shine.style.opacity='0';}
   }
   function finishCinematic(){
     if(phase!=='cinematic'||closed)return;
