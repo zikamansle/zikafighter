@@ -45,3 +45,8 @@
 #zf-intro .zf-splash .zf-logo-entrance{position:absolute;inset:0;background:url("./assets/zikacom-splash.png") center/contain no-repeat;opacity:var(--zf-logo-opacity,0);transform:none;filter:none;clip-path:none;transition:none;pointer-events:none;will-change:opacity}
 #zf-intro:not(.zf-splash-ready) .zf-splash .zf-publisher{opacity:var(--zf-logo-opacity,0)!important;visibility:visible;transform:none;animation:none!important}
 #zf-intro:not(.zf-splash-ready) .zf-splash .zf-logo-entrance{display:none}
+
+/* Le bouton ne s'affiche que si le navigateur bloque explicitement la lecture automatique. */
+#zf-intro .zf-unlock-sound{position:absolute;bottom:9%;left:50%;transform:translateX(-50%);z-index:10;background:#07145d;color:#fff;border:3px solid #ffda25;padding:14px 18px;font:700 clamp(12px,1.6vw,20px) "Courier New",monospace;cursor:pointer;max-width:90%;white-space:normal}
+#zf-intro .zf-unlock-sound[hidden],#zf-intro .zf-sound-error[hidden]{display:none!important}
+#zf-intro .zf-sound-error{position:absolute;bottom:1%;padding:5px;background:#500;color:#fff;font:700 13px monospace}
