@@ -167,3 +167,9 @@
 #zf-intro .zf-zikacom-official{filter:brightness(calc(1 + var(--zf-palette-pulse,0)*.65)) saturate(calc(1 - var(--zf-palette-pulse,0)*.32))!important}
 #zf-intro .zf-zikacom-shine{filter:brightness(1.8) saturate(.25)!important;mix-blend-mode:screen!important}
 #zf-intro.zf-zikapcom-fallback .zf-zikacom-official::after{content:'ZIKAPCOM';position:absolute;inset:0;color:#f7d53c;text-shadow:2px 2px #143aaf,-2px -2px #143aaf;font:bold clamp(18px,3.1vw,55px)/1.4 Georgia,serif;text-align:center}
+
+/* Palette 16 bits sur le logo ZIKAPCOM : rendu pixel, reflets dans les ors uniquement. */
+#zf-intro .zf-palette-canvas{display:block;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+#zf-intro .zf-palette-canvas + img{display:none}
+#zf-intro.zf-palette-ready .zf-zikacom-official{filter:none!important}
+#zf-intro.zf-palette-ready .zf-zikacom-shine{display:none!important}
