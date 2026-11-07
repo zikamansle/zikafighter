@@ -79,3 +79,13 @@
   0%,24%,29%,56%,61%,94%{opacity:0}
   25%,28%,57%,60%,95%,100%{opacity:1}
 }
+
+/* Teinte visible même lorsque le PNG validé couvre la totalité de l'écran. */
+#zf-intro .zf-title-flash{mix-blend-mode:screen;background:#fff}
+#zf-intro.zf-title-ready .zf-title-flash{animation:zf-title-color-strobe 2.8s steps(1,end) infinite}
+@keyframes zf-title-color-strobe{
+  0%,24%,29%,56%,61%,94%{opacity:0;background:transparent}
+  25%,28%{opacity:.16;background:#5daaff}
+  57%,60%{opacity:.24;background:#71ff38}
+  95%,100%{opacity:.13;background:#fff}
+}
