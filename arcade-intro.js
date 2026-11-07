@@ -70,9 +70,9 @@
     const departure=1-smooth((seconds-3.15)/.67);
     overlay.style.setProperty('--zf-logo-opacity',String(entrance*departure));
     const shine=document.querySelector('.zf-zikacom-shine');
-    // Accent fort du jingle à ~1,80 s (analyse du fichier audio).
-    // Le MP3 contient un silence final : ne jamais placer l'éclat à 4 s.
-    const start=1.62, end=2.10;
+    // Dernière note / accord final à partir d'environ 2,5 s, puis décroissance
+    // sonore jusqu'à 3,8 s. Brillance sur l'attaque de cette note, pas le silence.
+    const start=2.46, end=3.03;
     if(seconds>=start && seconds<=end){
       const t=(seconds-start)/(end-start);
       // Référence CAPCOM : ligne lumineuse horizontale qui REMONTE
