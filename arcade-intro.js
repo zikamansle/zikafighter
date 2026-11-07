@@ -246,7 +246,8 @@
     if(!titleCtx)return;
     const ctx=titleCtx,w=320,h=180;
     ctx.setTransform(2,0,0,2,0,0);
-    ctx.imageSmoothingEnabled=false;
+    ctx.imageSmoothingEnabled=true;
+    ctx.imageSmoothingQuality='high';
     ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
     let band=t<6.55?'#225ab4':t<6.93?'#66c83e':'#000';
     ctx.fillStyle=band;ctx.fillRect(15,15,290,89);
@@ -307,7 +308,7 @@
     if(t<2.19){
       const p=Math.min(1,(t-1.24)/.95);
       const x=32-670*p;
-      if(giantLetters)ctx.drawImage(giantLetters,x,16,960,146);
+      if(giantLetters)ctx.drawImage(giantLetters,0,0,345,150,x,16,960,146);
       else paint(sprite,160,90,900,450);
       return;
     }
@@ -338,6 +339,8 @@
     }
     // 3.22–3.48 : stabilisation progressive du logo, toujours sur bande bleue.
     const p=ease((t-3.22)/.26);
+    ctx.imageSmoothingEnabled=true;
+    ctx.imageSmoothingQuality='high';
     paint(sprite,160,67,222+14*p,110+6*p,-.19*(1-p),.8+.2*p);
     if(t>=3.30){
       ctx.textAlign='center';ctx.fillStyle='#f0a45b';
