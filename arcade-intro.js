@@ -19,6 +19,11 @@
     '</div>'
   ].join('');
   document.body.appendChild(overlay);
+  for (const [filename, readyClass] of [['zika-fighter-title.png','zf-title-ready'], ['zikacom-splash.png','zf-splash-ready']]) {
+    const image = new Image();
+    image.onload = () => { if (image.naturalWidth > 0) overlay.classList.add(readyClass); };
+    image.src = './assets/' + filename;
+  }
   const splash = document.getElementById('zf-splash');
   const title = document.getElementById('zf-title');
   const button = document.getElementById('zf-start');
