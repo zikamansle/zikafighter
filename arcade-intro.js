@@ -23,7 +23,11 @@
     '</div>',
     '<div class="zf-screen zf-title" id="zf-title" hidden>',
       '<canvas id="zf-title-canvas" width="640" height="360" aria-hidden="true"></canvas>',
-      '<button type="button" class="zf-start" id="zf-start" aria-label="Commencer Zika Fighter">COMMENCER</button>',
+      '<button type="button" class="zf-start" id="zf-start" aria-label="Menu du jeu">MENU</button>',
+    '</div>',
+    '<div class="zf-screen zf-options" id="zf-options" hidden aria-label="Option Mode">',
+      '<canvas id="zf-options-canvas" width="640" height="360" aria-label="Options de Zika Fighter"></canvas>',
+      '<button type="button" class="zf-options-back" id="zf-options-back" aria-label="Retour aux titres">RETOUR</button>',
     '</div>'
   ].join('');
   document.body.appendChild(overlay);
@@ -115,6 +119,10 @@
   const legalCtx=legalCanvas.getContext('2d',{alpha:false});
   const splash=document.getElementById('zf-splash');
   const title=document.getElementById('zf-title');
+  const optionsScreen=document.getElementById('zf-options');
+  const optionsCanvas=document.getElementById('zf-options-canvas');
+  const optionsCtx=optionsCanvas.getContext('2d',{alpha:false});
+  const optionsBack=document.getElementById('zf-options-back');
   const titleCanvas=document.getElementById('zf-title-canvas');
   const titleCtx=titleCanvas.getContext('2d',{alpha:false});
   let titleFrame=0;
