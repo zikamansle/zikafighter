@@ -1,0 +1,26 @@
+/* Zika Fighter - accueil arcade. Aucune dépendance externe. */
+#zf-intro{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;background:#0810a8;color:#fff;font-family:Georgia,"Times New Roman",serif;user-select:none}
+#zf-intro[hidden]{display:none!important}
+#zf-intro *{box-sizing:border-box}
+#zf-intro .zf-screen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;overflow:hidden;text-align:center}
+#zf-intro .zf-screen[hidden]{display:none!important}
+#zf-intro .zf-splash{background:radial-gradient(ellipse at 50% 50%,#153fff 0%,#0712a9 55%,#03045d 100%);animation:zf-flash .6s ease-out}
+#zf-intro .zf-publisher{font-family:Georgia,serif;font-size:clamp(40px,10vw,138px);font-weight:1000;letter-spacing:-.075em;font-style:normal;color:#ffe200;-webkit-text-stroke:clamp(1px,.4vw,5px) #fff;text-shadow:4px 5px #10277d,8px 9px #050b34;transform:scaleX(1.05);max-width:93vw;line-height:1.1;animation:zf-publisher 1.1s cubic-bezier(.17,.67,.29,1.2) both}
+#zf-intro .zf-title{background:radial-gradient(ellipse at 50% 34%,#092df0 0%,#001098 55%,#020450 100%)}
+#zf-intro .zf-title:before{content:"";position:absolute;inset:0;opacity:.23;background:repeating-linear-gradient(0deg,#0000 0px,#0000 3px,#000 4px);pointer-events:none}
+#zf-intro .zf-mark{position:relative;width:min(87vw,1040px);margin:-8vh auto 1vh;line-height:.77;transform:skew(-12deg) rotate(-5deg);filter:drop-shadow(11px 14px 0 #040a35);animation:zf-mark-in .65s cubic-bezier(.2,.8,.25,1.3) both}
+#zf-intro .zf-mark span{display:block;font-weight:1000;font-family:Impact,"Arial Black",sans-serif;letter-spacing:-.06em;font-style:italic;font-size:clamp(76px,14vw,190px);background:linear-gradient(180deg,#ff267f 0%,#ff5c59 24%,#ffd349 58%,#ffe614 90%);color:#ffd520;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;-webkit-text-stroke:clamp(1px,.15vw,2px) #ffcf0b;text-shadow:3px 5px 0 #141029}
+#zf-intro .zf-mark span:last-child{font-size:clamp(69px,13vw,174px);margin-left:7%;margin-top:.06em}
+#zf-intro .zf-press{position:relative;font-family:"Courier New",monospace;font-weight:900;font-size:clamp(19px,3.2vw,40px);letter-spacing:.09em;color:white;text-shadow:3px 3px 0 #e7333b;animation:zf-blink 1.15s steps(1) infinite;margin-top:7vh}
+#zf-intro .zf-copyright{position:absolute;bottom:5%;left:3%;right:3%;font:700 clamp(9px,1.5vw,15px) "Courier New",monospace;letter-spacing:.08em;line-height:1.65;color:#e3e5ff}
+#zf-intro .zf-credits{position:absolute;bottom:2%;right:3%;font:700 12px "Courier New",monospace}
+#zf-intro .zf-start{position:absolute;inset:0;width:100%;border:0;color:transparent;background:transparent;cursor:pointer}
+#zf-intro .zf-start:focus-visible{outline:5px solid #fff;outline-offset:-8px}
+#zf-intro .zf-fade{animation:zf-out .38s ease-in both;pointer-events:none}
+@keyframes zf-publisher{from{transform:scale(3);opacity:0;filter:blur(15px)}to{transform:scale(1.05);opacity:1;filter:none}}
+@keyframes zf-flash{from{filter:brightness(4)}to{filter:brightness(1)}}
+@keyframes zf-mark-in{from{opacity:0;transform:skew(-12deg) rotate(-5deg) scale(2)}to{opacity:1;transform:skew(-12deg) rotate(-5deg) scale(1)}}
+@keyframes zf-blink{50%{opacity:0}}
+@keyframes zf-out{to{opacity:0}}
+@media(max-width:650px){#zf-intro .zf-mark{margin-top:-2vh}#zf-intro .zf-press{margin-top:9vh}}
+@media(prefers-reduced-motion:reduce){#zf-intro *,#zf-intro:before{animation-duration:.01ms!important;animation-iteration-count:1!important}}
