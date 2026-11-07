@@ -166,24 +166,69 @@
   // Déplacement : bruitage WAV fourni par l'utilisateur, compressé en MP3 pour le web.
   const cursorMoveSound=new Audio('data:audio/mpeg;base64,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');
   cursorMoveSound.preload='auto';
-  cursorMoveSound.volume=.82;
+  cursorMoveSound.volume=1;
+  cursorMoveSound.load();
+  // Amplify the original menu WAV effects: both are far quieter than the music.
+  let menuSfxContext=null,menuSfxReady=false;
+  window.ZikaMenuAudioState={movePlays:0,confirmPlays:0,lastError:null};
+  function prepareMenuSfx(){
+    if(!menuSfxReady){
+      const AC=window.AudioContext||window.webkitAudioContext;
+      if(AC){
+        try{
+          menuSfxContext=new AC();
+          const connect=(element,gain)=>{
+            const source=menuSfxContext.createMediaElementSource(element);
+            const amp=menuSfxContext.createGain();
+            amp.gain.value=gain;
+            source.connect(amp);amp.connect(menuSfxContext.destination);
+          };
+          connect(cursorMoveSound,4.3);
+          connect(cursorConfirmSound,3.3);
+          menuSfxReady=true;
+        }catch(e){
+          console.warn('Zika Fighter : amplification indisponible',e);
+          window.ZikaMenuAudioState.lastError=String(e);
+        }
+      }
+    }
+    if(menuSfxContext&&menuSfxContext.state==='suspended'){
+      const p=menuSfxContext.resume();
+      if(p&&p.catch)p.catch(e=>{window.ZikaMenuAudioState.lastError=String(e);});
+    }
+  }
   let cursorSoundAt=0;
   function cursorMove(){
     const now=performance.now();
     if(now-cursorSoundAt<55)return;
     cursorSoundAt=now;
-    try{cursorMoveSound.pause();cursorMoveSound.currentTime=0;
-      const p=cursorMoveSound.play();if(p&&p.catch)p.catch(()=>{});
-    }catch(_){}
+    prepareMenuSfx();
+    try{
+      cursorMoveSound.pause();cursorMoveSound.currentTime=0;
+      const p=cursorMoveSound.play();
+      window.ZikaMenuAudioState.movePlays++;
+      if(p&&p.catch)p.catch(e=>{
+        window.ZikaMenuAudioState.lastError=String(e);
+        console.warn('Zika Fighter : déplacement audio bloqué',e);
+      });
+    }catch(e){window.ZikaMenuAudioState.lastError=String(e);}
   }
   // Validation fournie par l'utilisateur (WAV original converti en MP3 compact).
   const cursorConfirmSound=new Audio('data:audio/mpeg;base64,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');
   cursorConfirmSound.preload='auto';
-  cursorConfirmSound.volume=.88;
+  cursorConfirmSound.volume=1;
+  cursorConfirmSound.load();
   function cursorConfirm(){
-    try{cursorConfirmSound.pause();cursorConfirmSound.currentTime=0;
-      const p=cursorConfirmSound.play();if(p&&p.catch)p.catch(()=>{});
-    }catch(_){}
+    prepareMenuSfx();
+    try{
+      cursorConfirmSound.pause();cursorConfirmSound.currentTime=0;
+      const p=cursorConfirmSound.play();
+      window.ZikaMenuAudioState.confirmPlays++;
+      if(p&&p.catch)p.catch(e=>{
+        window.ZikaMenuAudioState.lastError=String(e);
+        console.warn('Zika Fighter : validation audio bloquée',e);
+      });
+    }catch(e){window.ZikaMenuAudioState.lastError=String(e);}
   }
   let lastTitleNav=null,lastOptionsNav=null;
   const titleMusic=new Audio('./assets/zika-title-theme.mp3');
@@ -306,11 +351,6 @@
   // Les mentions du menu n'apparaissent qu'après le logo (vers 6.30).
   function renderTitleFrame(t){
     if(!titleCtx)return;
-    if(t>=6.28){
-      const signature=titleSelection+':'+settings.turbo;
-      if(lastTitleNav!==null&&signature!==lastTitleNav)cursorMove();
-      lastTitleNav=signature;
-    }
     const ctx=titleCtx,w=320,h=180;
     ctx.setTransform(2,0,0,2,0,0);
     ctx.imageSmoothingEnabled=true;
@@ -373,9 +413,6 @@
   function renderOptions(){
     if(!optionsCtx)return;
     const ctx=optionsCtx;
-    const navState=optionSelection+':'+JSON.stringify(settings);
-    if(lastOptionsNav!==null&&navState!==lastOptionsNav)cursorMove();
-    lastOptionsNav=navState;
     ctx.setTransform(2,0,0,2,0,0);
     ctx.imageSmoothingEnabled=true;
     ctx.imageSmoothingQuality='high';
@@ -427,6 +464,7 @@
     if(p&&p.catch)p.catch(()=>{});
   }
   function adjustOption(direction){
+    const before=JSON.stringify(settings);
     const d=direction<0?-1:1;
     switch(optionSelection){
       case 0:settings.difficulty=clamp(settings.difficulty+d,1,8);break;
@@ -436,6 +474,7 @@
       case 4:settings.stereo=!settings.stereo;break;
       case 5:settings.musicTest=clamp(settings.musicTest+d,0,99);break;
     }
+    if(before!==JSON.stringify(settings))cursorMove();
     persistSettings();renderOptions();
   }
   function openOptions(){
