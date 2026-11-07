@@ -232,6 +232,7 @@
       pc.fillStyle='#d64aa7';
       pc.fillRect(0,0,480,240);
       pc.globalCompositeOperation='source-over';
+      if(phase==='options')renderOptions();
       const sm=makeCanvas(144,72),sc=sm.getContext('2d',{willReadFrequently:true});
       sc.imageSmoothingEnabled=true;sc.imageSmoothingQuality='high';
       sc.drawImage(src,0,0,144,72);
@@ -772,7 +773,19 @@
   }
   requestAnimationFrame(pollArcadePad);
   fade(0);
-  legalFrame=requestAnimationFrame(legalTick);
+  // Paramètres de prévisualisation destinés aux tests graphiques uniquement.
+  // Sans paramètre, l'introduction complète démarre normalement.
+  const previewScreen=new URLSearchParams(location.search).get('screen');
+  if(previewScreen==='options'){
+    legal.hidden=true;optionsScreen.hidden=false;phase='options';
+    renderOptions();
+  }else if(previewScreen==='title'){
+    legal.hidden=true;title.hidden=false;phase='title';
+    titleVisualStartedAt=performance.now()-7000;
+    titleFrame=requestAnimationFrame(drawTitleFrame);
+  }else{
+    legalFrame=requestAnimationFrame(legalTick);
+  }
   // Réessayer automatiquement au retour sur l'application (sans remplacer l'interaction exigée par certains navigateurs).
   document.addEventListener('visibilitychange',()=>{
     if(!document.hidden && phase==='splash' && status==='blocked')attemptPlayback();
