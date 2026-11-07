@@ -10,7 +10,7 @@
   overlay.setAttribute('aria-label','Introduction Zika Fighter');
   overlay.innerHTML=[
     '<div class="zf-screen zf-legal" id="zf-legal" aria-label="Crédits de lancement ZIKAPCOM">',
-      '<canvas id="zf-legal-canvas" width="640" height="480" aria-hidden="true"></canvas>',
+      '<canvas id="zf-legal-canvas" width="1280" height="960" aria-hidden="true"></canvas>',
     '</div>',
     '<div class="zf-screen zf-splash" id="zf-splash" hidden>',
       '<div class="zf-zikacom-official" aria-label="ZIKAPCOM"><img id="zf-zikapcom-logo" src="./assets/zikapcom-logo.png" alt="ZIKAPCOM"></div>',
@@ -26,7 +26,7 @@
       '<button type="button" class="zf-start" id="zf-start" aria-label="Menu du jeu">MENU</button>',
     '</div>',
     '<div class="zf-screen zf-options" id="zf-options" hidden aria-label="Option Mode">',
-      '<canvas id="zf-options-canvas" width="640" height="480" aria-label="Options de Zika Fighter"></canvas>',
+      '<canvas id="zf-options-canvas" width="1280" height="960" aria-label="Options de Zika Fighter"></canvas>',
       '<button type="button" class="zf-options-back" id="zf-options-back" aria-label="Retour aux titres">RETOUR</button>',
     '</div>'
   ].join('');
@@ -132,7 +132,7 @@
   const titleCanvas=document.getElementById('zf-title-canvas');
   const titleCtx=titleCanvas.getContext('2d',{alpha:false});
   const OPTIONS_STORAGE_KEY='zikafighter-options-v2';
-  const defaultSettings={difficulty:4,timeLimit:true,players:1,controlPreset:0,stereo:true,musicTest:10,turbo:3};
+  const defaultSettings={difficulty:4,timeLimit:true,players:1,controlPreset:0,stereo:true,musicTest:10,seTest:0,turbo:3};
   let settings={...defaultSettings};
   try{
     const saved=JSON.parse(localStorage.getItem(OPTIONS_STORAGE_KEY)||'null');
@@ -410,46 +410,79 @@
     ctx.fillStyle=color;ctx.fillText(text,x,y);
     ctx.restore();
   }
+  // High-resolution native Canvas: no 260x195 raster stretched to full-screen.
+  // Pixel-era serif styling, precise positions and fully dynamic values.
   function renderOptions(){
     if(!optionsCtx)return;
     const ctx=optionsCtx;
-    ctx.setTransform(2,0,0,2,0,0);
-    ctx.imageSmoothingEnabled=true;
-    ctx.imageSmoothingQuality='high';
+    ctx.setTransform(4,0,0,4,0,0);
+    ctx.clearRect(0,0,320,240);
     ctx.fillStyle='#000';ctx.fillRect(0,0,320,240);
-    if(approvedOptions.complete&&approvedOptions.naturalWidth){
-      ctx.drawImage(approvedOptions,0,0,320,240);
-      // Masquer la position initiale du curseur, puis redessiner le Z extrait
-      // de l'illustration validée à la ligne effectivement sélectionnée.
-      ctx.fillStyle='#000';ctx.fillRect(14,38,22,17);
-      const positions=[47,64,81,98,170,190];
-      const y=positions[optionSelection]||47;
-      ctx.drawImage(approvedOptions,15,39,19,17,14,y-10,19,17);
-      // Régler la difficulté en étoiles ; zones de valeurs mises à jour en surimpression.
-      if(settings.difficulty!==6){
-        ctx.fillStyle='rgba(0,0,0,.96)';ctx.fillRect(140,47,88,14);
-        menuText(ctx,'★'.repeat(settings.difficulty),145,58,11,'#d7cf31');
-      }
-      if(settings.timeLimit!==true){
-        ctx.fillStyle='#000';ctx.fillRect(143,67,35,12);
-        menuText(ctx,'NO',147,78,11,'#d5c63d');
-      }
-      if(settings.players===2){
-        ctx.fillStyle='#000';ctx.fillRect(130,89,105,10);
-        menuText(ctx,'2PLAYER',161,98,11,'#d7cb40','center');
-      }
-      if(!settings.stereo){
-        ctx.fillStyle='#000';ctx.fillRect(140,172,150,16);
-        menuText(ctx,'MONAURAL',210,183,11,'#d8d13d','center');
-      }
-      if(settings.musicTest!==10){
-        ctx.fillStyle='#000';ctx.fillRect(138,194,35,14);
-        menuText(ctx,String(settings.musicTest).padStart(2,'0'),150,205,11,'#d6cb39','center');
-      }
-    }else{
-      menuText(ctx,'OPTION MODE',160,35,20,'#518ae8','center');
-      menuText(ctx,'DIFFICULTY / TIME LIMIT / CONFIG / MUSIC TEST',160,110,12,'#f1dec8','center');
-    }
+    ctx.textBaseline='alphabetic';
+    // Large dark Zika Fighter watermark behind the settings.
+    ctx.save();
+    ctx.translate(160,123);ctx.rotate(-.12);
+    ctx.font='italic 900 69px Impact,"Arial Black",sans-serif';
+    ctx.textAlign='center';ctx.lineJoin='round';
+    ctx.strokeStyle='#111';ctx.lineWidth=3;
+    ctx.fillStyle='#464646';
+    ctx.strokeText('ZIKA',-1,-15);ctx.fillText('ZIKA',-1,-15);
+    ctx.font='italic 900 73px Impact,"Arial Black",sans-serif';
+    ctx.strokeText('FIGHTER',2,42);ctx.fillText('FIGHTER',2,42);
+    ctx.restore();
+    const txt=(value,x,y,size=11,color='#e3e2df',align='left')=>{
+      ctx.save();ctx.font='900 '+size+'px Georgia,"Times New Roman",serif';
+      ctx.textAlign=align;ctx.lineJoin='round';ctx.lineWidth=.5;
+      ctx.strokeStyle='#16111b';ctx.strokeText(value,x+.4,y+.5);
+      ctx.fillStyle=color;ctx.fillText(value,x,y);
+      ctx.restore();
+    };
+    // Graffiti-style standalone Z cursor, white with violet edging.
+    const z=(x,y)=>{
+      ctx.save();ctx.translate(x,y);
+      ctx.beginPath();
+      ctx.moveTo(1,1);ctx.bezierCurveTo(6,-1,17,-2,19,-4);
+      ctx.lineTo(13,1);ctx.lineTo(7,10);
+      ctx.bezierCurveTo(12,8,16,9,19,7);
+      ctx.lineTo(16,12);ctx.bezierCurveTo(10,17,3,15,-1,18);
+      ctx.lineTo(5,13);ctx.lineTo(13,3);
+      ctx.bezierCurveTo(8,4,4,6,-1,6);ctx.closePath();
+      ctx.strokeStyle='#833783';ctx.lineWidth=2.1;ctx.lineJoin='round';
+      ctx.stroke();ctx.fillStyle='#fff';ctx.fill();
+      ctx.restore();
+    };
+    txt('OPTION MODE',160,26,20,'#66a4ee','center');
+    // Difficulty
+    txt('DIFFICULTY',26,52,12,optionSelection===0?'#e23a43':'#e9e9eb');
+    txt('EASY',144,40,12);txt('HARD',286,40,12,'#e9e9eb','right');
+    for(let i=0;i<8;i++)txt('★',161+i*14,55,14,i<settings.difficulty?'#f1e52e':'#777c85','center');
+    // Clock, player configuration.
+    txt('TIME LIMIT',26,77,12);
+    txt('YES',158,77,12,settings.timeLimit?'#f1e527':'#c4c4c6','center');
+    txt('NO',270,77,12,!settings.timeLimit?'#f1e527':'#c4c4c6','center');
+    txt('CONFIG.',26,98,12);
+    txt('1PLAYER',162,98,12,settings.players===1?'#f1e527':'#e2e2e2','center');
+    txt('2PLAYER',276,98,12,settings.players===2?'#f1e527':'#e2e2e2','center');
+    txt('CPS FIGHTER',26,120,12);
+    txt('SET',165,120,12,'#f1e527','center');
+    txt('SET',270,120,12,'#f1e527','center');
+    // SNES six-button assignment as real selectable settings.
+    const mapping=['Y','X','L','B','A','R'];
+    ['L. PUNCH','M. PUNCH','H. PUNCH','L. KICK','M. KICK','H. KICK'].forEach((label,i)=>{
+      const yy=133+i*10;
+      txt(label,45,yy,10,'#dedede');
+      txt(mapping[(i+settings.controlPreset*2)%6],167,yy,10,'#e7e7e7','center');
+      txt(mapping[i],271,yy,10,'#e7e7e7','center');
+    });
+    txt('HYPER FIGHTING',23,201,11);
+    txt('STEREO',170,201,11,settings.stereo?'#f0e52a':'#dad9db','center');
+    txt('MONAURAL',292,201,11,!settings.stereo?'#f0e52a':'#dad9db','right');
+    txt('MUSIC TEST',27,220,12);
+    txt(String(settings.musicTest).padStart(2,'0'),167,220,12,'#f2e72e','center');
+    txt('S.E. TEST',27,237,12);
+    txt(String(settings.seTest??0).padStart(2,'0'),167,237,12,'#f2e72e','center');
+    const cursorY=[52,77,98,120,201,220,237][optionSelection]||52;
+    z(5,cursorY-12);
   }
   function playMusicTest(){
     if(musicTestAudio){musicTestAudio.pause();musicTestAudio=null;}
@@ -473,6 +506,7 @@
       case 3:settings.controlPreset=(settings.controlPreset+d+3)%3;break;
       case 4:settings.stereo=!settings.stereo;break;
       case 5:settings.musicTest=clamp(settings.musicTest+d,0,99);break;
+      case 6:settings.seTest=clamp(settings.seTest+d,0,99);break;
     }
     if(before!==JSON.stringify(settings))cursorMove();
     persistSettings();renderOptions();
@@ -645,29 +679,42 @@
     ctx.globalAlpha=1;ctx.drawImage(glyph.colored,left,y,glyphWidth,h);
     ctx.restore();
   }
+  // Crisp vector text at 1280x960, in the same 4:3 frame as the reference.
   function drawLegalFrame(t){
     if(!legalCtx)return;
     const ctx=legalCtx;
-    ctx.setTransform(1,0,0,1,0,0);
-    ctx.imageSmoothingEnabled=true;
-    ctx.imageSmoothingQuality='high';
-    ctx.fillStyle=t<.19?'#1009ac':'#000';
-    ctx.fillRect(0,0,640,480);
+    ctx.setTransform(4,0,0,4,0,0);
+    ctx.clearRect(0,0,320,240);
+    ctx.fillStyle=t<.19?'#110a9e':'#000';
+    ctx.fillRect(0,0,320,240);
     if(t<.33)return;
     const opacity=Math.min(1,Math.max(0,(t-.33)/.22),Math.max(0,(5.2-t)/.18));
     ctx.globalAlpha=opacity;
-    if(approvedLegal.complete&&approvedLegal.naturalWidth){
-      ctx.drawImage(approvedLegal,0,0,640,480);
-    }else{
-      ctx.fillStyle='#f4aa47';ctx.textAlign='center';
-      ctx.font='bold 36px Georgia,serif';
-      ctx.fillText('ZIKA FIGHTER TURBO',320,55);
-      ctx.fillText('HYPER FIGHTING',320,125);
-      ctx.font='bold 24px Georgia,serif';
-      ctx.fillText('© ZIKAPCOM 2027',320,195);
-      ctx.fillText('© ZIKAMANSLE 2027',320,235);
-      ctx.fillText('PRÉSENTÉ PAR ZIKAMANSLE',320,310);
-    }
+    const write=(value,y,size,color='#eaae37')=>{
+      ctx.save();
+      ctx.textAlign='center';ctx.textBaseline='alphabetic';
+      ctx.font='900 '+size+'px Georgia,"Times New Roman",serif';
+      ctx.lineJoin='round';ctx.strokeStyle='#1b0b22';ctx.lineWidth=1;
+      ctx.strokeText(value,160,y+1);
+      ctx.fillStyle=color;ctx.fillText(value,160,y);
+      ctx.restore();
+    };
+    write('ZIKA FIGHTER TURBO',39,18,'#f2c247');
+    write('HYPER FIGHTING',65,13,'#e99335');
+    write('© ZIKAPCOM 2027',101,13);
+    write('© ZIKAMANSLE 2027',119,13);
+    write('PRÉSENTÉ PAR ZIKAMANSLE',154,15,'#ffca3b');
+    ctx.save();
+    ctx.beginPath();ctx.rect(182,170,138,70);ctx.clip();
+    ctx.textAlign='center';ctx.translate(247,220);ctx.rotate(-.11);
+    ctx.font='italic 900 36px Impact,"Arial Black",sans-serif';
+    ctx.lineWidth=2;ctx.strokeStyle='#200925';ctx.strokeText('ZIKA',0,-18);
+    const gradient=ctx.createLinearGradient(0,-40,0,30);
+    gradient.addColorStop(0,'#ff52ac');gradient.addColorStop(1,'#cc2d9a');
+    ctx.fillStyle=gradient;ctx.fillText('ZIKA',0,-18);
+    ctx.font='italic 900 34px Impact,"Arial Black",sans-serif';
+    ctx.strokeText('FIGHTER',0,17);ctx.fillText('FIGHTER',0,17);
+    ctx.restore();
     ctx.globalAlpha=1;
   }
   function legalTick(now){
@@ -767,9 +814,9 @@
     if(phase!=='options')return;
     const rect=optionsCanvas.getBoundingClientRect();
     const x=(event.clientX-rect.left)/Math.max(1,rect.width)*320;
-    const y=(event.clientY-rect.top)/Math.max(1,rect.height)*180;
-    if(y<25||x>288&&y>158){closeOptions();return;}
-    const rows=[48,64,81,97,151,171];
+    const y=(event.clientY-rect.top)/Math.max(1,rect.height)*240;
+    if(y<15||x>300&&y>222){closeOptions();return;}
+    const rows=[52,77,98,120,201,220,237];
     const beforeSelection=optionSelection;
     optionSelection=rows.reduce((best,v,i)=>Math.abs(v-y)<Math.abs(rows[best]-y)?i:best,0);
     if(beforeSelection!==optionSelection)cursorMove();
@@ -799,9 +846,9 @@
       if(['Escape','Backspace','KeyB'].includes(event.code)){
         closeOptions();
       }else if(['ArrowUp','KeyW','KeyZ'].includes(event.code)){
-        optionSelection=(optionSelection+5)%6;renderOptions();
+        optionSelection=(optionSelection+6)%7;renderOptions();
       }else if(['ArrowDown','KeyS'].includes(event.code)){
-        optionSelection=(optionSelection+1)%6;renderOptions();
+        optionSelection=(optionSelection+1)%7;renderOptions();
       }else if(['ArrowLeft','ArrowRight','KeyA','KeyD'].includes(event.code)){
         adjustOption(['ArrowLeft','KeyA'].includes(event.code)?-1:1);
       }else if(['Enter','Space','NumpadEnter'].includes(event.code)){
