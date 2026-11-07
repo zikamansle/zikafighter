@@ -385,7 +385,9 @@
     // Les autres indices peuvent être préparés sans lecture fictive.
     if(settings.musicTest!==1&&settings.musicTest!==10)return;
     const src=settings.musicTest===1?'./assets/zikacom-intro.mp3':'./assets/zika-title-theme.mp3';
+    titleMusic.pause();
     musicTestAudio=new Audio(src);musicTestAudio.volume=.7;
+    musicTestAudio.addEventListener('ended',()=>{if(phase==='options')playTitleMusic();},{once:true});
     const p=musicTestAudio.play();
     if(p&&p.catch)p.catch(()=>{});
   }
@@ -413,6 +415,7 @@
     if(phase!=='options')return;
     if(musicTestAudio){musicTestAudio.pause();musicTestAudio=null;}
     optionsScreen.hidden=true;title.hidden=false;phase='title';
+    if(titleMusic.paused)playTitleMusic();
     // Le titre reprend sur son menu stable, pas au début de la rotation.
     titleVisualStartedAt=performance.now()-7000;
     titleFrame=requestAnimationFrame(drawTitleFrame);
@@ -668,6 +671,9 @@
     if(phase!=='title')return;
     const rect=titleCanvas.getBoundingClientRect();
     const y=(event.clientY-rect.top)/Math.max(1,rect.height)*180;
+    // Un clic sur le logo n'envoie pas directement au combat :
+    // il faut sélectionner l'une des trois lignes du menu.
+    if(y<136||y>178)return;
     if(y>=136&&y<=178){
       const rows=[145,157,169];
       titleSelection=rows.reduce((best,v,i)=>Math.abs(v-y)<Math.abs(rows[best]-y)?i:best,0);
