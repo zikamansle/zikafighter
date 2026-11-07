@@ -210,3 +210,13 @@
 #zf-intro .zf-legal-mark{position:absolute;bottom:-8%;width:100%;
   font:bold italic clamp(25px,5vw,58px) Impact,sans-serif;color:#d54c9b;
   transform:skew(-12deg);clip-path:inset(0 0 76% 0);opacity:.92}
+
+/* Écran titre animé d'après la capture : vrai bandeau bleu/noir/vert,
+   logo approuvé sans ancien ZIKACOM, PUSH START et musique continus. */
+#zf-intro .zf-title,#zf-intro.zf-title-ready .zf-title{
+ background:#000!important;animation:none!important;
+}
+#zf-intro #zf-title-canvas{
+ width:100%;height:100%;display:block;object-fit:contain;
+ image-rendering:auto;pointer-events:none;
+}
