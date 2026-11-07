@@ -1,14 +1,17 @@
-/* Zika Fighter - séquence d'accueil originale, compatible avec la démo existante. */
+/* Zika Fighter - intro ZIKACOM synchronisée avec le son fourni par l'utilisateur. */
 (() => {
   'use strict';
   if (document.getElementById('zf-intro')) return;
+  const INTRO_AUDIO = './assets/zikacom-intro.mp3';
+  const FALLBACK_MS = 5695;
   const overlay = document.createElement('div');
   overlay.id = 'zf-intro';
-  overlay.setAttribute('role', 'dialog');
-  overlay.setAttribute('aria-label', 'Introduction Zika Fighter');
+  overlay.setAttribute('role','dialog');
+  overlay.setAttribute('aria-label','Introduction Zika Fighter');
   overlay.innerHTML = [
     '<div class="zf-screen zf-splash" id="zf-splash">',
-    '<div class="zf-publisher">ZIKACOM<sup style="font-size:.22em;vertical-align:top;letter-spacing:0">®</sup></div>',
+    '<div class="zf-publisher">ZIKACOM</div>',
+    '<div class="zf-play-prompt" id="zf-play-prompt">APPUYEZ SUR START POUR ÉCOUTER LE JINGLE</div>',
     '</div>',
     '<div class="zf-screen zf-title" id="zf-title" hidden>',
     '<div class="zf-mark" aria-label="Zika Fighter"><span>ZIKA</span><span>FIGHTER</span></div>',
@@ -20,96 +23,78 @@
     '</div>'
   ].join('');
   document.body.appendChild(overlay);
-  for (const [filename, readyClass] of [['zika-fighter-title.png','zf-title-ready'], ['zikacom-splash.png','zf-splash-ready']]) {
-    const image = new Image();
-    image.onload = () => { if (image.naturalWidth > 0) overlay.classList.add(readyClass); };
-    image.src = './assets/' + filename;
+  for (const [filename,readyClass] of [
+    ['zika-fighter-title.png','zf-title-ready'],
+    ['zikacom-splash.png','zf-splash-ready']
+  ]) {
+    const img = new Image();
+    img.onload=()=>{if(img.naturalWidth>0)overlay.classList.add(readyClass);};
+    img.src='./assets/'+filename;
   }
-  const splash = document.getElementById('zf-splash');
-  const title = document.getElementById('zf-title');
-  const button = document.getElementById('zf-start');
-  const soundButton = document.getElementById('zf-audio');
-  let soundEnabled = false;
-  const enableSound = () => {
-    const engine=window.ZikaArcadeAudio;
-    if (!engine) { soundButton.textContent='SON INDISPONIBLE'; return false; }
-    if (!engine.startTitle()) { soundButton.textContent='AUDIO NON PRIS EN CHARGE'; return false; }
-    soundEnabled=true;
-    soundButton.textContent='♪ SON ACTIVÉ';
-    return true;
-  };
-  soundButton.addEventListener('click', event => {
-    event.stopPropagation();
-    enableSound();
-  });
-  let phase = 'publisher';
-  let closed = false;
-  let splashTimer;
-  let audioContext;
 
-  const beep = (frequency, duration, shape = 'square') => {
-    try {
-      const Context = window.AudioContext || window.webkitAudioContext;
-      if (!Context) return;
-      audioContext ||= new Context();
-      if (audioContext.state === 'suspended') void audioContext.resume();
-      const oscillator = audioContext.createOscillator();
-      const gain = audioContext.createGain();
-      oscillator.type = shape;
-      oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-      gain.gain.setValueAtTime(0.07, audioContext.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
-      oscillator.connect(gain).connect(audioContext.destination);
-      oscillator.start();
-      oscillator.stop(audioContext.currentTime + duration);
-    } catch (_) { /* Audio optionnel, l'interface doit rester utilisable. */ }
-  };
-  const showTitle = () => {
-    if (closed || phase !== 'publisher') return;
-    clearTimeout(splashTimer);
-    phase = 'title';
-    splash.hidden = true;
-    title.hidden = false;
-    button.focus({ preventScroll: true });
-    // Le son démarre au premier geste utilisateur (pas d'autoplay forcé).
-  };
-  const launch = () => {
-    if (closed) return;
-    if (phase === 'publisher') { enableSound(); window.ZikaArcadeAudio?.logo(); showTitle(); return; }
-    enableSound();
-    closed = true;
-    phase = 'selection';
-    window.ZikaArcadeAudio?.select();
+  const splash=document.getElementById('zf-splash');
+  const title=document.getElementById('zf-title');
+  const prompt=document.getElementById('zf-play-prompt');
+  const startButton=document.getElementById('zf-start');
+  const soundButton=document.getElementById('zf-audio');
+  const music=window.ZikaArcadeAudio;
+  const intro=new Audio(INTRO_AUDIO);
+  intro.preload='auto';
+  intro.volume=0.9;
+  let phase='ready', closed=false, fallbackTimer=null;
+  function clearFallback(){if(fallbackTimer!==null){clearTimeout(fallbackTimer);fallbackTimer=null;}}
+  function titleScreen(){
+    if(closed || phase==='title')return;
+    clearFallback();
+    phase='title';
+    intro.pause();
+    splash.hidden=true;title.hidden=false;
+    if(music?.startTitle())soundButton.textContent='♪ SON ACTIVÉ';
+    startButton.focus({preventScroll:true});
+  }
+  intro.addEventListener('ended',titleScreen);
+  intro.addEventListener('error',()=>{
+    if(phase==='playing'){prompt.textContent='SON INDISPONIBLE — PASSAGE AU TITRE';clearFallback();fallbackTimer=setTimeout(titleScreen,500);}
+  });
+  function begin(){
+    if(closed || phase!=='ready')return;
+    phase='playing';
+    prompt.textContent='ZIKACOM';
+    music?.stop();
+    // Le lancement dans un événement utilisateur autorise la lecture sur mobile/PC.
+    try{
+      const playback=intro.play();
+      if(playback&&typeof playback.then==='function'){
+        playback.catch(()=>{if(phase==='playing'){prompt.textContent='SON BLOQUÉ — CONTINUER';clearFallback();fallbackTimer=setTimeout(titleScreen,900);}});
+      }
+    }catch(_){fallbackTimer=setTimeout(titleScreen,900);}
+    // Sécurité : si l'événement ended n'arrive pas, on ne bloque pas l'interface.
+    fallbackTimer=setTimeout(titleScreen,FALLBACK_MS+1500);
+  }
+  function launch(){
+    if(closed)return;
+    if(phase==='ready'){begin();return;}
+    if(phase==='playing')return; // Laisser jouer le jingle entièrement.
+    closed=true;
+    music?.select();
     overlay.classList.add('zf-fade');
-    window.setTimeout(() => {
+    setTimeout(()=>{
       overlay.remove();
-      // La grille Pascal/Micka de la démo est l'écran de sélection actuellement jouable.
-      const first = document.querySelector('[data-player]');
-      if (first) first.focus({ preventScroll: true });
-      if (audioContext && audioContext.state !== 'closed') void audioContext.close();
-    }, 390);
-  };
-  const keydown = event => {
-    if (closed || !document.body.contains(overlay)) return;
-    if (['Enter', 'Space', 'NumpadEnter'].includes(event.code)) {
-      enableSound();
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      launch();
-    } else if (event.code === 'Escape') {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      if (phase === 'publisher') showTitle();
-      else launch();
-    }
-  };
-  document.addEventListener('keydown', keydown, true);
-  button.addEventListener('click', launch);
-  splash.addEventListener('click', () => { enableSound(); window.ZikaArcadeAudio?.logo(); showTitle(); });
-  // Le son peut également être activé par une pression sur l'écran sans quitter la sélection.
-  document.addEventListener('pointerdown', (event) => {
-    if(!closed && overlay.contains(event.target) && !soundEnabled) enableSound();
-  }, {capture:true});
-  // La marque apparaît d'abord, puis l'écran-titre. Aucun son automatique interdit par le navigateur.
-  splashTimer = window.setTimeout(showTitle, 1900);
+      const first=document.querySelector('[data-player]');
+      if(first)first.focus({preventScroll:true});
+    },390);
+  }
+  soundButton.addEventListener('click',event=>{
+    event.stopPropagation();
+    if(music?.startTitle())soundButton.textContent='♪ SON ACTIVÉ';
+    else soundButton.textContent='AUDIO NON PRIS EN CHARGE';
+  });
+  splash.addEventListener('click',begin);
+  startButton.addEventListener('click',launch);
+  document.addEventListener('keydown',event=>{
+    if(closed || !overlay.isConnected || !['Enter','Space','NumpadEnter'].includes(event.code))return;
+    event.preventDefault();event.stopImmediatePropagation();
+    if(phase==='ready')begin();
+    else if(phase==='title')launch();
+  },true);
 })();
