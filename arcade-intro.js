@@ -62,19 +62,27 @@
   const visualStartedAt=performance.now();
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
   function fade(seconds){
-    // Séquence ZIKACOM sur fond noir : logo fixe, fondu doux, tenue, fondu de sortie.
-    // Le temps est celui du MP3 et non une animation CSS indépendante.
-    const rise=clamp((seconds-.52)/.88,0,1);
-    const enter=rise*rise*(3-2*rise);
-    const fall=clamp((5.05-seconds)/.55,0,1);
-    const exit=fall*fall*(3-2*fall);
-    const opacity=enter*exit;
-    overlay.style.setProperty('--zf-logo-opacity',String(opacity));
+    // CAPCOM-style: fondu d'entrée, tenue, reflet mobile sur les lettres, sortie.
+    // Séquence pilotée par le temps de lecture effectif du jingle.
+    const smooth=n=>{const t=clamp(n,0,1);return t*t*(3-2*t);};
+    const entrance=smooth((seconds-.45)/.9);
+    const departure=1-smooth((seconds-5.12)/.5);
+    overlay.style.setProperty('--zf-logo-opacity',String(entrance*departure));
     const shine=document.querySelector('.zf-zikacom-shine');
-    // Éclat final discret, sans balayage traversant tout l'écran.
-    const sparkle=clamp((seconds-4.66)/.18,0,1)*clamp((4.98-seconds)/.15,0,1);
-    shine.style.opacity=String(Math.min(.24,sparkle*.24));
-    shine.style.clipPath='none';
+    // Reflet marqué à 4,28 s, terminé avant la disparition du logo.
+    const start=4.28, end=4.86;
+    if(seconds>=start && seconds<=end){
+      const t=(seconds-start)/(end-start);
+      const x=-24+148*t;
+      const glow=Math.min(1,smooth(t/.18),smooth((1-t)/.18));
+      shine.style.opacity=String(glow*.95);
+      shine.style.clipPath='polygon('+x+'% 0%,'+(x+18)+'% 0%,'+(x-2)+'% 100%,'+(x-20)+'% 100%)';
+      overlay.style.setProperty('--zf-logo-glow',String(.08+.24*glow));
+    }else{
+      shine.style.opacity='0';
+      shine.style.clipPath='none';
+      overlay.style.setProperty('--zf-logo-glow','0');
+    }
   }
   function finishCinematic(){
     if(phase!=='cinematic'||closed)return;
