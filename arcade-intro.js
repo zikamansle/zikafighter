@@ -15,9 +15,8 @@
       '<button type="button" class="zf-unlock-sound" id="zf-unlock-sound" hidden>ACTIVER LE SON POUR LANCER LE JEU</button>',
       '<p id="zf-sound-error" class="zf-sound-error" hidden>Jingle introuvable : assets/zikacom-intro.mp3</p>',
     '</div>',
-    '<div class="zf-screen zf-cinematic" id="zf-cinematic" hidden aria-label="Animation Zika Fighter">',
-      '<div class="zf-cine-logo" aria-label="Logo officiel Zika Fighter"><svg class="zf-official-logo" viewBox="0 0 1408 605" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><defs><filter id="zf-key-main" x="-5%" y="-7%" width="110%" height="114%"><feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2 -0.6 -1.2 0 -0.2" result="colorMask"/><feMorphology in="colorMask" operator="dilate" radius="5" result="fullMask"/><feComposite in="SourceGraphic" in2="fullMask" operator="in"/></filter></defs><image href="./assets/zika-fighter-title.png" width="1408" height="1056" filter="url(#zf-key-main)"/></svg></div>',
-      '<div class="zf-cine-shine" aria-hidden="true"><svg class="zf-official-logo" viewBox="0 0 1408 605" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><defs><filter id="zf-key-shine" x="-5%" y="-7%" width="110%" height="114%"><feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2 -0.6 -1.2 0 -0.2" result="colorMask"/><feMorphology in="colorMask" operator="dilate" radius="5" result="fullMask"/><feComposite in="SourceGraphic" in2="fullMask" operator="in"/></filter></defs><image href="./assets/zika-fighter-title.png" width="1408" height="1056" filter="url(#zf-key-shine)"/></svg></div>',
+    '<div class="zf-screen zf-cinematic" id="zf-cinematic" hidden aria-label="Animation du titre Zika Fighter">',
+      '<canvas id="zf-cinematic-canvas" width="640" height="360" aria-hidden="true"></canvas>',
     '</div>',
     '<div class="zf-screen zf-title" id="zf-title" hidden>',
       '<div class="zf-mark" aria-label="Zika Fighter"><span>ZIKA</span><span>FIGHTER</span></div>',
@@ -116,7 +115,7 @@
   const title=document.getElementById('zf-title');
   const cinematic=document.getElementById('zf-cinematic');
   let cinematicFrame=null;
-  const CINEMATIC_LENGTH=2.35;
+  const CINEMATIC_LENGTH=3.42;
   const startButton=document.getElementById('zf-start');
   const unblock=document.getElementById('zf-unlock-sound');
   const errorText=document.getElementById('zf-sound-error');
@@ -150,6 +149,35 @@
     shine.style.opacity='0';
     overlay.style.setProperty('--zf-palette-pulse','0');
   }
+  // Animation d'après la vidéo fournie : petit titre, zoom géant,
+  // bande bleue, pixels en rotation, titre entier stabilisé.
+  const movie=document.getElementById('zf-cinematic-canvas');
+  const mctx=movie.getContext('2d',{alpha:false});
+  const titleSprite=new Image();
+  let titleSpriteCanvas=null;
+  titleSprite.src='./assets/zika-fighter-title.png';
+  function prepareTitleSprite(){
+    try{
+      const src=document.createElement('canvas');
+      src.width=420;src.height=206;
+      const cx=src.getContext('2d',{willReadFrequently:true});
+      cx.drawImage(titleSprite,110,60,1230,590,0,0,420,206);
+      const data=cx.getImageData(0,0,420,206);
+      for(let p=0;p<data.data.length;p+=4){
+        const r=data.data[p],g=data.data[p+1],b=data.data[p+2];
+        // Retirer le fond bleu uni tout en gardant les contours noirs, rouges et or.
+        if(b>65 && b>r*1.33 && b>g*1.25){
+          data.data[p+3]=0;
+        }
+      }
+      cx.putImageData(data,0,0);
+      titleSpriteCanvas=src;
+    }catch(_){titleSpriteCanvas=null;}
+  }
+  if(titleSprite.complete && titleSprite.naturalWidth)prepareTitleSprite();
+  else titleSprite.addEventListener('load',prepareTitleSprite,{once:true});
+  const easeOut=x=>1-Math.pow(1-clamp(x,0,1),3);
+  const easeInOut=x=>{const t=clamp(x,0,1);return t*t*(3-2*t)};
   function finishCinematic(){
     if(phase!=='cinematic'||closed)return;
     if(cinematicFrame!==null)cancelAnimationFrame(cinematicFrame);
@@ -158,31 +186,76 @@
     phase='title';
     startButton.focus({preventScroll:true});
   }
+  function renderCinematic(t){
+    if(!mctx)return;
+    const w=movie.width,h=movie.height;
+    mctx.imageSmoothingEnabled=false;
+    mctx.fillStyle='#000';
+    mctx.fillRect(0,0,w,h);
+    const sprite=titleSpriteCanvas;
+    if(!sprite){
+      // Fallback lorsque l'image est encore en cours de chargement.
+      mctx.fillStyle='#ffe024';
+      mctx.font='italic bold 38px Impact,sans-serif';
+      mctx.textAlign='center';
+      mctx.fillText('ZIKA FIGHTER',w/2,h/2);
+      return;
+    }
+    const paint=(x,y,ww,hh,angle=0,flip=1)=>{
+      mctx.save();
+      mctx.translate(x,y);
+      mctx.rotate(angle);
+      mctx.scale(flip,1);
+      mctx.drawImage(sprite,-ww/2,-hh/2,ww,hh);
+      mctx.restore();
+    };
+    if(t<1.22){
+      // Titre minuscule et immobile sur fond noir.
+      paint(w/2,h*.29,142,70);
+      return;
+    }
+    if(t<2.19){
+      // Zoom énorme, comme les lettres TURBO qui remplissent l'écran
+      // dans la vidéo ; ici le mot animé est exclusivement ZIKA FIGHTER.
+      const p=easeOut((t-1.22)/.97);
+      paint(w*.50,h*.48,175+1770*p,85+860*p,-.08*p);
+      return;
+    }
+    // Bande bleue centrale ; les zones supérieure et inférieure restent noires.
+    mctx.fillStyle='#1b4fb4';
+    mctx.fillRect(0,114,w,133);
+    if(t<2.97){
+      // Le logo se retourne autour d'un axe vertical et pivote.
+      const p=easeInOut((t-2.19)/.78);
+      const angle=p*Math.PI*2.0;
+      const perspective=Math.cos(angle);
+      const zoom=0.35+1.03*p;
+      // Pixelisation temporaire pour reproduire les fragments SNES.
+      const size=165+310*p;
+      const hh=size*.49;
+      paint(w/2,h/2,size,hh,Math.sin(angle)*.48,Math.sign(perspective||1)*Math.max(.08,Math.abs(perspective)));
+      return;
+    }
+    if(t<3.30){
+      // Dernière rotation complète puis arrêt net sur le titre.
+      const p=easeOut((t-2.97)/.33);
+      paint(w/2,h*.46,450,220,(1-p)*Math.PI*.5,Math.max(.12,p));
+      return;
+    }
+    paint(w/2,h*.46,450,220);
+  }
   function animateCinematic(startedAt){
-    const shine=cinematic.querySelector('.zf-cine-shine');
-    const run=(now)=>{
+    // L'horloge musicale reste prioritaire si le titre se joue réellement.
+    const tick=now=>{
       if(phase!=='cinematic'||closed)return;
-      // Temps musical réel lorsque le navigateur autorise la lecture.
-      const t=(!titleMusic.paused && titleMusic.currentTime>0)
+      const t=(!titleMusic.paused&&titleMusic.currentTime>0)
         ? titleMusic.currentTime
         : Math.max(0,(now-startedAt)/1000);
-      const entry=clamp((t-.13)/.74,0,1);
-      const eased=1-Math.pow(1-entry,3);
-      const scale=.20+.23*eased; // petit logo : 20 à 43 % de sa taille de référence
-      const alpha=clamp((t-.10)/.20,0,1);
-      cinematic.style.setProperty('--zf-cine-size',String(scale));
-      cinematic.style.setProperty('--zf-cine-alpha',String(alpha));
-      // Reflet argenté : un balayage étroit sur les lettres, sans éclairer le fond noir.
-      const sparkle=clamp((t-1.47)/.32,0,1);
-      if(t>=1.47&&t<=1.93){
-        const x=-18+134*sparkle;
-        shine.style.opacity='1';
-        shine.style.clipPath='polygon('+x+'% 0%,'+(x+12)+'% 0%,'+(x-6)+'% 100%,'+(x-18)+'% 100%)';
-      }else{shine.style.opacity='0';}
+      renderCinematic(t);
       if(t>=CINEMATIC_LENGTH){finishCinematic();return;}
-      cinematicFrame=requestAnimationFrame(run);
+      cinematicFrame=requestAnimationFrame(tick);
     };
-    cinematicFrame=requestAnimationFrame(run);
+    cinematicFrame=requestAnimationFrame(tick);
   }
   function showTitle(){
     if(phase!=='splash'||closed)return;
