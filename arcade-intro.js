@@ -126,6 +126,7 @@
   const optionsCanvas=document.getElementById('zf-options-canvas');
   const optionsCtx=optionsCanvas.getContext('2d',{alpha:false});
   const approvedOptions=new Image();
+  approvedOptions.crossOrigin='anonymous';
   approvedOptions.src='https://static.wixstatic.com/media/685632_9ffbfcbed80e4abfac3914d16b94a23e~mv2.png';
   approvedOptions.onerror=()=>{if(!approvedOptions.src.includes('approved-options.svg'))approvedOptions.src='./assets/approved-options.svg';};
   approvedOptions.addEventListener('load',()=>{if(phase==='options')renderOptions();});
@@ -455,86 +456,151 @@
   const clampPreset=n=>(n+3)%3;
 
 
-  // Les captures fournies (1448×1086) sont les images affichées. Les polices,
-  // le logo, les couleurs et les placements NE sont JAMAIS redessinés au chargement.
+  // Tous les éléments graphiques proviennent de la capture validée.
+  // Seuls les pixels des options modifiées changent ; le reste ne bouge pas.
+  const WOPT=1448,HOPT=1086;
+  const optionsSource=document.createElement('canvas');
+  optionsSource.width=WOPT;optionsSource.height=HOPT;
+  const optionsSourceCtx=optionsSource.getContext('2d',{willReadFrequently:true});
+  let optionsPixels=null;
   const optionLabelBoxes=[
-    [153,151,384,52], [152,223,368,54], [153,295,252,50],
-    [153,365,378,54], [103,755,485,53], [106,828,384,55],
-    [109,900,324,52]
+    [153,151,384,52],[152,223,368,54],[153,295,252,50],
+    [153,365,378,54],[103,755,485,53],[106,828,384,55],[109,900,324,52]
   ];
-  const optionTemp=document.createElement('canvas');
-  const optionTempCtx=optionTemp.getContext('2d');
-  function recolorOriginalLabel(ctx,index){
-    const [x,y,w,h]=optionLabelBoxes[index];
-    optionTemp.width=w;optionTemp.height=h;
-    optionTempCtx.globalCompositeOperation='source-over';
-    optionTempCtx.clearRect(0,0,w,h);
-    optionTempCtx.drawImage(approvedOptions,x,y,w,h,0,0,w,h);
-    if(index===0){
-      // Quand le curseur quitte DIFFICULTY, remplacer son rouge par blanc.
-      optionTempCtx.globalCompositeOperation='multiply';
-      optionTempCtx.fillStyle='#ffffff';
-      optionTempCtx.fillRect(0,0,w,h);
-      optionTempCtx.globalCompositeOperation='source-over';
-      ctx.save();ctx.fillStyle='#000';ctx.fillRect(x,y,w,h);
-      ctx.filter='grayscale(1) brightness(4) contrast(1.7)';
-      ctx.drawImage(optionTemp,x,y);
-      ctx.restore();
-    }else{
-      // Multiplier le texte blanc par un rouge : le noir du fond reste noir.
-      optionTempCtx.globalCompositeOperation='multiply';
-      optionTempCtx.fillStyle='#ef444b';
-      optionTempCtx.fillRect(0,0,w,h);
-      optionTempCtx.globalCompositeOperation='source-over';
-      ctx.drawImage(optionTemp,x,y);
+  const controlYs=[450,497,544,591,638,685];
+  const controlKeys=['Y','X','L','B','A','R'];
+  let optionSnapshot=null;
+  const pixelAt=(data,x,y)=>(y*WOPT+x)*4;
+  function getOptionPixels(){
+    if(optionsPixels)return optionsPixels;
+    if(!approvedOptions.complete||!approvedOptions.naturalWidth)return null;
+    try{
+      optionsSourceCtx.drawImage(approvedOptions,0,0,WOPT,HOPT);
+      optionsPixels=optionsSourceCtx.getImageData(0,0,WOPT,HOPT);
+    }catch(err){
+      // Si un hébergeur interdit les pixels, conserver l'image sans crash.
+      console.warn('Zika Fighter : sprites Options indisponibles',err);
+      return null;
     }
+    return optionsPixels;
+  }
+  function eachPixel(data,box,fn){
+    const x0=Math.max(0,box[0]),y0=Math.max(0,box[1]),
+      x1=Math.min(WOPT,x0+box[2]),y1=Math.min(HOPT,y0+box[3]);
+    for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++)fn(pixelAt(data,x,y),x,y);
+  }
+  function recolorOption(data,box,from,to){
+    eachPixel(data,box,(i)=>{
+      const r=data[i],g=data[i+1],b=data[i+2];
+      const isWhite=Math.min(r,g,b)>155&&Math.abs(r-g)<50&&Math.abs(g-b)<50;
+      const isRed=r>110&&r>g*1.55&&r>b*1.25;
+      const isYellow=r>120&&g>95&&r>b*1.8&&g>b*1.6;
+      if((from==='white'&&isWhite)||(from==='red'&&isRed)||(from==='yellow'&&isYellow)){
+        const brightness=Math.min(1,Math.max(.45,Math.max(r,g,b)/255));
+        const dest=to==='red'?[239,64,72]:to==='yellow'?[255,235,0]:[245,245,245];
+        data[i]=dest[0]*brightness;data[i+1]=dest[1]*brightness;data[i+2]=dest[2]*brightness;
+      }
+    });
+  }
+  function eraseOptionInk(data,box,mode='white'){
+    // Remplacer seulement les pixels de l'encre, sans toucher au logo gris.
+    eachPixel(data,box,(i)=>{
+      const r=data[i],g=data[i+1],b=data[i+2];
+      const isWhite=Math.min(r,g,b)>146&&Math.abs(r-g)<43&&Math.abs(g-b)<43;
+      const isYellow=r>120&&g>90&&r>b*1.8&&g>b*1.55;
+      if((mode==='white'&&isWhite)||(mode==='yellow'&&isYellow)){
+        const gray=Math.min(79,Math.max(0,Math.round((r+g+b)/15)));
+        data[i]=gray;data[i+1]=gray;data[i+2]=gray;
+      }
+    });
   }
   function renderOptions(){
-    if(!optionsCtx)return;
+    if(!optionsCtx||!approvedOptions.complete||!approvedOptions.naturalWidth)return;
     const c=optionsCtx;
-    c.setTransform(1,0,0,1,0,0);
-    c.imageSmoothingEnabled=false;
-    c.fillStyle='#000';c.fillRect(0,0,1448,1086);
-    if(!approvedOptions.complete||!approvedOptions.naturalWidth)return;
-    c.drawImage(approvedOptions,0,0,1448,1086);
-
-    // Sur le premier état, il n'y a AUCUN dessin par-dessus l'image de référence.
-    if(optionSelection!==0){
-      c.fillStyle='#000';c.fillRect(48,141,94,63);
-      c.drawImage(approvedOptions,53,144,82,61,53,optionRows[optionSelection]-51,82,61);
-      recolorOriginalLabel(c,0);
-      recolorOriginalLabel(c,optionSelection);
+    c.setTransform(1,0,0,1,0,0);c.imageSmoothingEnabled=false;
+    c.clearRect(0,0,WOPT,HOPT);
+    c.drawImage(approvedOptions,0,0,WOPT,HOPT);
+    // La référence originale est toujours conservée pour l'état par défaut.
+    const original=getOptionPixels();
+    if(original){
+      const data=new ImageData(new Uint8ClampedArray(original.data),WOPT,HOPT);
+      if(optionSelection!==0){
+        // Nettoyer le Z initial, recolorer la ligne quittée et la nouvelle.
+        eraseOptionInk(data,[48,139,92,69],'white');
+        recolorOption(data,optionLabelBoxes[0],'red','white');
+        recolorOption(data,optionLabelBoxes[optionSelection],'white','red');
+      }
+      if(!settings.stereo){
+        recolorOption(data,[638,755,250,57],'yellow','white');
+        recolorOption(data,[986,755,349,59],'white','yellow');
+      }
+      if(settings.players===2){
+        recolorOption(data,[999,289,303,59],'white','yellow');
+      }
+      c.putImageData(data,0,0);
     }
-
-    // Les changements de difficulté reprennent les vrais pixels des étoiles.
+    // Extraire le Z de la capture plutôt qu'en dessiner un autre.
+    if(optionSelection!==0){
+      if(original){
+        const z=document.createElement('canvas');z.width=96;z.height=75;
+        const zc=z.getContext('2d');
+        const crop=optionsSourceCtx.getImageData(45,137,96,75);
+        for(let i=0;i<crop.data.length;i+=4){
+          const r=crop.data[i],g=crop.data[i+1],b=crop.data[i+2];
+          crop.data[i+3]=(Math.min(r,g,b)>145&&Math.abs(r-g)<60&&Math.abs(g-b)<60)?255:0;
+        }
+        zc.putImageData(crop,0,0);
+        c.drawImage(z,45,137+optionRows[optionSelection]-optionRows[0]);
+      }else{
+        c.fillStyle='#fff';c.font='italic bold 62px Georgia,serif';
+        c.fillText('Z',56,optionRows[optionSelection]);
+      }
+    }
+    const fillBlack=(x,y,w,h)=>{c.fillStyle='#000';c.fillRect(x,y,w,h);};
+    // Les valeurs variables utilisent des zones fixes : pas de nouveau bouton.
+    function pixelNumber(n,x,y){
+      const v=String(n).padStart(2,'0');
+      c.fillStyle='#f9ed00';c.font='900 51px Georgia,serif';
+      c.textAlign='left';c.textBaseline='alphabetic';
+      c.fillText(v,x,y);
+    }
     if(settings.difficulty!==3){
-      c.fillStyle='#000';c.fillRect(791,147,273,61);
+      // La difficulté est limitée aux cinq étoiles de l'écran d'origine.
+      fillBlack(792,146,272,63);
       for(let i=0;i<5;i++){
         const filled=i<settings.difficulty;
-        c.drawImage(approvedOptions,filled?793:951,147,51,57,793+i*53,147,51,57);
+        c.drawImage(approvedOptions,filled?797:954,147,46,55,797+53*i,147,46,55);
       }
     }
-
-    // Valeurs variables : elles ne sont jamais ajoutées au menu d'origine.
     if(!settings.timeLimit){
-      c.fillStyle='#000';c.fillRect(615,215,140,65);
-      c.font='900 52px Georgia,serif';c.textBaseline='alphabetic';
-      c.fillStyle='#f8e800';c.fillText('NO',626,263);
+      fillBlack(618,213,148,67);
+      c.fillStyle='#f9ed00';c.font='900 54px Georgia,serif';
+      c.fillText('NO',631,266);
     }
     if(settings.musicTest!==10){
-      c.fillStyle='#000';c.fillRect(613,826,105,57);
-      if(settings.musicTest===0){
-        c.drawImage(approvedOptions,610,895,84,51,622,825,84,51);
-      }else{
-        c.drawImage(approvedOptions,612,899,42,44,624,830,42,44);
-        c.drawImage(approvedOptions,617,828,39,49,663,830,39,49);
-      }
+      fillBlack(615,818,111,69);pixelNumber(settings.musicTest,625,875);
     }
     if(settings.seTest!==0){
-      c.fillStyle='#000';c.fillRect(607,896,110,55);
-      c.fillStyle='#fff000';c.font='900 50px Georgia,serif';
-      c.fillText(String(settings.seTest).padStart(2,'0'),610,941);
+      fillBlack(608,892,117,68);pixelNumber(settings.seTest,615,941);
     }
+    // L'association des boutons doit correspondre aux deux colonnes SET.
+    if(settings.controlPreset!==0||(settings.controlPresetP2||0)!==0){
+      for(let player=0;player<2;player++){
+        const preset=player===0?settings.controlPreset:(settings.controlPresetP2||0);
+        if(!preset)continue;
+        const x=player===0?686:1056;
+        for(let i=0;i<6;i++){
+          if(original) {
+            const patch=new ImageData(new Uint8ClampedArray(original.data),WOPT,HOPT);
+            eraseOptionInk(patch,[x,controlYs[i]-32,98,43],'white');
+            c.putImageData(patch,0,0,x,controlYs[i]-32,98,43);
+          }else fillBlack(x,controlYs[i]-34,96,46);
+          c.fillStyle='#f5f5f5';c.font='900 48px Georgia,serif';
+          c.textAlign='center';c.fillText(controlKeys[(i+preset*2)%6],x+48,controlYs[i]);
+        }
+      }
+    }
+    optionSnapshot={...settings,selection:optionSelection};
   }
   // Test only real tracks and the exact supplied sounds plus implemented game FX.
   function playMusicTest(){
