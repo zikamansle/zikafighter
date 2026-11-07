@@ -40,6 +40,16 @@
   audio.load();
   audio.volume=1;
   const music=window.ZikaArcadeAudio;
+  const titleMusic=new Audio('./assets/zika-title-theme.mp3');
+  titleMusic.preload='auto';
+  titleMusic.loop=true;
+  titleMusic.volume=0.8;
+  let titleMusicAvailable=true;
+  titleMusic.addEventListener('error',()=>{titleMusicAvailable=false;});
+  function playTitleMusic(){
+    if(!titleMusicAvailable)return;
+    try{const p=titleMusic.play();if(p&&typeof p.catch==='function')p.catch(()=>{});}catch(_){}
+  }
   let phase='splash',status='pending',closed=false,raf=0;
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
   function fade(seconds){
@@ -54,7 +64,8 @@
     audio.pause();
     splash.hidden=true;
     title.hidden=false;
-    music?.startTitle();
+    // Musique de l'écran-titre fournie par l'utilisateur (pas de chiptune provisoire).
+    playTitleMusic();
     startButton.focus({preventScroll:true});
   }
   function update(){
@@ -109,6 +120,8 @@
   function launch(){
     if(phase!=='title'||closed)return;
     closed=true;
+    titleMusic.pause();
+    titleMusic.currentTime=0;
     music?.select();
     overlay.classList.add('zf-fade');
     setTimeout(()=>{
@@ -117,6 +130,8 @@
     },390);
   }
   startButton.addEventListener('click',launch);
+  // Si le navigateur avait bloqué le son, une touche ou un clic sur l'écran-titre peut le déverrouiller.
+  document.addEventListener('pointerdown',()=>{if(phase==='title'&&titleMusic.paused)playTitleMusic();},{capture:true});
   document.addEventListener('keydown',event=>{
     if(phase!=='title'||closed||!overlay.isConnected)return;
     if(['Enter','Space','NumpadEnter'].includes(event.code)){
