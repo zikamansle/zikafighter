@@ -75,10 +75,12 @@
     const start=1.62, end=2.10;
     if(seconds>=start && seconds<=end){
       const t=(seconds-start)/(end-start);
-      const x=-24+148*t;
+      // CAPCOM SNES : reflet HORIZONTAL qui descend du HAUT vers le BAS
+      // des lettres, et non un balayage latéral.
+      const y=-22+144*t;
       const glow=Math.min(1,smooth(t/.18),smooth((1-t)/.18));
       shine.style.opacity=String(glow*.95);
-      shine.style.clipPath='polygon('+x+'% 0%,'+(x+18)+'% 0%,'+(x-2)+'% 100%,'+(x-20)+'% 100%)';
+      shine.style.clipPath='inset('+y+'% 0 '+(100-y-28)+'% 0)';
       overlay.style.setProperty('--zf-logo-glow',String(.08+.24*glow));
     }else{
       shine.style.opacity='0';
