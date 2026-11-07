@@ -234,3 +234,13 @@
 #zf-intro .zf-options-back{position:absolute;inset:0;border:0;background:transparent;color:transparent;cursor:pointer;z-index:4;}
 #zf-intro .zf-options-back:focus-visible{outline:3px solid #b1ab3e;outline-offset:-8px;}
 #zf-intro .zf-title .zf-start{z-index:4;}
+
+/* Les écrans validés prennent tout l'espace 4:3, sans étirement 16:9. */
+#zf-intro #zf-legal-canvas,#zf-intro #zf-options-canvas{
+  width:min(100vw, 133.333vh)!important;
+  height:auto!important;
+  max-height:100vh;
+  aspect-ratio:4/3;
+  object-fit:contain;
+  image-rendering:pixelated;
+}
