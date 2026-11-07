@@ -168,73 +168,95 @@
   cursorMoveSound.preload='auto';
   cursorMoveSound.volume=1;
   cursorMoveSound.load();
-  // Amplify the original menu WAV effects: both are far quieter than the music.
-  let menuSfxContext=null,menuSfxReady=false;
-  window.ZikaMenuAudioState={movePlays:0,confirmPlays:0,lastError:null};
+  // Soundbank decoded before any interaction. At key/button press we resume
+  // the WebAudio context and trigger an AudioBufferSourceNode immediately.
+  // This avoids HTMLAudioElement .play() races and hidden media-element gains.
+  const MenuAC=window.AudioContext||window.webkitAudioContext;
+  let menuContext=null;
+  const menuBuffers={move:null,confirm:null};
+  const menuPending={move:null,confirm:null};
+  const menuMedia={move:cursorMoveSound,confirm:cursorConfirmSound};
+  window.ZikaMenuAudioState={movePlays:0,confirmPlays:0,lastError:null,moveReady:false,confirmReady:false};
   function prepareMenuSfx(){
-    if(!menuSfxReady){
-      const AC=window.AudioContext||window.webkitAudioContext;
-      if(AC){
-        try{
-          menuSfxContext=new AC();
-          const connect=(element,gain)=>{
-            const source=menuSfxContext.createMediaElementSource(element);
-            const amp=menuSfxContext.createGain();
-            amp.gain.value=gain;
-            source.connect(amp);amp.connect(menuSfxContext.destination);
-          };
-          connect(cursorMoveSound,4.3);
-          connect(cursorConfirmSound,3.3);
-          menuSfxReady=true;
-        }catch(e){
-          console.warn('Zika Fighter : amplification indisponible',e);
-          window.ZikaMenuAudioState.lastError=String(e);
+    if(!MenuAC)return;
+    if(!menuContext){
+      try{
+        menuContext=new MenuAC();
+        for(const kind of ['move','confirm']){
+          const url=menuMedia[kind].src;
+          const encoded=url.split(',')[1];
+          const binary=atob(encoded);
+          const data=new Uint8Array(binary.length);
+          for(let i=0;i<binary.length;i++)data[i]=binary.charCodeAt(i);
+          menuPending[kind]=menuContext.decodeAudioData(data.buffer).then(buffer=>{
+            menuBuffers[kind]=buffer;
+            window.ZikaMenuAudioState[kind+'Ready']=true;
+            return buffer;
+          }).catch(err=>{
+            window.ZikaMenuAudioState.lastError=String(err);
+            console.warn('Zika Fighter : décodage du WAV du menu',kind,err);
+            return null;
+          });
         }
-      }
+      }catch(err){window.ZikaMenuAudioState.lastError=String(err);}
     }
-    if(menuSfxContext&&menuSfxContext.state==='suspended'){
-      const p=menuSfxContext.resume();
+    if(menuContext&&menuContext.state==='suspended'){
+      const p=menuContext.resume();
+      if(p&&p.catch)p.catch(err=>{window.ZikaMenuAudioState.lastError=String(err);});
+    }
+  }
+  function playMenuSfx(kind){
+    prepareMenuSfx();
+    window.ZikaMenuAudioState[kind+'Plays']++;
+    const buffer=menuBuffers[kind];
+    const context=menuContext;
+    if(context&&buffer){
+      try{
+        const source=context.createBufferSource();
+        const gain=context.createGain();
+        source.buffer=buffer;
+        gain.gain.value=kind==='move'?9:6.5;
+        source.connect(gain);gain.connect(context.destination);
+        source.start(context.currentTime);
+        return;
+      }catch(e){window.ZikaMenuAudioState.lastError=String(e);}
+    }
+    // First key after load: schedule playback as soon as decoding completes.
+    const pending=menuPending[kind];
+    if(pending){
+      pending.then(decoded=>{
+        if(!decoded||!menuContext)return;
+        if(menuContext.state==='suspended')return;
+        const source=menuContext.createBufferSource();
+        const gain=menuContext.createGain();
+        source.buffer=decoded;
+        gain.gain.value=kind==='move'?9:6.5;
+        source.connect(gain);gain.connect(menuContext.destination);
+        source.start();
+      }).catch(e=>{window.ZikaMenuAudioState.lastError=String(e);});
+    }else{
+      // Fallback for environments without WebAudio support.
+      const element=menuMedia[kind];
+      element.currentTime=0;
+      const p=element.play();
       if(p&&p.catch)p.catch(e=>{window.ZikaMenuAudioState.lastError=String(e);});
     }
   }
   let cursorSoundAt=0;
   function cursorMove(){
     const now=performance.now();
-    if(now-cursorSoundAt<55)return;
+    if(now-cursorSoundAt<65)return;
     cursorSoundAt=now;
-    prepareMenuSfx();
-    try{
-      cursorMoveSound.pause();cursorMoveSound.currentTime=0;
-      const p=cursorMoveSound.play();
-      window.ZikaMenuAudioState.movePlays++;
-      if(p&&p.catch)p.catch(e=>{
-        window.ZikaMenuAudioState.lastError=String(e);
-        console.warn('Zika Fighter : déplacement audio bloqué',e);
-      });
-    }catch(e){window.ZikaMenuAudioState.lastError=String(e);}
+    playMenuSfx('move');
   }
-  // Validation fournie par l'utilisateur (WAV original converti en MP3 compact).
-  const cursorConfirmSound=new Audio('data:audio/mpeg;base64,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');
-  cursorConfirmSound.preload='auto';
-  cursorConfirmSound.volume=1;
-  cursorConfirmSound.load();
-  function cursorConfirm(){
-    prepareMenuSfx();
-    try{
-      cursorConfirmSound.pause();cursorConfirmSound.currentTime=0;
-      const p=cursorConfirmSound.play();
-      window.ZikaMenuAudioState.confirmPlays++;
-      if(p&&p.catch)p.catch(e=>{
-        window.ZikaMenuAudioState.lastError=String(e);
-        console.warn('Zika Fighter : validation audio bloquée',e);
-      });
-    }catch(e){window.ZikaMenuAudioState.lastError=String(e);}
-  }
+  function cursorConfirm(){playMenuSfx('confirm');}
+  // Pre-decode on load; playback only starts on user menu input.
+  prepareMenuSfx();
   let lastTitleNav=null,lastOptionsNav=null;
   const titleMusic=new Audio('./assets/zika-title-theme.mp3');
   titleMusic.preload='auto';
   titleMusic.loop=true;
-  titleMusic.volume=0.8;
+  titleMusic.volume=0.46;
   // Décalage établi par comparaison spectrale avec la vidéo de référence :
   // le thème MP3 est avancé de 0.64 s par rapport aux images du titre.
   const TITLE_MUSIC_OFFSET=0.64;
