@@ -29,9 +29,18 @@
   const title = document.getElementById('zf-title');
   const button = document.getElementById('zf-start');
   const soundButton = document.getElementById('zf-audio');
+  let soundEnabled = false;
+  const enableSound = () => {
+    const engine=window.ZikaArcadeAudio;
+    if (!engine) { soundButton.textContent='SON INDISPONIBLE'; return false; }
+    if (!engine.startTitle()) { soundButton.textContent='AUDIO NON PRIS EN CHARGE'; return false; }
+    soundEnabled=true;
+    soundButton.textContent='♪ SON ACTIVÉ';
+    return true;
+  };
   soundButton.addEventListener('click', event => {
     event.stopPropagation();
-    if (window.ZikaArcadeAudio?.startTitle()) soundButton.textContent='♪ MUSIQUE ACTIVÉE';
+    enableSound();
   });
   let phase = 'publisher';
   let closed = false;
@@ -62,17 +71,14 @@
     splash.hidden = true;
     title.hidden = false;
     button.focus({ preventScroll: true });
-    if (window.ZikaArcadeAudio && window.ZikaArcadeAudio.startTitle && window.ZikaArcadeAudio.unlock()) {
-      // L'autoplay sera silencieux si le navigateur n'a reçu aucune interaction.
-      if (navigator.userActivation?.hasBeenActive) window.ZikaArcadeAudio.startTitle();
-    }
+    // Le son démarre au premier geste utilisateur (pas d'autoplay forcé).
   };
   const launch = () => {
     if (closed) return;
-    if (phase === 'publisher') { window.ZikaArcadeAudio?.logo(); showTitle(); return; }
+    if (phase === 'publisher') { enableSound(); window.ZikaArcadeAudio?.logo(); showTitle(); return; }
+    enableSound();
     closed = true;
     phase = 'selection';
-    window.ZikaArcadeAudio?.stop();
     window.ZikaArcadeAudio?.select();
     overlay.classList.add('zf-fade');
     window.setTimeout(() => {
@@ -86,6 +92,7 @@
   const keydown = event => {
     if (closed || !document.body.contains(overlay)) return;
     if (['Enter', 'Space', 'NumpadEnter'].includes(event.code)) {
+      enableSound();
       event.preventDefault();
       event.stopImmediatePropagation();
       launch();
@@ -98,7 +105,11 @@
   };
   document.addEventListener('keydown', keydown, true);
   button.addEventListener('click', launch);
-  splash.addEventListener('click', () => { window.ZikaArcadeAudio?.logo(); showTitle(); });
+  splash.addEventListener('click', () => { enableSound(); window.ZikaArcadeAudio?.logo(); showTitle(); });
+  // Le son peut également être activé par une pression sur l'écran sans quitter la sélection.
+  document.addEventListener('pointerdown', (event) => {
+    if(!closed && overlay.contains(event.target) && !soundEnabled) enableSound();
+  }, {capture:true});
   // La marque apparaît d'abord, puis l'écran-titre. Aucun son automatique interdit par le navigateur.
   splashTimer = window.setTimeout(showTitle, 1900);
 })();
