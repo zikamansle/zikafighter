@@ -794,7 +794,7 @@
     if(phase!=='title')return;
     cursorConfirm();
     if(titleSelection===2){openOptions();return;}
-    if(titleSelection===0){settings.turbo=clamp(settings.turbo,0,8);persistSettings();}
+    if(titleSelection===0){settings.turbo=clamp(settings.turbo,0,4);persistSettings();}
     if(titleSelection===1){settings.turbo=0;persistSettings();}
     launch();
   }
@@ -1048,7 +1048,7 @@
       if(beforeSelection!==titleSelection)cursorMove();
       if(titleSelection===0&&event.clientX>rect.left+rect.width*.63){
         const previous=settings.turbo;
-        settings.turbo=clamp(settings.turbo+1,0,8);persistSettings();
+        settings.turbo=clamp(settings.turbo+1,0,4);persistSettings();
         if(previous!==settings.turbo)cursorMove();
         return;
       }
@@ -1095,7 +1095,7 @@
         titleSelection=(titleSelection+1)%3;
       }else if(['ArrowLeft','ArrowRight','KeyA','KeyD'].includes(event.code)){
         if(titleSelection===0){
-          settings.turbo=clamp(settings.turbo+(['ArrowLeft','KeyA'].includes(event.code)?-1:1),0,8);
+          settings.turbo=clamp(settings.turbo+(['ArrowLeft','KeyA'].includes(event.code)?-1:1),0,4);
           persistSettings();
         }
       }else if(['Enter','Space','NumpadEnter'].includes(event.code)){
@@ -1156,8 +1156,8 @@
           const priorSelection=titleSelection, priorTurbo=settings.turbo;
           if(action==='up')titleSelection=(titleSelection+2)%3;
           else if(action==='down')titleSelection=(titleSelection+1)%3;
-          else if(action==='left'&&titleSelection===0){settings.turbo=clamp(settings.turbo-1,0,8);persistSettings();}
-          else if(action==='right'&&titleSelection===0){settings.turbo=clamp(settings.turbo+1,0,8);persistSettings();}
+          else if(action==='left'&&titleSelection===0){settings.turbo=clamp(settings.turbo-1,0,4);persistSettings();}
+          else if(action==='right'&&titleSelection===0){settings.turbo=clamp(settings.turbo+1,0,4);persistSettings();}
           else if(action==='select')activateTitleSelection();
           if(priorSelection!==titleSelection||priorTurbo!==settings.turbo)cursorMove();
         }else if(phase==='options'){
