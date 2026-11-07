@@ -308,6 +308,116 @@
     renderTitleFrame(elapsed);
     titleFrame=requestAnimationFrame(drawTitleFrame);
   }
+
+  // Curseur : le Z découpé du lettrage officiel ZIKA, avec ses couleurs.
+  function drawZCursor(ctx,x,y){
+    if(titleSpriteCanvas){
+      ctx.save();ctx.imageSmoothingEnabled=false;
+      ctx.drawImage(titleSpriteCanvas,1,0,154,106,x,y-12,17,15);
+      ctx.restore();
+    }else{
+      ctx.font='italic bold 15px Georgia,serif';
+      ctx.fillStyle='#ffbc21';ctx.fillText('Z',x,y);
+    }
+  }
+  function menuText(ctx,text,x,y,size=10,color='#b9b9b9',align='left'){
+    ctx.save();
+    ctx.textAlign=align;
+    ctx.font='bold '+size+'px Georgia,"Times New Roman",serif';
+    ctx.textBaseline='alphabetic';
+    ctx.fillStyle='#17161a';ctx.fillText(text,x+1,y+1);
+    ctx.fillStyle=color;ctx.fillText(text,x,y);
+    ctx.restore();
+  }
+  function renderOptions(){
+    if(!optionsCtx)return;
+    const ctx=optionsCtx;
+    ctx.setTransform(2,0,0,2,0,0);
+    ctx.imageSmoothingEnabled=false;
+    ctx.fillStyle='#000';ctx.fillRect(0,0,320,180);
+    // Grand logo ZIKA FIGHTER sombre en filigrane, même taille et emplacement
+    // que la référence "OPTION MODE" fournie par l'utilisateur.
+    if(titleSpriteCanvas){
+      ctx.save();
+      ctx.globalAlpha=.23;
+      ctx.filter='grayscale(1) brightness(.72)';
+      ctx.drawImage(titleSpriteCanvas,41,24,252,114);
+      ctx.filter='none';
+      ctx.restore();
+    }
+    menuText(ctx,'OPTION MODE',160,21,19,'#5868a3','center');
+    menuText(ctx,'EASY',135,40,10,'#b9b9bc','center');
+    menuText(ctx,'HARD',242,40,10,'#b9b9bc','center');
+    menuText(ctx,'DIFFICULTY',19,48,11,'#8d3848');
+    for(let i=0;i<8;i++)menuText(ctx,'★',158+i*12,49,12,i<settings.difficulty?'#acaa40':'#777b80');
+    menuText(ctx,'TIME LIMIT',19,64,11);
+    menuText(ctx,'YES',156,64,11,settings.timeLimit?'#a6ad3e':'#b5b4b7','center');
+    menuText(ctx,'NO',239,64,11,!settings.timeLimit?'#a6ad3e':'#b5b4b7','center');
+    menuText(ctx,'CONFIG.',19,81,11);
+    menuText(ctx,'1PLAYER',159,81,10,settings.players===1?'#a6ad3e':'#bbb','center');
+    menuText(ctx,'2PLAYER',244,81,10,settings.players===2?'#a6ad3e':'#bbb','center');
+    menuText(ctx,'OPS FIGHTER',19,97,11);
+    menuText(ctx,'SET',165,97,11,'#a6ad3e','center');
+    // Présentation verticale des touches comme sur l'écran SNES.
+    for(let i=0;i<6;i++){
+      const left=['Y','X','L','B','A','R'][i];
+      const right=['Y','X','L','B','A','R'][(i+settings.controlPreset*2)%6];
+      menuText(ctx,left,172,107+i*6,8,'#c9c9c9','center');
+      menuText(ctx,right,242,107+i*6,8,'#c9c9c9','center');
+    }
+    menuText(ctx,'STEREO',19,151,11);
+    menuText(ctx,'STEREO',162,151,10,settings.stereo?'#b1b34a':'#b9b9b9','center');
+    menuText(ctx,'MONAURAL',247,151,10,!settings.stereo?'#b1b34a':'#b9b9b9','center');
+    menuText(ctx,'MUSIC TEST',19,171,11);
+    menuText(ctx,String(settings.musicTest).padStart(2,'0'),163,171,11,'#a6ad3e','center');
+    drawZCursor(ctx,optionSelection===5?138:optionSelection===4?130:optionSelection===3?139:optionSelection===2?128:optionSelection===1?130:135,
+      [48,64,81,97,151,171][optionSelection]);
+  }
+  function playMusicTest(){
+    if(musicTestAudio){musicTestAudio.pause();musicTestAudio=null;}
+    // Deux morceaux sont actuellement fournis : 01 (logo) et 10 (titre).
+    // Les autres indices peuvent être préparés sans lecture fictive.
+    if(settings.musicTest!==1&&settings.musicTest!==10)return;
+    const src=settings.musicTest===1?'./assets/zikacom-intro.mp3':'./assets/zika-title-theme.mp3';
+    musicTestAudio=new Audio(src);musicTestAudio.volume=.7;
+    const p=musicTestAudio.play();
+    if(p&&p.catch)p.catch(()=>{});
+  }
+  function adjustOption(direction){
+    const d=direction<0?-1:1;
+    switch(optionSelection){
+      case 0:settings.difficulty=clamp(settings.difficulty+d,1,8);break;
+      case 1:settings.timeLimit=!settings.timeLimit;break;
+      case 2:settings.players=settings.players===1?2:1;break;
+      case 3:settings.controlPreset=(settings.controlPreset+d+3)%3;break;
+      case 4:settings.stereo=!settings.stereo;break;
+      case 5:settings.musicTest=clamp(settings.musicTest+d,0,99);break;
+    }
+    persistSettings();renderOptions();
+  }
+  function openOptions(){
+    if(phase!=='title')return;
+    if(titleFrame)cancelAnimationFrame(titleFrame);
+    phase='options';
+    title.hidden=true;optionsScreen.hidden=false;
+    optionSelection=0;
+    renderOptions();
+  }
+  function closeOptions(){
+    if(phase!=='options')return;
+    if(musicTestAudio){musicTestAudio.pause();musicTestAudio=null;}
+    optionsScreen.hidden=true;title.hidden=false;phase='title';
+    // Le titre reprend sur son menu stable, pas au début de la rotation.
+    titleVisualStartedAt=performance.now()-7000;
+    titleFrame=requestAnimationFrame(drawTitleFrame);
+  }
+  function activateTitleSelection(){
+    if(phase!=='title')return;
+    if(titleSelection===2){openOptions();return;}
+    if(titleSelection===0){settings.turbo=clamp(settings.turbo,0,8);persistSettings();}
+    if(titleSelection===1){settings.turbo=0;persistSettings();}
+    launch();
+  }
   // Frises et positions relevées sur la capture 1311-30 (320x180 virtuels).
   // Aucune interpolation temporelle entre frames SNES de 1/30 s.
   function renderCinematic(seconds){
