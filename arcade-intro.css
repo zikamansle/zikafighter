@@ -160,3 +160,10 @@
 #zf-intro .zf-zikacom-shine{
   filter:brightness(4.2) saturate(.3) contrast(1.18)!important;
 }
+
+/* ZIKAPCOM: golden pixel-art logo and whole-letter metallic flash on final note. */
+#zf-intro .zf-zikacom-official,#zf-intro .zf-zikacom-shine{width:min(39vw,555px)!important;aspect-ratio:1401/228!important}
+#zf-intro .zf-zikacom-official img,#zf-intro .zf-zikacom-shine img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+#zf-intro .zf-zikacom-official{filter:brightness(calc(1 + var(--zf-palette-pulse,0)*.65)) saturate(calc(1 - var(--zf-palette-pulse,0)*.32))!important}
+#zf-intro .zf-zikacom-shine{filter:brightness(1.8) saturate(.25)!important;mix-blend-mode:screen!important}
+#zf-intro.zf-zikapcom-fallback .zf-zikacom-official::after{content:'ZIKAPCOM';position:absolute;inset:0;color:#f7d53c;text-shadow:2px 2px #143aaf,-2px -2px #143aaf;font:bold clamp(18px,3.1vw,55px)/1.4 Georgia,serif;text-align:center}
