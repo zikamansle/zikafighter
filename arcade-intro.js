@@ -75,12 +75,15 @@
     const start=1.62, end=2.10;
     if(seconds>=start && seconds<=end){
       const t=(seconds-start)/(end-start);
-      // CAPCOM SNES : reflet HORIZONTAL qui descend du HAUT vers le BAS
-      // des lettres, et non un balayage latéral.
-      const y=-22+144*t;
-      const glow=Math.min(1,smooth(t/.18),smooth((1-t)/.18));
+      // Référence CAPCOM : ligne lumineuse horizontale qui REMONTE
+      // du bas vers le haut, puis REDESCEND vers le bas.
+      // Un aller-retour complet sur l'accent du jingle (1.62–2.10 s).
+      const travel=t<.5 ? smooth(t*2) : smooth((1-t)*2);
+      const y=110-120*travel;
+      const top=y-12, bottom=y+12;
+      const glow=Math.min(1,smooth(t/.12),smooth((1-t)/.12));
       shine.style.opacity=String(glow*.95);
-      shine.style.clipPath='inset('+y+'% 0 '+(100-y-28)+'% 0)';
+      shine.style.clipPath='polygon(0 '+top+'%,100% '+top+'%,100% '+bottom+'%,0 '+bottom+'%)';
       overlay.style.setProperty('--zf-logo-glow',String(.08+.24*glow));
     }else{
       shine.style.opacity='0';
