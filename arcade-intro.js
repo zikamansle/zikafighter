@@ -15,6 +15,7 @@
     '<div class="zf-press" aria-hidden="true">PUSH START</div>',
     '<div class="zf-copyright">© 2027 ZIKACOM<br>ALL RIGHTS RESERVED</div>',
     '<div class="zf-credits">CREDIT 00</div>',
+    '<button type="button" id="zf-audio" aria-label="Activer la musique arcade" style="position:absolute;bottom:10%;right:3%;z-index:3;background:#09135a;color:white;border:2px solid #fff;padding:8px 12px;font:700 12px monospace;cursor:pointer">♪ ACTIVER LE SON</button>',
     '<button type="button" id="zf-start" class="zf-start" aria-label="Commencer Zika Fighter et choisir son personnage">COMMENCER</button>',
     '</div>'
   ].join('');
@@ -27,6 +28,11 @@
   const splash = document.getElementById('zf-splash');
   const title = document.getElementById('zf-title');
   const button = document.getElementById('zf-start');
+  const soundButton = document.getElementById('zf-audio');
+  soundButton.addEventListener('click', event => {
+    event.stopPropagation();
+    if (window.ZikaArcadeAudio?.startTitle()) soundButton.textContent='♪ MUSIQUE ACTIVÉE';
+  });
   let phase = 'publisher';
   let closed = false;
   let splashTimer;
@@ -56,13 +62,18 @@
     splash.hidden = true;
     title.hidden = false;
     button.focus({ preventScroll: true });
+    if (window.ZikaArcadeAudio && window.ZikaArcadeAudio.startTitle && window.ZikaArcadeAudio.unlock()) {
+      // L'autoplay sera silencieux si le navigateur n'a reçu aucune interaction.
+      if (navigator.userActivation?.hasBeenActive) window.ZikaArcadeAudio.startTitle();
+    }
   };
   const launch = () => {
     if (closed) return;
-    if (phase === 'publisher') { showTitle(); return; }
+    if (phase === 'publisher') { window.ZikaArcadeAudio?.logo(); showTitle(); return; }
     closed = true;
     phase = 'selection';
-    beep(440, .12);
+    window.ZikaArcadeAudio?.stop();
+    window.ZikaArcadeAudio?.select();
     overlay.classList.add('zf-fade');
     window.setTimeout(() => {
       overlay.remove();
@@ -87,7 +98,7 @@
   };
   document.addEventListener('keydown', keydown, true);
   button.addEventListener('click', launch);
-  splash.addEventListener('click', showTitle);
+  splash.addEventListener('click', () => { window.ZikaArcadeAudio?.logo(); showTitle(); });
   // La marque apparaît d'abord, puis l'écran-titre. Aucun son automatique interdit par le navigateur.
   splashTimer = window.setTimeout(showTitle, 1900);
 })();
