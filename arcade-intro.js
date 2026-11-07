@@ -693,7 +693,8 @@
     if(titleFrame)cancelAnimationFrame(titleFrame);
     titleMusic.pause();
     titleMusic.currentTime=0;
-    music?.select();
+    // Le vrai WAV de confirmation est joué par activateTitleSelection().
+    // Ne pas superposer le vieux bruitage synthétique.
     overlay.classList.add('zf-fade');
     setTimeout(()=>{
       overlay.remove();
