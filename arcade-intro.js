@@ -125,6 +125,25 @@
   const optionsBack=document.getElementById('zf-options-back');
   const titleCanvas=document.getElementById('zf-title-canvas');
   const titleCtx=titleCanvas.getContext('2d',{alpha:false});
+  const OPTIONS_STORAGE_KEY='zikafighter-options-v2';
+  const defaultSettings={difficulty:4,timeLimit:true,players:1,controlPreset:0,stereo:true,musicTest:10,turbo:3};
+  let settings={...defaultSettings};
+  try{
+    const saved=JSON.parse(localStorage.getItem(OPTIONS_STORAGE_KEY)||'null');
+    if(saved&&typeof saved==='object'){
+      for(const key of Object.keys(defaultSettings)){
+        if(typeof saved[key]===typeof defaultSettings[key])settings[key]=saved[key];
+      }
+    }
+  }catch(_){}
+  const persistSettings=()=>{
+    try{localStorage.setItem(OPTIONS_STORAGE_KEY,JSON.stringify(settings));}catch(_){}
+    window.ZikaFighterSettings={...settings};
+  };
+  persistSettings();
+  let titleSelection=0,optionSelection=0,optionsFrame=0;
+  let musicTestAudio=null;
+
   let titleFrame=0;
   const cinematic=document.getElementById('zf-cinematic');
   let cinematicFrame=null;
