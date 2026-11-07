@@ -66,11 +66,13 @@
     // Séquence pilotée par le temps de lecture effectif du jingle.
     const smooth=n=>{const t=clamp(n,0,1);return t*t*(3-2*t);};
     const entrance=smooth((seconds-.45)/.9);
-    const departure=1-smooth((seconds-5.12)/.5);
+    // La musique s'éteint vers 3,8 s ; fond noir avant la transition de 5,695 s.
+    const departure=1-smooth((seconds-3.15)/.67);
     overlay.style.setProperty('--zf-logo-opacity',String(entrance*departure));
     const shine=document.querySelector('.zf-zikacom-shine');
-    // Reflet marqué à 4,28 s, terminé avant la disparition du logo.
-    const start=4.28, end=4.86;
+    // Accent fort du jingle à ~1,80 s (analyse du fichier audio).
+    // Le MP3 contient un silence final : ne jamais placer l'éclat à 4 s.
+    const start=1.62, end=2.10;
     if(seconds>=start && seconds<=end){
       const t=(seconds-start)/(end-start);
       const x=-24+148*t;
