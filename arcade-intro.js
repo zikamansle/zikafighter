@@ -132,7 +132,7 @@
   const titleCanvas=document.getElementById('zf-title-canvas');
   const titleCtx=titleCanvas.getContext('2d',{alpha:false});
   const OPTIONS_STORAGE_KEY='zikafighter-options-v2';
-  const defaultSettings={difficulty:4,timeLimit:true,players:1,controlPreset:0,stereo:true,musicTest:10,seTest:0,turbo:3};
+  const defaultSettings={difficulty:4,timeLimit:true,players:1,controlPreset:0,stereo:true,musicTest:10,seTest:0,musicVolume:7,fxVolume:8,turbo:3};
   let settings={...defaultSettings};
   try{
     const saved=JSON.parse(localStorage.getItem(OPTIONS_STORAGE_KEY)||'null');
@@ -145,6 +145,7 @@
   const persistSettings=()=>{
     try{localStorage.setItem(OPTIONS_STORAGE_KEY,JSON.stringify(settings));}catch(_){}
     window.ZikaFighterSettings={...settings};
+    window.dispatchEvent(new CustomEvent('zika:settings-changed',{detail:{...settings}}));
   };
   persistSettings();
   let titleSelection=0,optionSelection=0,optionsFrame=0;
@@ -161,7 +162,10 @@
   const audio=new Audio('./assets/zikacom-intro.mp3');
   audio.preload='auto';
   audio.load();
-  audio.volume=1;
+  audio.volume=.95*Math.max(0,Math.min(10,settings.musicVolume))/10;
+  window.addEventListener('zika:settings-changed',event=>{
+    audio.volume=.95*Math.max(0,Math.min(10,event.detail.musicVolume))/10;
+  });
   const music=window.ZikaArcadeAudio;
   // Déplacement : bruitage WAV fourni par l'utilisateur, compressé en MP3 pour le web.
   const cursorMoveSound=new Audio('data:audio/mpeg;base64,SUQzBAAAAAAAIlRTU0UAAAAOAAADTGF2ZjYxLjcuMTAzAAAAAAAAAAAAAAD/81jAAAAAAAAAAAAASW5mbwAAAA8AAAASAAAFxAArKysrKzg4ODg4OEREREREUVFRUVFRXV1dXV1qampqamp2dnZ2doODg4ODg4+Pj4+PnJycnJycqKioqKiotbW1tbXBwcHBwcHOzs7Oztra2tra2ufn5+fn8/Pz8/Pz//////8AAAAATGF2YzYxLjE5AAAAAAAAAAAAAAAAJAP3AAAAAAAABcRZB7PMAAAAAAAAAAAAAAD/8yjEAAo4BeIWAEYAZBUogTRgW84kvKEzFqnBg+soMOH9/Hvz//OJR//3nP//9JD9+cP6ZBYEgLGEEPaiIK7ZC1ePvp6im1//8yjEEgnIAgFMCEQA5DFmuT9SPp/7f/+kPIf9rHD63izlVRU5EWXHiiirJ19s7nbavjHCjXlJAXsDQtZK9db21foFhOinuT//8yjEJQvQBgFFQBAAs/2q2ue98IIJBVXwAkBu7sG+Ke6AOwA3+Wi8QQPTAICACifJxFMrgepcDUGIwEBvsm9xnSHDNE6Xv3v/8yjEMBbSXpgBjaAA8fRFSsRInSJ/6kDTkkPAYrBEEK5o3//6aHN1LR////UtFInD+3//yjRVRNVxytgOMIaXgAJEeKLJPRT/8yjEDxDq+tpfzWgCVIospKijWj6yVBMkq30f62f+Owoo////RE1Fqj///+S5Cd////ULIt////iAHUf///ojFPJBxxAOKEX/8yjEBg3a9tZeUNoykoAKf8IqEsUcm5Z1CEB9+6HTs67pfyc3tt9f/zAo///9fK3////kmUv///5s////85VS22AWuiiwABD/8yjECQ6pStpeQwR0PD1aso1HieZabWRPLU20fUjcgwX76nULjj1bKR2cyp8EL6Klmqln/8WNY7///1k//0KBgQEAQuAAyGr/8yjECQ8C+qkemCgSWpeo6DWqCJMXUuktSCaH/+bDF////TFmiaf///WoO8V7///+sXaH///5wN0V0v///yBqAEggCyAHd4D/8yjECA6q+rZeoA+gKj/3QXV3NOtAzBoxFGRfrf6zNJatD5Hkl////FoHl+jckMr1f//+MFv///4LyX///8stAPACqgGL4Az/8yjECA2S9rG+oA+gH/6qrJ9egZggSjQfVR76SC6SF/j+bft6//1CnL7fEJyt///8Vf///41b//9fx5UEAiCiATF//X2fWtH/8yjEDAzCjpz0oAWgUaF8BzUHGDZFWzrUnqZrqr+Rrf/v/9AV4b//Vv///4sf///+C//rBAcACmgAYKm//r2qzVwKRB2TYur/8yjEFAyKjpz+mAug2dJa7aCkKnv8xPf///eOsemf+IN////CP///+Dj0qgA2C5ahtgA3//rSd3IQhO+9un27LJA+OnI90+3/8yjEHAwijsm+UA+i/8R37LZYmf//v288JBad///7KBFqcE26/vAA7///KYwiUICij6GWtJUMrqyOtAoMXdW3te3/UIjtHWn/8yjEJgyqjqx+K0rgT//3f///+Ev///8QLQA4BdvhdgAN2RjjzbqwVgOtfOU1WOmo6sbf4lEqOrHTUZJt1+yOawkApd/9f///8yjELgxhSqW+EBQMD//5ZQULRdvAB0GAaGN/6CCCDf0Cp////0A+EBBm9NBBBBBBv9BBH/6aaaaf00000xBTQEHf+tUJQUn/8yjENwzSIsB+AprGAAJ/n/W1rWjPnymEmOEFQVBUFQafiYGg7+z/BkNAqCrvg0DWWBoGg75YS5Y9//IqKEH/////xUWaaWL/8yjEPgyYcnw+CB5En/8V////+LC7DISFhURmRguIRUVEdUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/8yjERggYASQMAES4VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU=');
@@ -220,7 +224,7 @@
         const source=context.createBufferSource();
         const gain=context.createGain();
         source.buffer=buffer;
-        gain.gain.value=kind==='move'?9:6.5;
+        gain.gain.value=(kind==='move'?9:6.5)*(Math.max(0,Math.min(10,settings.fxVolume))/10);
         source.connect(gain);gain.connect(context.destination);
         source.start(context.currentTime);
       }catch(err){
@@ -260,7 +264,11 @@
   const titleMusic=new Audio('./assets/zika-title-theme.mp3');
   titleMusic.preload='auto';
   titleMusic.loop=true;
-  titleMusic.volume=0.46;
+  titleMusic.volume=.70*Math.max(0,Math.min(10,settings.musicVolume))/10;
+  window.addEventListener('zika:settings-changed',event=>{
+    titleMusic.volume=.70*Math.max(0,Math.min(10,event.detail.musicVolume))/10;
+    if(musicTestAudio)musicTestAudio.volume=.70*Math.max(0,Math.min(10,event.detail.musicVolume))/10;
+  });
   // Décalage établi par comparaison spectrale avec la vidéo de référence :
   // le thème MP3 est avancé de 0.64 s par rapport aux images du titre.
   const TITLE_MUSIC_OFFSET=0.64;
