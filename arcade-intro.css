@@ -111,3 +111,18 @@
 #zf-intro .zf-cine-shine{opacity:0;filter:brightness(2.8) saturate(.1);pointer-events:none}
 #zf-intro.zf-title-ready .zf-title{animation:none!important;filter:none!important}
 #zf-intro.zf-title-ready .zf-title-flash{animation:none!important;opacity:0!important}
+
+/* ZIKACOM (premier écran) : logo exact extrait visuellement de l'illustration validée,
+   petit sur NOIR, fondu lié à audio.currentTime, reflet argenté final. */
+#zf-intro .zf-splash,#zf-intro.zf-splash-ready .zf-splash{
+  background:#000!important;animation:none!important;isolation:isolate;
+}
+#zf-intro .zf-zikacom-official,#zf-intro .zf-zikacom-shine{
+  position:absolute;left:50%;top:50%;width:min(58vw,720px);aspect-ratio:1200 / 260;
+  transform:translate(-50%,-50%);pointer-events:none;
+}
+#zf-intro .zf-zikacom-official{opacity:var(--zf-logo-opacity,0)}
+#zf-intro .zf-zikacom-shine{opacity:0;filter:brightness(3) saturate(0);mix-blend-mode:screen}
+#zf-intro .zf-zikacom-official svg,#zf-intro .zf-zikacom-shine svg{
+  display:block;width:100%;height:100%;overflow:visible;
+}
