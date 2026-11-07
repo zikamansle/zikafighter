@@ -855,6 +855,8 @@
     overlay.classList.add('zf-fade');
     setTimeout(()=>{
       overlay.remove();
+      // The selection scene takes over the shared BGM, with the global music level.
+      window.ZikaArcadeAudio?.startTitle();
       document.querySelector('[data-player]')?.focus({preventScroll:true});
     },390);
   }
