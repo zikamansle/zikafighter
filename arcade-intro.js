@@ -526,7 +526,13 @@
       const data=new ImageData(new Uint8ClampedArray(original.data),WOPT,HOPT);
       if(optionSelection!==0){
         // Nettoyer le Z initial, recolorer la ligne quittée et la nouvelle.
-        eraseOptionInk(data,[48,139,92,69],'white');
+        // Fond noir uni à cet endroit ; ne laisser aucun fantôme du Z.
+        eachPixel(data,[48,139,92,69],(i)=>{
+          const r=data[i],g=data[i+1],b=data[i+2];
+          if(Math.min(r,g,b)>130&&Math.abs(r-g)<65&&Math.abs(g-b)<65){
+            data[i]=0;data[i+1]=0;data[i+2]=0;
+          }
+        });
         recolorOption(data,optionLabelBoxes[0],'red','white');
         recolorOption(data,optionLabelBoxes[optionSelection],'white','red');
       }
@@ -585,18 +591,32 @@
     }
     // L'association des boutons doit correspondre aux deux colonnes SET.
     if(settings.controlPreset!==0||(settings.controlPresetP2||0)!==0){
+      // Calculer la suppression des anciennes lettres une seule fois.
+      // Ne pas recopier 12 fois une image de 6 Mo à chaque touche.
+      if(original){
+        const keysClean=new ImageData(new Uint8ClampedArray(original.data),WOPT,HOPT);
+        for(let player=0;player<2;player++){
+          const preset=player===0?settings.controlPreset:(settings.controlPresetP2||0);
+          if(!preset)continue;
+          const x=player===0?686:1056;
+          for(let i=0;i<6;i++)eraseOptionInk(keysClean,[x,controlYs[i]-32,98,43],'white');
+        }
+        for(let player=0;player<2;player++){
+          const preset=player===0?settings.controlPreset:(settings.controlPresetP2||0);
+          if(!preset)continue;
+          const x=player===0?686:1056;
+          c.putImageData(keysClean,0,0,x,controlYs[0]-32,98,controlYs[5]-controlYs[0]+43);
+        }
+      }
       for(let player=0;player<2;player++){
         const preset=player===0?settings.controlPreset:(settings.controlPresetP2||0);
         if(!preset)continue;
         const x=player===0?686:1056;
         for(let i=0;i<6;i++){
-          if(original) {
-            const patch=new ImageData(new Uint8ClampedArray(original.data),WOPT,HOPT);
-            eraseOptionInk(patch,[x,controlYs[i]-32,98,43],'white');
-            c.putImageData(patch,0,0,x,controlYs[i]-32,98,43);
-          }else fillBlack(x,controlYs[i]-34,96,46);
+          if(!original)fillBlack(x,controlYs[i]-34,96,46);
           c.fillStyle='#f5f5f5';c.font='900 48px Georgia,serif';
-          c.textAlign='center';c.fillText(controlKeys[(i+preset*2)%6],x+48,controlYs[i]);
+          c.textAlign='center';c.textBaseline='alphabetic';
+          c.fillText(controlKeys[(i+preset*2)%6],x+48,controlYs[i]);
         }
       }
     }
@@ -946,8 +966,12 @@
       case 3:if(x>=580&&x<920){settings.controlPreset=clampPreset(settings.controlPreset+1);changed=true;}
         else if(x>=920){settings.controlPresetP2=clampPreset((settings.controlPresetP2||0)+1);changed=true;}break;
       case 4:if(x>=580){let n=x<940;if(n!==settings.stereo){settings.stereo=n;changed=true;}}break;
-      case 5:if(x>=500){adjustOption(1);return;}break;
-      case 6:if(x>=500){adjustOption(1);return;}break;
+      case 5:
+        if(x>=900){cursorConfirm();playMusicTest();return;}
+        if(x>=500){adjustOption(1);return;}break;
+      case 6:
+        if(x>=900){cursorConfirm();playSfxTest();return;}
+        if(x>=500){adjustOption(1);playSfxTest();return;}break;
     }
     if(changed){cursorConfirm();persistSettings();}
     renderOptions();
@@ -996,7 +1020,7 @@
   document.addEventListener('pointerdown',()=>{
     if(phase==='title'||phase==='options'){
       prepareMenuSfx();
-      if(titleMusic.paused)playTitleMusic();
+      if(titleMusic.paused&&!musicTestAudio)playTitleMusic();
     }
   },{capture:true});
   // Prise en charge des manettes du navigateur : croix, sticks, A et B.
