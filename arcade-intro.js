@@ -899,7 +899,7 @@
       return;
     }
     if(optionSelection===7&&x>205){cursorConfirm();playMusicTest();return;}
-    if(optionSelection===8&&x>205){cursorConfirm();playSfxTest();return;}
+    if(optionSelection===8&&x>205){playSfxTest();return;}
     adjustOption(x<154?-1:1);
   });
   document.addEventListener('keydown',event=>{
@@ -931,10 +931,12 @@
       }else if(['ArrowLeft','ArrowRight','KeyA','KeyD'].includes(event.code)){
         adjustOption(['ArrowLeft','KeyA'].includes(event.code)?-1:1);
       }else if(['Enter','Space','NumpadEnter'].includes(event.code)){
-        cursorConfirm();
-        if(optionSelection===7)playMusicTest();
-        else if(optionSelection===8)playSfxTest();
-        else adjustOption(1);
+        if(optionSelection===8)playSfxTest();
+        else {
+          cursorConfirm();
+          if(optionSelection===7)playMusicTest();
+          else adjustOption(1);
+        }
       }else return;
       if(oldSelection!==optionSelection)cursorMove();
       event.preventDefault();event.stopImmediatePropagation();
@@ -981,7 +983,7 @@
           else if(action==='left')adjustOption(-1);
           else if(action==='right')adjustOption(1);
           else if(action==='back')closeOptions();
-          else if(action==='select'){cursorConfirm();if(optionSelection===7)playMusicTest();else if(optionSelection===8)playSfxTest();else adjustOption(1);}
+          else if(action==='select'){if(optionSelection===8)playSfxTest();else{cursorConfirm();if(optionSelection===7)playMusicTest();else adjustOption(1);}}
         }
       }
     }
