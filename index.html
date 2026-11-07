@@ -45,7 +45,7 @@ function start(){
   anim=requestAnimationFrame(frame);
 }
 function playAgain(){start()}
-function menu(){cancelAnimationFrame(anim);status='menu';$('#select').hidden=false;$('#fight').hidden=true;$('#home').hidden=true;window.ZikaArcadeAudio?.stop();Object.keys(keys).forEach(k=>keys[k]=false);Object.keys(p2keys).forEach(k=>p2keys[k]=false)}
+function menu(){cancelAnimationFrame(anim);status='menu';$('#select').hidden=false;$('#fight').hidden=true;$('#home').hidden=true;window.ZikaArcadeAudio?.startTitle();Object.keys(keys).forEach(k=>keys[k]=false);Object.keys(p2keys).forEach(k=>p2keys[k]=false)}
 function padControls(index){
   let pad=null;
   try{pad=navigator.getGamepads?.()?.[index]||null;}catch(_){}
@@ -138,6 +138,18 @@ window.addEventListener('blur',()=>{
   Object.keys(p2keys).forEach(k=>p2keys[k]=false);
 });
 for(const b of document.querySelectorAll('[data-action]')){const action=b.dataset.action;b.addEventListener('pointerdown',event=>{event.preventDefault();keys[action]=true;b.setPointerCapture(event.pointerId)});for(const n of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(n,()=>{keys[action]=false})}
-for(const b of document.querySelectorAll('[data-player]'))b.addEventListener('click',()=>{config.player=b.dataset.player;document.querySelectorAll('[data-player]').forEach(x=>x.classList.toggle('active',x===b))});$('#stage').addEventListener('change',ev=>{config.stage=ev.target.value});$('#start').onclick=start;$('#retry').onclick=playAgain;$('#back').onclick=menu;$('#home').onclick=menu;
+for(const b of document.querySelectorAll('[data-player]'))b.addEventListener('click',()=>{
+  window.ZikaArcadeAudio?.playEffect('move');
+  config.player=b.dataset.player;
+  document.querySelectorAll('[data-player]').forEach(x=>x.classList.toggle('active',x===b));
+});
+$('#stage').addEventListener('change',ev=>{
+  config.stage=ev.target.value;
+  window.ZikaArcadeAudio?.playEffect('move');
+});
+$('#start').onclick=()=>{window.ZikaArcadeAudio?.playEffect('confirm');start();};
+$('#retry').onclick=playAgain;
+$('#back').onclick=menu;
+$('#home').onclick=menu;
 })();
 </script><script defer src="./arcade-audio.js?v=20261107-global-mix"></script><script defer src="./arcade-intro.js?v=20261107-global-mix"></script></body></html>
