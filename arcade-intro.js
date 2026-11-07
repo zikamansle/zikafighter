@@ -310,7 +310,7 @@
   function drawZCursor(ctx,x,y){
     if(titleSpriteCanvas){
       ctx.save();ctx.imageSmoothingEnabled=false;
-      ctx.drawImage(titleSpriteCanvas,1,0,154,106,x,y-12,17,15);
+      ctx.drawImage(titleSpriteCanvas,0,0,204,153,x,y-13,18,16);
       ctx.restore();
     }else{
       ctx.font='italic bold 15px Georgia,serif';
@@ -549,10 +549,13 @@
       c.globalCompositeOperation='destination-in';c.drawImage(mask,0,0);
       glyph={mask,colored,dark};creditGlyphs.set(key,glyph);
     }
-    const left=Math.round(x-w/2);
+    // Éviter d'étirer artificiellement les mentions plus courtes que CAPCOM :
+    // préserver les proportions des empattements de la police 16 bits.
+    const glyphWidth=Math.min(w,Math.round(glyph.mask.width*1.13));
+    const left=Math.round(x-glyphWidth/2);
     ctx.save();ctx.imageSmoothingEnabled=false;
-    ctx.globalAlpha=.9;ctx.drawImage(glyph.dark,left+1,y+1,w,h);
-    ctx.globalAlpha=1;ctx.drawImage(glyph.colored,left,y,w,h);
+    ctx.globalAlpha=.9;ctx.drawImage(glyph.dark,left+1,y+1,glyphWidth,h);
+    ctx.globalAlpha=1;ctx.drawImage(glyph.colored,left,y,glyphWidth,h);
     ctx.restore();
   }
   function drawLegalFrame(t){
