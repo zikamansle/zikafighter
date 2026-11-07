@@ -742,40 +742,49 @@
     ctx.restore();
   }
   // Crisp vector text at 1280x960, in the same 4:3 frame as the reference.
+  // 4:3 SNES credits: rows and relative sizes measured against the reference.
+  // Render the actual lettering sharply, never a tiny screenshot enlarged.
   function drawLegalFrame(t){
     if(!legalCtx)return;
     const ctx=legalCtx;
     ctx.setTransform(4,0,0,4,0,0);
     ctx.clearRect(0,0,320,240);
-    ctx.fillStyle=t<.19?'#110a9e':'#000';
+    ctx.fillStyle=t<.19?'#120b98':'#000';
     ctx.fillRect(0,0,320,240);
     if(t<.33)return;
     const opacity=Math.min(1,Math.max(0,(t-.33)/.22),Math.max(0,(5.2-t)/.18));
     ctx.globalAlpha=opacity;
-    const write=(value,y,size,color='#eaae37')=>{
+    const write=(value,y,size)=>{
       ctx.save();
-      ctx.textAlign='center';ctx.textBaseline='alphabetic';
       ctx.font='900 '+size+'px Georgia,"Times New Roman",serif';
-      ctx.lineJoin='round';ctx.strokeStyle='#1b0b22';ctx.lineWidth=1;
-      ctx.strokeText(value,160,y+1);
-      ctx.fillStyle=color;ctx.fillText(value,160,y);
+      ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.lineJoin='round';
+      const gradient=ctx.createLinearGradient(0,y-size,0,y+1);
+      gradient.addColorStop(0,'#f6d16d');
+      gradient.addColorStop(.35,'#d99452');
+      gradient.addColorStop(.65,'#9e5038');
+      gradient.addColorStop(1,'#eda850');
+      ctx.strokeStyle='#3d1930';ctx.lineWidth=.8;
+      ctx.strokeText(value,160,y+.7);
+      ctx.fillStyle=gradient;ctx.fillText(value,160,y);
       ctx.restore();
     };
-    write('ZIKA FIGHTER TURBO',39,18,'#f2c247');
-    write('HYPER FIGHTING',65,13,'#e99335');
-    write('© ZIKAPCOM 2027',101,13);
-    write('© ZIKAMANSLE 2027',119,13);
-    write('PRÉSENTÉ PAR ZIKAMANSLE',154,15,'#ffca3b');
+    write('ZIKA FIGHTER TURBO',30,16);
+    write('HYPER FIGHTING',57,12);
+    write('© ZIKAPCOM 2027',91,12);
+    write('© ZIKAPCOM - MANSLE-LES-FONTAINES - 2027',107,9);
+    write('PRÉSENTÉ PAR ZIKAMANSLE',144,15);
     ctx.save();
-    ctx.beginPath();ctx.rect(182,170,138,70);ctx.clip();
-    ctx.textAlign='center';ctx.translate(247,220);ctx.rotate(-.11);
-    ctx.font='italic 900 36px Impact,"Arial Black",sans-serif';
-    ctx.lineWidth=2;ctx.strokeStyle='#200925';ctx.strokeText('ZIKA',0,-18);
-    const gradient=ctx.createLinearGradient(0,-40,0,30);
-    gradient.addColorStop(0,'#ff52ac');gradient.addColorStop(1,'#cc2d9a');
-    ctx.fillStyle=gradient;ctx.fillText('ZIKA',0,-18);
-    ctx.font='italic 900 34px Impact,"Arial Black",sans-serif';
-    ctx.strokeText('FIGHTER',0,17);ctx.fillText('FIGHTER',0,17);
+    ctx.beginPath();ctx.rect(174,162,146,78);ctx.clip();
+    const logo=legalPinkSprite||titleSpriteCanvas;
+    if(logo){
+      ctx.shadowColor='#270e29';ctx.shadowBlur=1.5;
+      ctx.drawImage(logo,180,163,155,78);
+    }else{
+      ctx.textAlign='center';ctx.translate(248,216);ctx.rotate(-.10);
+      ctx.font='italic 900 37px Impact,"Arial Black",sans-serif';
+      ctx.fillStyle='#e84fb1';ctx.fillText('ZIKA',0,-13);
+      ctx.fillText('FIGHTER',0,24);
+    }
     ctx.restore();
     ctx.globalAlpha=1;
   }
