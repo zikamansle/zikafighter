@@ -6,14 +6,14 @@
   const AC=()=>window.AudioContext||window.webkitAudioContext;
   function unlock(){
     try {
-      if(!ctx){const C=AC();if(!C)return false;ctx=new C();master=ctx.createGain();master.gain.value=.23;master.connect(ctx.destination);}
-      if(ctx.state==='suspended') void ctx.resume();
-      return true;
+      if(!ctx){const C=AC();if(!C)return false;ctx=new C();master=ctx.createGain();master.gain.value=.65;master.connect(ctx.destination);}
+      if(ctx.state==='suspended') void ctx.resume().catch(()=>{});
+      return ctx.state !== 'closed';
     }catch(_){return false;}
   }
   function note(freq,duration=.12,at=0,type='square',level=.08){
     if(!ctx||!master)return;
-    const start=ctx.currentTime+at;
+    const start=ctx.currentTime+Math.max(0,at)+.02;
     const osc=ctx.createOscillator(),env=ctx.createGain();
     osc.type=type;osc.frequency.setValueAtTime(freq,start);
     env.gain.setValueAtTime(.0001,start);
@@ -35,12 +35,17 @@
   function startTitle(){
     if(!unlock())return false;
     if(playing)return true;
-    playing=true;beat=0;tick();timer=window.setInterval(tick,167);
+    playing=true;beat=0;
+    if(ctx.state==='running') tick();
+    else void ctx.resume().then(()=>{if(playing)tick();}).catch(()=>{});
+    timer=window.setInterval(tick,167);
     return true;
   }
   function stop(){playing=false;if(timer!==null){window.clearInterval(timer);timer=null;}}
   function logo(){if(!unlock())return;[392,523.25,659.25,1046.5].forEach((f,i)=>note(f,.16,i*.11,'square',.12));}
   function select(){if(!unlock())return;note(523.25,.08,0,'square',.15);note(784,.16,.085,'square',.14);}
   function transition(){if(!unlock())return;[392,466.16,587.33,784].forEach((f,i)=>note(f,.08,i*.065,'sawtooth',.09));}
-  window.ZikaArcadeAudio={unlock,logo,startTitle,stop,select,transition};
+  function isRunning(){return !!ctx && ctx.state === 'running' && playing;}
+  function volume(value){if(unlock())master.gain.value=Math.max(0,Math.min(1,value));}
+  window.ZikaArcadeAudio={unlock,logo,startTitle,stop,select,transition,isRunning,volume};
 })();
