@@ -33,3 +33,7 @@
 
 #zf-intro .zf-title #zf-audio{visibility:visible!important}
 #zf-intro .zf-title-ready #zf-audio{visibility:visible!important}
+
+/* Écran ZIKACOM : démarrage au geste utilisateur, synchronisé sur le MP3. */
+#zf-intro .zf-play-prompt{position:absolute;bottom:6%;font:700 clamp(12px,1.8vw,23px) "Courier New",monospace;letter-spacing:.055em;color:white;text-shadow:2px 2px #070c53;animation:zf-blink 1s steps(1) infinite;cursor:pointer}
+#zf-intro.zf-splash-ready .zf-splash .zf-play-prompt{visibility:visible}
