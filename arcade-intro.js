@@ -476,10 +476,10 @@
       optionTempCtx.fillStyle='#ffffff';
       optionTempCtx.fillRect(0,0,w,h);
       optionTempCtx.globalCompositeOperation='source-over';
-      optionTempCtx.filter='grayscale(1) brightness(3.5) contrast(1.7)';
       ctx.save();ctx.fillStyle='#000';ctx.fillRect(x,y,w,h);
+      ctx.filter='grayscale(1) brightness(4) contrast(1.7)';
       ctx.drawImage(optionTemp,x,y);
-      ctx.restore();optionTempCtx.filter='none';
+      ctx.restore();
     }else{
       // Multiplier le texte blanc par un rouge : le noir du fond reste noir.
       optionTempCtx.globalCompositeOperation='multiply';
@@ -520,11 +520,6 @@
       c.fillStyle='#000';c.fillRect(615,215,140,65);
       c.font='900 52px Georgia,serif';c.textBaseline='alphabetic';
       c.fillStyle='#f8e800';c.fillText('NO',626,263);
-    }
-    if(settings.players===2){
-      c.fillStyle='#000';c.fillRect(616,290,256,62);
-      c.fillStyle='#ffff00';c.font='900 50px Georgia,serif';
-      c.fillText('1PLAYER',622,336);
     }
     if(settings.musicTest!==10){
       c.fillStyle='#000';c.fillRect(613,826,105,57);
