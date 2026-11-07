@@ -227,3 +227,10 @@
   display:block;width:100%;height:100%;object-fit:contain;
   image-rendering:pixelated;pointer-events:none;background:#000;
 }
+
+/* Menu OPTION MODE - composition 16 bits de la référence, logo gris en fond. */
+#zf-intro .zf-options{background:#000!important;}
+#zf-intro #zf-options-canvas{width:100%;height:100%;object-fit:contain;image-rendering:pixelated;display:block;pointer-events:none;}
+#zf-intro .zf-options-back{position:absolute;inset:0;border:0;background:transparent;color:transparent;cursor:pointer;z-index:4;}
+#zf-intro .zf-options-back:focus-visible{outline:3px solid #b1ab3e;outline-offset:-8px;}
+#zf-intro .zf-title .zf-start{z-index:4;}
