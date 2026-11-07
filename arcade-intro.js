@@ -119,7 +119,7 @@
   const approvedLegal=new Image();
   approvedLegal.src='https://static.wixstatic.com/media/685632_10295a3ce7ed4ea392f845c0a243472f~mv2.png';
   approvedLegal.onerror=()=>{if(!approvedLegal.src.includes('approved-legal.svg'))approvedLegal.src='./assets/approved-legal.svg';};
-  approvedLegal.addEventListener('load',()=>{if(phase==='legal')drawLegalFrame((performance.now()-legalStartedAt)/1000);});
+  approvedLegal.addEventListener('load',()=>{if(phase==='legal'||phase==='legal-preview')drawLegalFrame(phase==='legal-preview'?1.5:(performance.now()-legalStartedAt)/1000);});
   const splash=document.getElementById('zf-splash');
   const title=document.getElementById('zf-title');
   const optionsScreen=document.getElementById('zf-options');
