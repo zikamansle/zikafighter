@@ -10,7 +10,7 @@
     const saved=JSON.parse(localStorage.getItem('zikafighter-options-v2')||'null');
     if(saved) settings={...settings,...saved};
   } catch (_) {}
-  let ctx=null,musicOut=null,sfxOut=null,timer=null,beat=0,playing=false;
+  let ctx=null,musicOut=null,sfxOut=null,timer=null,beat=0,playing=false,effectPan=0;
   function updateGain(){
     if(!ctx)return;
     if(musicOut)musicOut.gain.setTargetAtTime(.57*clamp(settings.musicVolume,0,10)/10,ctx.currentTime,.012);
@@ -40,7 +40,7 @@
     if(next&&typeof next==='object')settings={...settings,...next};
     updateGain();
   }
-  function note(freq,duration=.12,at=0,type='square',level=.08,channel='sfx'){
+  function note(freq,duration=.12,at=0,type='square',level=.08,channel='sfx',pan=null){
     if(!ctx)return;
     const start=ctx.currentTime+Math.max(0,at)+.014;
     const osc=ctx.createOscillator(),env=ctx.createGain();
@@ -48,7 +48,16 @@
     env.gain.setValueAtTime(.0001,start);
     env.gain.exponentialRampToValueAtTime(Math.max(.001,level),start+.008);
     env.gain.exponentialRampToValueAtTime(.0001,start+duration);
-    osc.connect(env);env.connect(channel==='music'?musicOut:sfxOut);
+    osc.connect(env);
+    if(ctx.createStereoPanner){
+      const panner=ctx.createStereoPanner();
+      const requestedPan=pan===null?(channel==='sfx'?effectPan:0):pan;
+      panner.pan.value=settings.stereo?clamp(requestedPan,-1,1):0;
+      env.connect(panner);
+      panner.connect(channel==='music'?musicOut:sfxOut);
+    }else{
+      env.connect(channel==='music'?musicOut:sfxOut);
+    }
     osc.start(start);osc.stop(start+duration+.015);
   }
   const melody=[392,0,466.16,523.25,587.33,0,523.25,466.16,392,0,349.23,392,466.16,0,349.23,293.66,311.13,0,392,466.16,523.25,0,466.16,392,349.23,0,311.13,349.23,392,0,293.66,261.63];
@@ -57,7 +66,7 @@
     if(!playing||!ctx)return;
     const i=beat++;
     const m=melody[i%melody.length];
-    if(m)note(m,.125,0,'square',.09,'music');
+    if(m)note(m,.125,0,'square',.09,'music',Math.sin(i*.7)*.38);
     if(i%2===0)note(bass[Math.floor(i/8)%4],.19,0,'triangle',.13,'music');
     if(i%4===0)note(85,.08,0,'sine',.18,'music');
     if(i%4===2)note(174.6,.055,0,'triangle',.07,'music');
@@ -72,7 +81,8 @@
     return true;
   }
   function stop(){playing=false;if(timer!==null){clearInterval(timer);timer=null;}}
-  function playEffect(kind='select'){
+  function playEffect(kind='select',pan=0){
+    effectPan=clamp(pan,-1,1);
     if(!unlock())return;
     switch(kind){
       case 'punch':note(220,.065,0,'square',.18);note(110,.075,.025,'sawtooth',.13);break;
