@@ -16,7 +16,7 @@
 const $=s=>document.querySelector(s); const canvas=$('#game'); const ctx=canvas.getContext('2d');const W=1152,H=648, floor=565;
 const names={pascal:'PASCAL',micka:'MICKA'};const images={};for(const key of ['pascal','micka','mairie','superu','culture']){const im=new Image();im.src=ASSETS[key];images[key]=im;}
 const keys=Object.create(null),p2keys=Object.create(null),config={player:'pascal',stage:'mairie'};
-const settingsDefaults={difficulty:4,timeLimit:true,players:1,controlPreset:0,stereo:true,musicVolume:7,fxVolume:8,turbo:3};
+const settingsDefaults={difficulty:3,timeLimit:true,players:1,controlPreset:0,controlPresetP2:0,stereo:true,musicVolume:7,fxVolume:8,turbo:3};
 let gameSettings={...settingsDefaults};
 try{const stored=JSON.parse(localStorage.getItem('zikafighter-options-v2')||'null');if(stored&&typeof stored==='object')gameSettings={...gameSettings,...stored};}catch(_){}
 const settingsSnapshot=()=>({...gameSettings});
@@ -52,7 +52,7 @@ function padControls(index){
   if(!pad)return{left:false,right:false,jump:false,guard:false,punch:false,kick:false,special:false};
   const pressed=i=>!!pad.buttons?.[i]?.pressed;
   const ax=pad.axes?.[0]||0,ay=pad.axes?.[1]||0;
-  const preset=Math.max(0,Math.min(2,Number(gameSettings.controlPreset)||0));
+  const preset=Math.max(0,Math.min(2,Number(index===1?gameSettings.controlPresetP2:gameSettings.controlPreset)||0));
   const attackSets=[
     {punch:[2,3,4],kick:[0,1,5]},
     {punch:[0,2,4],kick:[1,3,5]},
@@ -116,14 +116,20 @@ const player2Keybind={
   Numpad1:'punch',Numpad2:'kick',Numpad3:'special'
 };
 function getActionBinding(code,player){
-  if(player===2)return player2Keybind[code];
+  if(player===2){
+    const preset=Math.max(0,Math.min(2,Number(gameSettings.controlPresetP2)||0));
+    const buttons=['Numpad1','Numpad2','Numpad3'];
+    const acts=['punch','kick','special'];
+    const mapped=buttons.indexOf(code);
+    return mapped>=0?acts[(mapped+preset)%3]:player2Keybind[code];
+  }
   const preset=Math.max(0,Math.min(2,Number(gameSettings.controlPreset)||0));
   const attacks=presetAttacks[preset];
   return attacks[code]||commonKeys[code]||(gameSettings.players===2?null:singlePlayerArrows[code]);
 }
 document.addEventListener('keydown',evt=>{
   if(status!=='fight')return;
-  const player=gameSettings.players===2&&player2Keybind[evt.code]?2:1;
+  const player=gameSettings.players===2&&getActionBinding(evt.code,2)?2:1;
   const action=getActionBinding(evt.code,player);
   if(action){evt.preventDefault();(player===2?p2keys:keys)[action]=true;}
 });
@@ -152,4 +158,4 @@ $('#retry').onclick=playAgain;
 $('#back').onclick=menu;
 $('#home').onclick=menu;
 })();
-</script><script defer src="./arcade-audio.js?v=20261107-global-options-v2"></script><script defer src="./arcade-intro.js?v=20261107-exact-screens-v5"></script></body></html>
+</script><script defer src="./arcade-audio.js?v=20261107-global-options-v2"></script><script defer src="./arcade-intro.js?v=20261107-options-working-v6"></script></body></html>
