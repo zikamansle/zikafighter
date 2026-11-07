@@ -124,7 +124,8 @@
   let titleFrame=0;
   const cinematic=document.getElementById('zf-cinematic');
   let cinematicFrame=null;
-  const CINEMATIC_LENGTH=3.62;
+  let titleVisualStartedAt=0;
+  const CINEMATIC_LENGTH=3.49;
   const startButton=document.getElementById('zf-start');
   const unblock=document.getElementById('zf-unlock-sound');
   const errorText=document.getElementById('zf-sound-error');
@@ -185,6 +186,19 @@
         const isBlue=(b>45&&b>r*1.25&&b>g*1.22);
         if(isBlue)pixels.data[p+3]=0;
       }
+      // Référence SNES : les zones rouges du logo tirent vers le rose-magenta.
+      // On conserve l'or, le jaune, les contours noirs et le logo validé d'origine.
+      for(let p=0;p<pixels.data.length;p+=4){
+        const r=pixels.data[p],g=pixels.data[p+1],b=pixels.data[p+2];
+        if(pixels.data[p+3]<40)continue;
+        const redness=r-g;
+        if(r>110&&redness>48&&r>b*1.3){
+          const transition=Math.min(1,Math.max(0,(redness-48)/125));
+          pixels.data[p]=Math.min(255,r+6*transition);
+          pixels.data[p+1]=g*(1-.32*transition)+43*transition;
+          pixels.data[p+2]=b+(166-b)*transition;
+        }
+      }
       cx.putImageData(pixels,0,0);titleSpriteCanvas=src;
       const sm=makeCanvas(144,72),sc=sm.getContext('2d',{willReadFrequently:true});
       sc.imageSmoothingEnabled=true;sc.imageSmoothingQuality='high';
@@ -207,7 +221,7 @@
       gr.addColorStop(0,'#ee1b22');gr.addColorStop(.28,'#fa3e26');
       gr.addColorStop(.55,'#ff9b35');gr.addColorStop(.82,'#ffe75c');gr.addColorStop(1,'#fffbd5');
       gc.font='900 148px Impact,"Arial Black",sans-serif';gc.textBaseline='top';
-      gc.fillStyle=gr;gc.fillText('FIGHTER',5,-7);
+      gc.fillStyle=gr;gc.fillText('ZIKA',5,-7);
     }catch(_){titleSpriteCanvas=null;mosaic=null;}
   }
   if(titleSprite.complete&&titleSprite.naturalWidth)prepareTitleSprite();
@@ -225,105 +239,112 @@
   // L'écran-titre continue au même temps musical ; le thème n'est pas relancé.
   // On reconstruit le fond noir/bande bleue de la capture, et non le PNG entier
   // qui contenait encore ZIKACOM et une inscription PUSH START permanente.
+  // Scène titre aux mêmes coordonnées que la fin de la cinématique.
+  // Fond : bleu jusqu'à 6.56, éclair vert 6.56–6.92, puis noir.
+  // Les mentions du menu n'apparaissent qu'après le logo (vers 6.30).
   function renderTitleFrame(t){
     if(!titleCtx)return;
     const ctx=titleCtx,w=320,h=180;
     ctx.setTransform(2,0,0,2,0,0);
     ctx.imageSmoothingEnabled=false;
     ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
-    let band='#2157b4';
-    if(t>=6.55 && t<6.84)band='#67c93d';
-    if(t>=6.84 && t<7.72)band='#000';
-    ctx.fillStyle=band;ctx.fillRect(0,52,w,79);
-    // Titre approuvé, découpé du PNG sans ses crédits ni la marque périmée.
-    if(titleSpriteCanvas)ctx.drawImage(titleSpriteCanvas,39,23,242,119);
-    else{
-      ctx.fillStyle='#f2d534';ctx.font='italic bold 34px Impact,sans-serif';
-      ctx.textAlign='center';ctx.fillText('ZIKA FIGHTER',160,89);
+    let band=t<6.55?'#225ab4':t<6.93?'#66c83e':'#000';
+    ctx.fillStyle=band;ctx.fillRect(15,15,290,89);
+    if(titleSpriteCanvas){
+      ctx.drawImage(titleSpriteCanvas,42,9,236,116);
+    }else{
+      ctx.textAlign='center';ctx.fillStyle='#ffe62a';
+      ctx.font='italic bold 34px Impact,sans-serif';ctx.fillText('ZIKA FIGHTER',160,85);
     }
-    ctx.textAlign='center';
-    ctx.fillStyle='#e99062';
-    ctx.font='bold 9px "Courier New",monospace';
-    ctx.fillText('HYPER FIGHTING',160,154);
-    ctx.font='bold 7px "Courier New",monospace';
-    ctx.fillStyle='#e8ab99';
-    ctx.fillText('© ZIKAPCOM 2027',160,172);
-    // "PUSH START" n'appartient plus au PNG : il clignote vraiment.
-    if((t%1.1)<.63){
-      ctx.font='bold 9px "Courier New",monospace';
-      ctx.fillStyle='#fff4e7';ctx.fillText('PUSH START',160,14);
+    // Le sous-titre reste au même endroit que sur les captures.
+    ctx.textAlign='center';ctx.fillStyle='#f1a566';
+    ctx.font='bold 10px Georgia,serif';ctx.fillText('HYPER FIGHTING',160,130);
+    ctx.font='bold 6px "Courier New",monospace';
+    ctx.fillStyle='#d99a70';ctx.fillText('© ZIKAPCOM 2027',160,178);
+    if(t>=6.28){
+      // Menu de vitesse dans l'esprit du mode Turbo, sans changer le nom du jeu.
+      ctx.textAlign='left';ctx.font='bold 8px "Courier New",monospace';
+      ctx.fillStyle='#f3b454';ctx.fillText('RAPIDE  ★★★',133,148);
+      ctx.fillText('NORMAL',133,159);
+      ctx.fillStyle='#f3e1c2';ctx.fillText('›',122,159);
     }
-    // Très bref assombrissement du logo et de la bande dans la référence.
-    let shade=0;
-    if(t>=5.73&&t<6.10)shade=.85*Math.sin(Math.PI*(t-5.73)/.37);
-    if(t>=7.65&&t<8.04)shade=.80*Math.sin(Math.PI*(t-7.65)/.39);
-    if(shade>0){ctx.fillStyle='rgba(0,0,0,'+shade+')';ctx.fillRect(0,0,w,h);}
+    // Les éclairs sont des changements du FOND, pas des flashes blancs.
+    const flicker=(t>=5.82&&t<6.13)?Math.sin(Math.PI*(t-5.82)/.31)*.72:0;
+    if(flicker>0){ctx.fillStyle='rgba(0,0,0,'+flicker+')';ctx.fillRect(0,0,w,h);}
+    // Dans la référence, l'écran entier s'assombrit avant la sélection.
+    if(t>=7.64&&t<8.02){
+      const opacity=Math.min(1,(t-7.64)/.38);
+      ctx.fillStyle='rgba(0,0,0,'+opacity+')';ctx.fillRect(0,0,w,h);
+    }
   }
   function drawTitleFrame(){
     if(phase!=='title'||closed)return;
-    renderTitleFrame(Math.max(0,(titleMusic.currentTime||0)-TITLE_MUSIC_OFFSET));
+    // Horloge visuelle continue même lorsque le fichier MP3 boucle.
+    // La lecture musicale reste continue, sans relancer le titre.
+    const elapsed=Math.max(0,(performance.now()-titleVisualStartedAt)/1000);
+    renderTitleFrame(elapsed);
     titleFrame=requestAnimationFrame(drawTitleFrame);
   }
+  // Frises et positions relevées sur la capture 1311-30 (320x180 virtuels).
+  // Aucune interpolation temporelle entre frames SNES de 1/30 s.
   function renderCinematic(seconds){
     if(!mctx)return;
     const ctx=mctx,w=320,h=180;
-    // Dessiner à 2x pour garder l'esthétique arcade sans énormes carrés.
     ctx.setTransform(2,0,0,2,0,0);
-    // Cadence SNES : 30 images effectives/s, sans interpolation moderne.
     const t=Math.floor(Math.max(0,seconds)*30)/30;
-    ctx.imageSmoothingEnabled=true;
-    ctx.imageSmoothingQuality='high';
+    ctx.imageSmoothingEnabled=false;
     ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
     const sprite=titleSpriteCanvas;
     if(!sprite)return;
-    const drawLogo=(x,y,ww,hh)=>ctx.drawImage(sprite,x-ww/2,y-hh/2,ww,hh);
-    if(t<1.2){
-      drawLogo(w/2,43,82,42);return;
-    }
-    if(t<2.2){
-      // Défilement horizontal géant, lettres rouges en haut, ivoire en bas.
-      // On ne reprend pas le mot TURBO : ZIKA FIGHTER conserve son propre nom.
-      const p=clamp((t-1.2)/1.0,0,1);
-      const x=80-880*p;
-      if(giantLetters)ctx.drawImage(giantLetters,x,17,1200,145);
-      else drawLogo(w/2,90,800,400);
+    const paint=(img,x,y,ww,hh,angle=0,sx=1)=>{
+      ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.scale(sx,1);
+      ctx.drawImage(img,-ww/2,-hh/2,ww,hh);ctx.restore();
+    };
+    // 0.00–1.23 : titre petit, haut de l'écran sur noir intégral.
+    if(t<1.24){paint(sprite,160,43,84,42);return;}
+    // 1.24–2.18 : très grandes lettres en dégradé rouge->jaune->blanc,
+    // mouvement DROITE vers GAUCHE, visible seulement par morceaux.
+    if(t<2.19){
+      const p=Math.min(1,(t-1.24)/.95);
+      const x=32-670*p;
+      if(giantLetters)ctx.drawImage(giantLetters,x,16,960,146);
+      else paint(sprite,160,90,900,450);
       return;
     }
-    // La bande bleue est limitée au tiers central, comme dans la vidéo.
-    ctx.fillStyle='#1852ae';ctx.fillRect(0,54,320,72);
-    if(t<2.31){
-      // Très court retour du petit logo, visible sur fond noir juste avant le ruban.
-      drawLogo(160,43,82,42);
+    // 2.19–2.34 : le petit titre réapparaît, incliné, sur fond NOIR.
+    if(t<2.35){
+      const p=Math.max(0,(t-2.19)/.16);
+      paint(sprite,160,59,93,46,-.25-p*.63);
       return;
     }
-    if(t<3.30){
-      const p=ease((t-2.31)/.99);
-      // La référence va de gros blocs très rares (2.3-2.7)
-      // à une image tournée détaillée (2.9-3.2), puis frontale (3.3).
-      const lod=p<.29?0:p<.46?1:p<.62?2:p<.76?3:4;
+    // 2.35 : bande bleue très large, au tiers SUPÉRIEUR de l'image.
+    const bandColor='#225ab4';
+    ctx.fillStyle=bandColor;ctx.fillRect(15,15,290,89);
+    // 2.35–3.20 : mosaïque jaune/rose qui tourne et devient progressivement
+    // plus détaillée. La durée de forte pixellisation reste courte.
+    if(t<3.22){
+      const raw=Math.max(0,Math.min(1,(t-2.35)/.87));
+      const p=ease(raw);
+      const lod=p<.26?0:p<.43?1:p<.61?2:p<.76?3:4;
       const image=coarseSprites[lod]||sprite;
-      const turn=(1-p)*Math.PI*2.52;
-      const flip=Math.cos(turn);
-      const sx=Math.sign(flip||1)*Math.max(.055,Math.abs(flip));
-      const roll=-.8*(1-p)+.09*Math.sin(p*Math.PI*5)*(1-p);
-      const ww=62+192*p;
-      const hh=ww*.48;
-      const bob=Math.sin(turn)*22*(1-p);
-      ctx.save();
-      ctx.translate(160,90+bob);
-      ctx.rotate(roll);
-      ctx.scale(sx,1);
-      ctx.imageSmoothingEnabled=false;
-      ctx.drawImage(image,-ww/2,-hh/2,ww,hh);
-      ctx.restore();
+      const spin=Math.PI*2.47*(1-p);
+      const scaleX=Math.cos(spin);
+      const flip=Math.sign(scaleX||1)*Math.max(.06,Math.abs(scaleX));
+      const tilt=-.79*(1-p);
+      const ww=66+166*p,hh=ww*.49;
+      const bob=12*Math.sin(spin)*(1-p);
+      paint(image,160,67+bob,ww,hh,tilt,flip);
       return;
     }
-    drawLogo(160,90,247,123);
-    ctx.textAlign='center';ctx.fillStyle='#e96338';
-    ctx.font='bold 9px Georgia,serif';ctx.letterSpacing='1px';
-    ctx.fillText('HYPER FIGHTING',160,153);
-    ctx.font='7px monospace';ctx.fillStyle='#e9a5a3';
-    ctx.fillText('© ZIKAPCOM 2027',160,173);
+    // 3.22–3.48 : stabilisation progressive du logo, toujours sur bande bleue.
+    const p=ease((t-3.22)/.26);
+    paint(sprite,160,67,222+14*p,110+6*p,-.19*(1-p),.8+.2*p);
+    if(t>=3.30){
+      ctx.textAlign='center';ctx.fillStyle='#f0a45b';
+      ctx.font='bold 10px Georgia,serif';ctx.fillText('HYPER FIGHTING',160,130);
+      ctx.font='bold 6px "Courier New",monospace';ctx.fillStyle='#ca8655';
+      ctx.fillText('© ZIKAPCOM 2027',160,178);
+    }
   }
   function animateCinematic(startedAt){
     const tick=now=>{
@@ -346,6 +367,7 @@
     splash.hidden=true;
     cinematic.hidden=false;
     titleMusic.currentTime=TITLE_MUSIC_OFFSET;
+    titleVisualStartedAt=performance.now();
     // On garde le thème fourni par l'utilisateur dès cette première scène.
     playTitleMusic();
     animateCinematic(performance.now());
