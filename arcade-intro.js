@@ -451,36 +451,80 @@
   const optionRows=[195,264,337,405,801,870,940],musicChoices=[0,1,10];
   const effectChoices=['move','confirm','punch','kick','hit','special','ko'];
   const clampPreset=n=>(n+3)%3;
+
+  // Le menu de référence est une image figée. Ne plus recréer les caractères
+  // ou repositionner le logo : seule la navigation modifie les pixels utiles.
+  const optionsBitmap=document.createElement('canvas');
+  optionsBitmap.width=320;optionsBitmap.height=240;
+  const ob=optionsBitmap.getContext('2d',{willReadFrequently:true});
+  const optionLabelBoxes=[
+    [34,33,118,47], [34,51,115,64], [34,67,100,81],
+    [34,84,123,98], [23,165,130,180], [23,183,118,196], [23,199,116,214]
+  ];
   function renderOptions(){
     if(!optionsCtx)return;
-    const c=optionsCtx;c.setTransform(1280/1448,0,0,1280/1448,0,0);
-    c.fillStyle='#000';c.fillRect(0,0,1448,1086);
-    if(titleSpriteCanvas){c.save();c.globalAlpha=.38;c.filter='grayscale(1) brightness(.60) contrast(1.3)';
-      c.imageSmoothingEnabled=true;c.drawImage(titleSpriteCanvas,142,184,1160,602);c.restore();}
-    const ink=(t,x,y,sz,col='#f7f7f7',align='left',width)=>{
-      c.save();c.textAlign=align;c.textBaseline='alphabetic';
-      c.font='900 '+sz+'px "Rockwell Extra Bold",Rockwell,Georgia,serif';
-      c.fillStyle='#070707';c.fillText(t,x+3,y+3,width);
-      c.fillStyle=col;c.fillText(t,x,y,width);c.restore();
+    const ctx=optionsCtx;
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.fillStyle='#000';ctx.fillRect(0,0,1280,960);
+    if(!approvedOptions.complete||!approvedOptions.naturalWidth)return;
+
+    ob.setTransform(1,0,0,1,0,0);
+    ob.imageSmoothingEnabled=false;
+    ob.clearRect(0,0,320,240);
+    ob.drawImage(approvedOptions,0,0,320,240);
+    const frame=ob.getImageData(0,0,320,240),pixels=frame.data;
+
+    // Laisser la typographie d'origine intacte ; changer uniquement sa couleur.
+    const recolor=(box,mode)=>{
+      for(let y=box[1];y<box[3];y++){
+        for(let x=box[0];x<box[2];x++){
+          const i=(y*320+x)*4,r=pixels[i],g=pixels[i+1],b=pixels[i+2];
+          const red=(r>110&&r>g*1.55&&r>b*1.25);
+          const white=(r>168&&g>168&&b>168&&Math.abs(r-g)<45&&Math.abs(g-b)<45);
+          if(mode==='white'&&red){pixels[i]=pixels[i+1]=pixels[i+2]=Math.max(r,230);}
+          if(mode==='red'&&white){pixels[i]=Math.round(r*.92);pixels[i+1]=Math.round(g*.23);pixels[i+2]=Math.round(b*.27);}
+        }
+      }
     };
-    const Y='#fff000',W='#f7f7f7',label=(t,i,x,y,sz,width)=>ink(t,x,y,sz,optionSelection===i?'#eb4248':W,'left',width);
-    ink('OPTION MODE',724,94,74,'#00baf0','center',700);
-    label('DIFFICULTY',0,153,195,51,410);ink('EASY',620,193,51);ink('HARD',1120,193,51);
-    for(let i=0;i<5;i++)ink(i<settings.difficulty?'★':'☆',818+i*54,194,55,Y,'center');
-    label('TIME LIMIT',1,155,264,50,465);ink(settings.timeLimit?'YES':'NO',625,264,53,Y);
-    label('CONFIG.',2,154,337,49);ink('1PLAYER',626,337,50,optionSelection===2&&settings.players===1?Y:W);
-    ink('2PLAYER',1008,337,50,optionSelection===2&&settings.players===2?Y:W);
-    label('CPS FIGHTER',3,154,405,49,480);ink('SET',674,406,49,Y);ink('SET',1044,406,49,Y);
-    const names=['L. PUNCH','M. PUNCH','H. PUNCH','L. KICK','M. KICK','H. KICK'];
-    const ys=[466,511,558,607,656,702],keys=['Y','X','L','B','A','R'];
-    names.forEach((name,i)=>{ink(name,197,ys[i],46,W,'left',365);
-      ink(keys[(i+settings.controlPreset*2)%6],729,ys[i],46,W,'center');
-      ink(keys[(i+(settings.controlPresetP2||0)*2)%6],1102,ys[i],46,W,'center');});
-    label('HYPER FIGHTING',4,105,801,48,540);ink('STEREO',646,801,47,settings.stereo?Y:W);
-    ink('MONAURAL',992,801,47,settings.stereo?W:Y);
-    label('MUSIC TEST',5,108,870,48,470);ink(String(settings.musicTest).padStart(2,'0'),624,870,49,Y);
-    label('S.E. TEST',6,108,940,48,460);ink(String(settings.seTest).padStart(2,'0'),614,940,49,Y);
-    c.save();c.transform(1,-.08,0,1,0,0);ink('Z',56,optionRows[optionSelection]+1,72,'#fff');c.restore();
+    // Première ligne rouge dans la capture ; les autres lignes deviennent
+    // rouges seulement quand on les sélectionne avec le curseur.
+    if(optionSelection!==0)recolor(optionLabelBoxes[0],'white');
+    if(optionSelection>0)recolor(optionLabelBoxes[optionSelection],'red');
+    ob.putImageData(frame,0,0);
+
+    // Conserver le véritable Z de la capture, et seulement le déplacer.
+    ob.fillStyle='#000';ob.fillRect(7,31,26,19);
+    ob.drawImage(approvedOptions,11,31,20,19,11,Math.round(optionRows[optionSelection]/(1086/240))-11,20,19);
+
+    // Valeurs dynamiques, sur des zones extrêmement limitées.
+    const value=(text,x,y,width=36,color='#fff000')=>{
+      ob.fillStyle='#000';ob.fillRect(x,y-11,width,16);
+      ob.textAlign='center';ob.textBaseline='alphabetic';
+      ob.font='900 11px "Rockwell Extra Bold",Rockwell,Georgia,serif';
+      ob.fillStyle=color;ob.fillText(text,x+width/2,y, width);
+    };
+    if(settings.timeLimit!==true)value('NO',134,60,38);
+    if(settings.players===2){
+      const box=ob.getImageData(215,68,65,13),a=box.data;
+      for(let i=0;i<a.length;i+=4){
+        if(a[i]>185&&a[i+1]>185&&a[i+2]>185){a[i]=255;a[i+1]=237;a[i+2]=0;}
+      }
+      ob.putImageData(box,215,68);
+    }
+    if(settings.musicTest!==10)value(String(settings.musicTest).padStart(2,'0'),136,193,26);
+    if(settings.seTest!==0)value(String(settings.seTest).padStart(2,'0'),135,209,27);
+
+    // Reconstruire les cinq étoiles depuis les vrais glyphes de la capture.
+    // La capture de base contient trois étoiles pleines et deux contours.
+    if(settings.difficulty!==3){
+      ob.fillStyle='#000';ob.fillRect(174,31,64,16);
+      for(let i=0;i<5;i++){
+        const src=i<settings.difficulty?174:210;
+        ob.drawImage(approvedOptions,src,31,14,16,174+i*13,31,14,16);
+      }
+    }
+    ctx.imageSmoothingEnabled=false;
+    ctx.drawImage(optionsBitmap,0,0,1280,960);
   }
   // Test only real tracks and the exact supplied sounds plus implemented game FX.
   function playMusicTest(){
@@ -698,30 +742,19 @@
   // Les cinq niveaux de texte occupent des hauteurs différentes ; le logo
   // magenta reste délibérément rogné dans l'angle inférieur droit.
 
+
   function drawLegalFrame(t){
     if(!legalCtx)return;
-    const c=legalCtx;c.setTransform(1280/1448,0,0,1280/1448,0,0);
-    c.fillStyle=t<.19?'#120b98':'#000';c.fillRect(0,0,1448,1086);
-    if(t<.33)return;
-    c.globalAlpha=Math.min(1,Math.max(0,(t-.33)/.22),Math.max(0,(5.2-t)/.18));
-    const letter=(t,x,y,size,width,top,bottom)=>{
-      c.save();c.textAlign='center';c.textBaseline='alphabetic';
-      c.font='900 '+size+'px "Rockwell Extra Bold",Rockwell,Georgia,serif';
-      c.fillStyle='#542005';c.fillText(t,x+4,y+6,width);
-      const g=c.createLinearGradient(0,y-size,0,y);g.addColorStop(0,top);g.addColorStop(1,bottom);
-      c.fillStyle=g;c.fillText(t,x,y,width);c.restore();
-    };
-    letter('ZIKA FIGHTER TURBO',724,192,94,1048,'#fff328','#ffbd02');
-    letter('HYPER FIGHTING',724,292,55,650,'#ffad02','#ed6900');
-    letter('© ZIKAPCOM 2027',724,401,50,655,'#ffed03','#f8a700');
-    letter('© ZIKAPCOM - MANSLE-LES-FONTAINES - 2027',724,484,49,1270,'#fff01c','#ed7e01');
-    letter('PRÉSENTÉ PAR ZIKAMANSLE',724,609,72,1084,'#fff329','#ffb200');
-    const logo=legalPinkSprite||titleSpriteCanvas;
-    if(logo){c.save();c.imageSmoothingEnabled=true;c.drawImage(logo,840,693,495,293);c.restore();}
-    else{c.save();c.translate(1080,850);c.rotate(-.11);c.fillStyle='#ef1599';
-      c.font='italic 900 98px Impact,"Arial Black",sans-serif';
-      c.fillText('ZIKA',-180,-38);c.fillText('FIGHTER',-215,65);c.restore();}
-    c.globalAlpha=1;
+    const c=legalCtx;
+    c.setTransform(1,0,0,1,0,0);
+    c.fillStyle=t<.19?'#120b98':'#000';
+    c.fillRect(0,0,1280,960);
+    if(t<.33||!approvedLegal.complete||!approvedLegal.naturalWidth)return;
+    const opacity=Math.min(1,Math.max(0,(t-.33)/.22),Math.max(0,(5.2-t)/.18));
+    c.save();c.globalAlpha=opacity;
+    c.imageSmoothingEnabled=false;
+    c.drawImage(approvedLegal,0,0,1280,960);
+    c.restore();
   }
   function legalTick(now){
     if(phase!=='legal')return;
