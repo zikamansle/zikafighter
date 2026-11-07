@@ -968,7 +968,7 @@
       case 4:if(x>=580){let n=x<940;if(n!==settings.stereo){settings.stereo=n;changed=true;}}break;
       case 5:
         if(x>=900){cursorConfirm();playMusicTest();return;}
-        if(x>=500){adjustOption(1);return;}break;
+        if(x>=500){adjustOption(1);playMusicTest();return;}break;
       case 6:
         if(x>=900){cursorConfirm();playSfxTest();return;}
         if(x>=500){adjustOption(1);playSfxTest();return;}break;
