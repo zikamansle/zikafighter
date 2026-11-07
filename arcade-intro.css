@@ -25,8 +25,8 @@
 @media(max-width:650px){#zf-intro .zf-mark{margin-top:-2vh}#zf-intro .zf-press{margin-top:9vh}}
 @media(prefers-reduced-motion:reduce){#zf-intro *,#zf-intro:before{animation-duration:.01ms!important;animation-iteration-count:1!important}}
 /* Visuels définitifs choisis : remplacer les lettres CSS par les captures validées. */
-#zf-intro .zf-title{background:#080eac url("./assets/zika-fighter-title.png") center center/contain no-repeat}
-#zf-intro .zf-title:before{display:none}
-#zf-intro .zf-title .zf-mark,#zf-intro .zf-title .zf-press,#zf-intro .zf-title .zf-copyright,#zf-intro .zf-title .zf-credits{visibility:hidden}
-#zf-intro .zf-splash{background:#0825ba url("./assets/zikacom-splash.png") center center/contain no-repeat}
-#zf-intro .zf-splash .zf-publisher{visibility:hidden}
+#zf-intro.zf-title-ready .zf-title{background:#080eac url("./assets/zika-fighter-title.png") center center/contain no-repeat}
+#zf-intro.zf-title-ready .zf-title:before{display:none}
+#zf-intro.zf-title-ready .zf-title .zf-mark,#zf-intro.zf-title-ready .zf-title .zf-press,#zf-intro.zf-title-ready .zf-title .zf-copyright,#zf-intro.zf-title-ready .zf-title .zf-credits{visibility:hidden}
+#zf-intro.zf-splash-ready .zf-splash{background:#0825ba url("./assets/zikacom-splash.png") center center/contain no-repeat}
+#zf-intro.zf-splash-ready .zf-splash .zf-publisher{visibility:hidden}
