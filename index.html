@@ -46,4 +46,4 @@ document.addEventListener('keydown',evt=>{if(status!=='fight')return;const actio
 for(const b of document.querySelectorAll('[data-action]')){const action=b.dataset.action;b.addEventListener('pointerdown',event=>{event.preventDefault();keys[action]=true;b.setPointerCapture(event.pointerId)});for(const n of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(n,()=>{keys[action]=false})}
 for(const b of document.querySelectorAll('[data-player]'))b.addEventListener('click',()=>{config.player=b.dataset.player;document.querySelectorAll('[data-player]').forEach(x=>x.classList.toggle('active',x===b))});$('#stage').addEventListener('change',ev=>{config.stage=ev.target.value});$('#start').onclick=start;$('#retry').onclick=playAgain;$('#back').onclick=menu;$('#home').onclick=menu;
 })();
-</script><script defer src="./arcade-audio.js"></script><script defer src="./arcade-intro.js"></script></body></html>
+</script><script defer src="./arcade-audio.js"></script><script defer src="./arcade-intro.js?v=20261107-sfx-v3"></script></body></html>
