@@ -997,7 +997,11 @@
   // Paramètres de prévisualisation destinés aux tests graphiques uniquement.
   // Sans paramètre, l'introduction complète démarre normalement.
   const previewScreen=new URLSearchParams(location.search).get('screen');
-  if(previewScreen==='options'){
+  if(previewScreen==='legal'){
+    // Static inspection of the first 4:3 credits screen without timed transition.
+    phase='legal-preview';
+    drawLegalFrame(1.5);
+  }else if(previewScreen==='options'){
     legal.hidden=true;optionsScreen.hidden=false;phase='options';
     renderOptions();
   }else if(previewScreen==='title'){
