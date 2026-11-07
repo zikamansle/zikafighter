@@ -173,3 +173,5 @@
 #zf-intro .zf-palette-canvas + img{display:none}
 #zf-intro.zf-palette-ready .zf-zikacom-official{filter:none!important}
 #zf-intro.zf-palette-ready .zf-zikacom-shine{display:none!important}
+
+#zf-intro.zf-palette-ready #zf-zikapcom-logo{display:none!important}
