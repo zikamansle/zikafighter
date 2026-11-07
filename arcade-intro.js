@@ -176,6 +176,15 @@
       const p=cursorMoveSound.play();if(p&&p.catch)p.catch(()=>{});
     }catch(_){}
   }
+  // Validation fournie par l'utilisateur (WAV original converti en MP3 compact).
+  const cursorConfirmSound=new Audio('data:audio/mpeg;base64,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');
+  cursorConfirmSound.preload='auto';
+  cursorConfirmSound.volume=.88;
+  function cursorConfirm(){
+    try{cursorConfirmSound.pause();cursorConfirmSound.currentTime=0;
+      const p=cursorConfirmSound.play();if(p&&p.catch)p.catch(()=>{});
+    }catch(_){}
+  }
   let lastTitleNav=null,lastOptionsNav=null;
   const titleMusic=new Audio('./assets/zika-title-theme.mp3');
   titleMusic.preload='auto';
@@ -449,6 +458,7 @@
   }
   function activateTitleSelection(){
     if(phase!=='title')return;
+    cursorConfirm();
     if(titleSelection===2){openOptions();return;}
     if(titleSelection===0){settings.turbo=clamp(settings.turbo,0,8);persistSettings();}
     if(titleSelection===1){settings.turbo=0;persistSettings();}
@@ -717,7 +727,7 @@
     if(y<25||x>288&&y>158){closeOptions();return;}
     const rows=[48,64,81,97,151,171];
     optionSelection=rows.reduce((best,v,i)=>Math.abs(v-y)<Math.abs(rows[best]-y)?i:best,0);
-    if(optionSelection===5&&x>205){playMusicTest();return;}
+    if(optionSelection===5&&x>205){cursorConfirm();playMusicTest();return;}
     adjustOption(x<154?-1:1);
   });
   document.addEventListener('keydown',event=>{
@@ -746,6 +756,7 @@
       }else if(['ArrowLeft','ArrowRight','KeyA','KeyD'].includes(event.code)){
         adjustOption(['ArrowLeft','KeyA'].includes(event.code)?-1:1);
       }else if(['Enter','Space','NumpadEnter'].includes(event.code)){
+        cursorConfirm();
         if(optionSelection===5)playMusicTest();
         else adjustOption(1);
       }else return;
@@ -788,7 +799,7 @@
           else if(action==='left')adjustOption(-1);
           else if(action==='right')adjustOption(1);
           else if(action==='back')closeOptions();
-          else if(action==='select'){if(optionSelection===5)playMusicTest();else adjustOption(1);}
+          else if(action==='select'){cursorConfirm();if(optionSelection===5)playMusicTest();else adjustOption(1);}
         }
       }
     }
