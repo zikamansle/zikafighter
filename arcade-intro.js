@@ -42,13 +42,11 @@
   const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 
   function revealAt(seconds){
-    // 0-.22: écran bleu; .22-.85: logo approche avec éclat;
-    // .85-2.25: déploiement du logo; 2.25-fin: maintien à l'écran.
-    const progress=clamp((seconds-.22)/2.03,0,1);
-    overlay.style.setProperty('--zf-logo-reveal',String(progress));
-    overlay.style.setProperty('--zf-logo-scale',String(1.35-.35*progress));
-    overlay.style.setProperty('--zf-logo-brightness',String(1.45-.45*progress));
-    overlay.style.setProperty('--zf-logo-opacity',String(clamp((seconds-.15)/.35,0,1)));
+    // Fondu CAPCOM : logo invisible au départ, apparition douce sur les notes,
+    // maintien net jusqu'à la fin du jingle. Aucun zoom, volet ni balayage.
+    const fade=clamp((seconds-0.20)/1.85,0,1);
+    const smooth=fade*fade*(3-2*fade);
+    overlay.style.setProperty('--zf-logo-opacity',String(smooth));
   }
   function showTitle(){
     if(closed||phase!=='splash')return;
