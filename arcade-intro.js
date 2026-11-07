@@ -10,8 +10,8 @@
   overlay.setAttribute('aria-label','Introduction Zika Fighter');
   overlay.innerHTML=[
     '<div class="zf-screen zf-splash" id="zf-splash">',
-      '<div class="zf-zikacom-official" aria-label="ZIKACOM"><svg viewBox="100 385 1200 260" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs><filter id="zf-zikacom-key-base" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 0 0 -0.55"/></filter></defs><image href="./assets/zikacom-splash.png" width="1408" height="1056" filter="url(#zf-zikacom-key-base)"/></svg></div>',
-      '<div class="zf-zikacom-shine" aria-hidden="true"><svg viewBox="100 385 1200 260" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs><filter id="zf-zikacom-key-shine" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 0 0 -0.55"/></filter></defs><image href="./assets/zikacom-splash.png" width="1408" height="1056" filter="url(#zf-zikacom-key-shine)"/></svg></div>',
+      '<div class="zf-zikacom-official" aria-label="ZIKACOM"><svg viewBox="135 401 1180 250" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs><filter id="zf-zikacom-key-base" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0.015 0 0 0 -1.2"/></filter></defs><image href="./assets/zikacom-splash.png" width="1448" height="1086" filter="url(#zf-zikacom-key-base)"/></svg></div>',
+      '<div class="zf-zikacom-shine" aria-hidden="true"><svg viewBox="135 401 1180 250" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs><filter id="zf-zikacom-key-shine" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0.015 0 0 0 -1.2"/></filter></defs><image href="./assets/zikacom-splash.png" width="1448" height="1086" filter="url(#zf-zikacom-key-shine)"/></svg></div>',
       '<button type="button" class="zf-unlock-sound" id="zf-unlock-sound" hidden>ACTIVER LE SON POUR LANCER LE JEU</button>',
       '<p id="zf-sound-error" class="zf-sound-error" hidden>Jingle introuvable : assets/zikacom-intro.mp3</p>',
     '</div>',
@@ -61,18 +61,19 @@
   let phase='splash',status='pending',closed=false,raf=0;
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
   function fade(seconds){
-    // Vrai écran ZIKACOM du début : noir, logo petit qui apparaît en fondu,
-    // reflet final aligné sur les dernières notes du jingle de 5,695 s.
-    const t=clamp((seconds-.32)/1.55,0,1);
-    const smooth=t*t*(3-2*t);
-    overlay.style.setProperty('--zf-logo-opacity',String(smooth));
+    // Séquence ZIKACOM sur fond noir : logo fixe, fondu doux, tenue, fondu de sortie.
+    // Le temps est celui du MP3 et non une animation CSS indépendante.
+    const rise=clamp((seconds-.52)/.88,0,1);
+    const enter=rise*rise*(3-2*rise);
+    const fall=clamp((5.05-seconds)/.55,0,1);
+    const exit=fall*fall*(3-2*fall);
+    const opacity=enter*exit;
+    overlay.style.setProperty('--zf-logo-opacity',String(opacity));
     const shine=document.querySelector('.zf-zikacom-shine');
-    const sparkle=clamp((seconds-4.62)/.50,0,1);
-    if(seconds>=4.62&&seconds<=5.25){
-      const x=-15+130*sparkle;
-      shine.style.opacity=String(Math.sin(Math.PI*clamp((seconds-4.62)/.63,0,1)));
-      shine.style.clipPath='polygon('+x+'% 0%,'+(x+20)+'% 0%,'+(x+4)+'% 100%,'+(x-16)+'% 100%)';
-    }else{shine.style.opacity='0';}
+    // Éclat final discret, sans balayage traversant tout l'écran.
+    const sparkle=clamp((seconds-4.66)/.18,0,1)*clamp((4.98-seconds)/.15,0,1);
+    shine.style.opacity=String(Math.min(.24,sparkle*.24));
+    shine.style.clipPath='none';
   }
   function finishCinematic(){
     if(phase!=='cinematic'||closed)return;
