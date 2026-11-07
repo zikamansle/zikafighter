@@ -39,6 +39,79 @@
     img.onload=()=>{if(img.naturalWidth>0)overlay.classList.add(cls);};
     img.src='./assets/'+filename;
   }
+  // Animation par palette de pixels : seuls les tons or changent, pas les contours bleus.
+  const logoImage=document.getElementById('zf-zikapcom-logo');
+  let paletteCanvas=null,paletteCtx=null,paletteBase=null,paletteRendered=false;
+  function preparePalette(){
+    try{
+      const source=document.createElement('canvas');
+      const scale=Math.min(1,700/logoImage.naturalWidth);
+      source.width=Math.max(1,Math.round(logoImage.naturalWidth*scale));
+      source.height=Math.max(1,Math.round(logoImage.naturalHeight*scale));
+      const ctx=source.getContext('2d',{willReadFrequently:true});
+      if(!ctx)return;
+      ctx.drawImage(logoImage,0,0,source.width,source.height);
+      const raw=ctx.getImageData(0,0,source.width,source.height);
+      // Recadrage du logo sur ses pixels colorés pour éviter les grandes marges noires du PNG.
+      let x0=source.width,y0=source.height,x1=0,y1=0;
+      for(let y=0;y<source.height;y++)for(let x=0;x<source.width;x++){
+        const p=(y*source.width+x)*4;
+        if(raw.data[p+3]>90&&Math.max(raw.data[p],raw.data[p+1],raw.data[p+2])>75){
+          x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);
+        }
+      }
+      if(x1<=x0||y1<=y0)return;
+      const pad=5,w=x1-x0+1+pad*2,h=y1-y0+1+pad*2;
+      paletteCanvas=document.createElement('canvas');
+      paletteCanvas.width=w;paletteCanvas.height=h;
+      paletteCanvas.className='zf-palette-canvas';
+      paletteCtx=paletteCanvas.getContext('2d',{willReadFrequently:true});
+      if(!paletteCtx){paletteCanvas=null;return;}
+      paletteCtx.drawImage(source,x0-pad,y0-pad,w,h,0,0,w,h);
+      paletteBase=paletteCtx.getImageData(0,0,w,h);
+      // Supprimer seulement les pixels noirs du fond. Garder les contours bleus.
+      for(let p=0;p<paletteBase.data.length;p+=4){
+        const r=paletteBase.data[p],g=paletteBase.data[p+1],b=paletteBase.data[p+2];
+        if(Math.max(r,g,b)<25)paletteBase.data[p+3]=0;
+      }
+      paletteCtx.putImageData(paletteBase,0,0);
+      logoImage.hidden=true;
+      logoImage.parentElement.appendChild(paletteCanvas);
+      document.querySelector('.zf-zikacom-shine').style.display='none';
+      overlay.classList.add('zf-palette-ready');
+    }catch(err){paletteCanvas=null;paletteCtx=null;paletteBase=null;}
+  }
+  if(logoImage.complete&&logoImage.naturalWidth)preparePalette();
+  else logoImage.addEventListener('load',preparePalette,{once:true});
+  function renderPalette(t){
+    if(!paletteCtx||!paletteBase)return;
+    const active=t>=2.46&&t<=3.03;
+    if(!active&&paletteRendered===false)return;
+    paletteRendered=active;
+    const out=new ImageData(new Uint8ClampedArray(paletteBase.data),paletteBase.width,paletteBase.height);
+    if(active){
+      const progress=(t-2.46)/.57;
+      const travel=progress<.5?progress*2:(1-progress)*2;
+      const eased=travel*travel*(3-2*travel);
+      const center=.93-.86*eased;
+      for(let y=0;y<out.height;y++){
+        const distance=Math.abs((y+.5)/out.height-center);
+        const stripe=Math.exp(-Math.pow(distance/.20,2));
+        for(let x=0;x<out.width;x++){
+          const p=(y*out.width+x)*4;
+          const r=paletteBase.data[p],g=paletteBase.data[p+1],b=paletteBase.data[p+2];
+          if(r>95&&g>60&&r>b*1.45&&g>b*1.3){
+            const a=stripe*.90;
+            const targetR=255,targetG=248,targetB=185;
+            out.data[p]=r+(targetR-r)*a;
+            out.data[p+1]=g+(targetG-g)*a;
+            out.data[p+2]=b+(targetB-b)*a;
+          }
+        }
+      }
+    }
+    paletteCtx.putImageData(out,0,0);
+  }
   const splash=document.getElementById('zf-splash');
   const title=document.getElementById('zf-title');
   const cinematic=document.getElementById('zf-cinematic');
@@ -71,15 +144,11 @@
     const entrance=smooth((seconds-.45)/.9);
     const departure=1-smooth((seconds-3.15)/.67);
     overlay.style.setProperty('--zf-logo-opacity',String(entrance*departure));
-    // CAPCOM reference: metallic palette cycles across ALL letter pixels.
-    // No rectangular travelling stripe. Emphasis on last audible note.
-    const rise=smooth((seconds-2.46)/.29);
-    const fall=1-smooth((seconds-2.75)/.28);
-    const pulse=Math.max(0,Math.min(rise,fall));
-    overlay.style.setProperty('--zf-palette-pulse',String(pulse));
+    // Palette métallique réelle : or -> jaune clair -> or, par hauteur des pixels.
+    renderPalette(seconds);
     const shine=document.querySelector('.zf-zikacom-shine');
-    shine.style.opacity=String(pulse*.42);
-    shine.style.clipPath='none';
+    shine.style.opacity='0';
+    overlay.style.setProperty('--zf-palette-pulse','0');
   }
   function finishCinematic(){
     if(phase!=='cinematic'||closed)return;
