@@ -28,11 +28,7 @@
       '<canvas id="zf-cinematic-canvas" width="640" height="360" aria-hidden="true"></canvas>',
     '</div>',
     '<div class="zf-screen zf-title" id="zf-title" hidden>',
-      '<div class="zf-mark" aria-label="Zika Fighter"><span>ZIKA</span><span>FIGHTER</span></div>',
-      '<div class="zf-press" aria-hidden="true">PUSH START</div>',
-      '<div class="zf-copyright">© 2027 ZIKAPCOM<br>ALL RIGHTS RESERVED</div>',
-      '<div class="zf-credits">CREDIT 00</div>',
-      '<div class="zf-title-flash" aria-hidden="true"></div>',
+      '<canvas id="zf-title-canvas" width="640" height="360" aria-hidden="true"></canvas>',
       '<button type="button" class="zf-start" id="zf-start" aria-label="Commencer Zika Fighter">COMMENCER</button>',
     '</div>'
   ].join('');
@@ -123,6 +119,9 @@
   const legal=document.getElementById('zf-legal');
   const splash=document.getElementById('zf-splash');
   const title=document.getElementById('zf-title');
+  const titleCanvas=document.getElementById('zf-title-canvas');
+  const titleCtx=titleCanvas.getContext('2d',{alpha:false});
+  let titleFrame=0;
   const cinematic=document.getElementById('zf-cinematic');
   let cinematicFrame=null;
   const CINEMATIC_LENGTH=3.62;
@@ -208,7 +207,50 @@
     cinematic.hidden=true;
     title.hidden=false;
     phase='title';
+    titleFrame=requestAnimationFrame(drawTitleFrame);
     startButton.focus({preventScroll:true});
+  }
+  // L'écran-titre continue au même temps musical ; le thème n'est pas relancé.
+  // On reconstruit le fond noir/bande bleue de la capture, et non le PNG entier
+  // qui contenait encore ZIKACOM et une inscription PUSH START permanente.
+  function renderTitleFrame(t){
+    if(!titleCtx)return;
+    const ctx=titleCtx,w=320,h=180;
+    ctx.setTransform(2,0,0,2,0,0);
+    ctx.imageSmoothingEnabled=false;
+    ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
+    let band='#2157b4';
+    if(t>=6.55 && t<6.84)band='#67c93d';
+    if(t>=6.84 && t<7.72)band='#000';
+    ctx.fillStyle=band;ctx.fillRect(0,52,w,79);
+    // Titre approuvé, découpé du PNG sans ses crédits ni la marque périmée.
+    if(titleSpriteCanvas)ctx.drawImage(titleSpriteCanvas,39,23,242,119);
+    else{
+      ctx.fillStyle='#f2d534';ctx.font='italic bold 34px Impact,sans-serif';
+      ctx.textAlign='center';ctx.fillText('ZIKA FIGHTER',160,89);
+    }
+    ctx.textAlign='center';
+    ctx.fillStyle='#e99062';
+    ctx.font='bold 9px "Courier New",monospace';
+    ctx.fillText('HYPER FIGHTING',160,154);
+    ctx.font='bold 7px "Courier New",monospace';
+    ctx.fillStyle='#e8ab99';
+    ctx.fillText('© ZIKAPCOM 2027',160,172);
+    // "PUSH START" n'appartient plus au PNG : il clignote vraiment.
+    if((t%1.1)<.63){
+      ctx.font='bold 9px "Courier New",monospace';
+      ctx.fillStyle='#fff4e7';ctx.fillText('PUSH START',160,145);
+    }
+    // Très bref assombrissement du logo et de la bande dans la référence.
+    let shade=0;
+    if(t>=5.73&&t<6.10)shade=.85*Math.sin(Math.PI*(t-5.73)/.37);
+    if(t>=7.65&&t<8.04)shade=.80*Math.sin(Math.PI*(t-7.65)/.39);
+    if(shade>0){ctx.fillStyle='rgba(0,0,0,'+shade+')';ctx.fillRect(0,0,w,h);}
+  }
+  function drawTitleFrame(){
+    if(phase!=='title'||closed)return;
+    renderTitleFrame(titleMusic.currentTime||0);
+    titleFrame=requestAnimationFrame(drawTitleFrame);
   }
   function renderCinematic(seconds){
     if(!mctx)return;
@@ -377,6 +419,7 @@
     if(phase!=='title'||closed)return;
     closed=true;
     if(cinematicFrame!==null)cancelAnimationFrame(cinematicFrame);
+    if(titleFrame)cancelAnimationFrame(titleFrame);
     titleMusic.pause();
     titleMusic.currentTime=0;
     music?.select();
