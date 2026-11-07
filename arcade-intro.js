@@ -368,7 +368,8 @@
     if(lastOptionsNav!==null&&navState!==lastOptionsNav)cursorMove();
     lastOptionsNav=navState;
     ctx.setTransform(2,0,0,2,0,0);
-    ctx.imageSmoothingEnabled=false;
+    ctx.imageSmoothingEnabled=true;
+    ctx.imageSmoothingQuality='high';
     ctx.fillStyle='#000';ctx.fillRect(0,0,320,240);
     if(approvedOptions.complete&&approvedOptions.naturalWidth){
       ctx.drawImage(approvedOptions,0,0,320,240);
@@ -599,7 +600,8 @@
     if(!legalCtx)return;
     const ctx=legalCtx;
     ctx.setTransform(1,0,0,1,0,0);
-    ctx.imageSmoothingEnabled=false;
+    ctx.imageSmoothingEnabled=true;
+    ctx.imageSmoothingQuality='high';
     ctx.fillStyle=t<.19?'#1009ac':'#000';
     ctx.fillRect(0,0,640,480);
     if(t<.33)return;
