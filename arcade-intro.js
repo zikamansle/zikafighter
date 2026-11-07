@@ -10,7 +10,7 @@
   overlay.setAttribute('aria-label','Introduction Zika Fighter');
   overlay.innerHTML=[
     '<div class="zf-screen zf-legal" id="zf-legal" aria-label="Crédits de lancement ZIKAPCOM">',
-      '<canvas id="zf-legal-canvas" width="742" height="378" aria-hidden="true"></canvas>',
+      '<canvas id="zf-legal-canvas" width="640" height="480" aria-hidden="true"></canvas>',
     '</div>',
     '<div class="zf-screen zf-splash" id="zf-splash" hidden>',
       '<div class="zf-zikacom-official" aria-label="ZIKAPCOM"><img id="zf-zikapcom-logo" src="./assets/zikapcom-logo.png" alt="ZIKAPCOM"></div>',
@@ -26,7 +26,7 @@
       '<button type="button" class="zf-start" id="zf-start" aria-label="Menu du jeu">MENU</button>',
     '</div>',
     '<div class="zf-screen zf-options" id="zf-options" hidden aria-label="Option Mode">',
-      '<canvas id="zf-options-canvas" width="640" height="360" aria-label="Options de Zika Fighter"></canvas>',
+      '<canvas id="zf-options-canvas" width="640" height="480" aria-label="Options de Zika Fighter"></canvas>',
       '<button type="button" class="zf-options-back" id="zf-options-back" aria-label="Retour aux titres">RETOUR</button>',
     '</div>'
   ].join('');
@@ -117,11 +117,17 @@
   const legal=document.getElementById('zf-legal');
   const legalCanvas=document.getElementById('zf-legal-canvas');
   const legalCtx=legalCanvas.getContext('2d',{alpha:false});
+  const approvedLegal=new Image();
+  approvedLegal.src='./assets/approved-legal.svg?v=1';
+  approvedLegal.addEventListener('load',()=>{if(phase==='legal')drawLegalFrame((performance.now()-legalStartedAt)/1000);});
   const splash=document.getElementById('zf-splash');
   const title=document.getElementById('zf-title');
   const optionsScreen=document.getElementById('zf-options');
   const optionsCanvas=document.getElementById('zf-options-canvas');
   const optionsCtx=optionsCanvas.getContext('2d',{alpha:false});
+  const approvedOptions=new Image();
+  approvedOptions.src='./assets/approved-options.svg?v=1';
+  approvedOptions.addEventListener('load',()=>{if(phase==='options')renderOptions();});
   const optionsBack=document.getElementById('zf-options-back');
   const titleCanvas=document.getElementById('zf-title-canvas');
   const titleCtx=titleCanvas.getContext('2d',{alpha:false});
@@ -357,50 +363,46 @@
   }
   function renderOptions(){
     if(!optionsCtx)return;
+    const ctx=optionsCtx;
     const navState=optionSelection+':'+JSON.stringify(settings);
     if(lastOptionsNav!==null&&navState!==lastOptionsNav)cursorMove();
     lastOptionsNav=navState;
-    const ctx=optionsCtx;
     ctx.setTransform(2,0,0,2,0,0);
     ctx.imageSmoothingEnabled=false;
-    ctx.fillStyle='#000';ctx.fillRect(0,0,320,180);
-    // Grand logo ZIKA FIGHTER sombre en filigrane, même taille et emplacement
-    // que la référence "OPTION MODE" fournie par l'utilisateur.
-    if(titleSpriteCanvas){
-      ctx.save();
-      ctx.globalAlpha=.23;
-      ctx.filter='grayscale(1) brightness(.72)';
-      ctx.drawImage(titleSpriteCanvas,41,24,252,114);
-      ctx.filter='none';
-      ctx.restore();
+    ctx.fillStyle='#000';ctx.fillRect(0,0,320,240);
+    if(approvedOptions.complete&&approvedOptions.naturalWidth){
+      ctx.drawImage(approvedOptions,0,0,320,240);
+      // Masquer la position initiale du curseur, puis redessiner le Z extrait
+      // de l'illustration validée à la ligne effectivement sélectionnée.
+      ctx.fillStyle='#000';ctx.fillRect(14,38,22,17);
+      const positions=[47,64,81,98,170,190];
+      const y=positions[optionSelection]||47;
+      ctx.drawImage(approvedOptions,15,39,19,17,14,y-10,19,17);
+      // Régler la difficulté en étoiles ; zones de valeurs mises à jour en surimpression.
+      if(settings.difficulty!==6){
+        ctx.fillStyle='rgba(0,0,0,.96)';ctx.fillRect(140,47,88,14);
+        menuText(ctx,'★'.repeat(settings.difficulty),145,58,11,'#d7cf31');
+      }
+      if(settings.timeLimit!==true){
+        ctx.fillStyle='#000';ctx.fillRect(143,67,35,12);
+        menuText(ctx,'NO',147,78,11,'#d5c63d');
+      }
+      if(settings.players===2){
+        ctx.fillStyle='#000';ctx.fillRect(130,89,105,10);
+        menuText(ctx,'2PLAYER',161,98,11,'#d7cb40','center');
+      }
+      if(!settings.stereo){
+        ctx.fillStyle='#000';ctx.fillRect(140,172,150,16);
+        menuText(ctx,'MONAURAL',210,183,11,'#d8d13d','center');
+      }
+      if(settings.musicTest!==10){
+        ctx.fillStyle='#000';ctx.fillRect(138,194,35,14);
+        menuText(ctx,String(settings.musicTest).padStart(2,'0'),150,205,11,'#d6cb39','center');
+      }
+    }else{
+      menuText(ctx,'OPTION MODE',160,35,20,'#518ae8','center');
+      menuText(ctx,'DIFFICULTY / TIME LIMIT / CONFIG / MUSIC TEST',160,110,12,'#f1dec8','center');
     }
-    menuText(ctx,'OPTION MODE',160,21,19,'#5868a3','center');
-    menuText(ctx,'EASY',135,40,10,'#b9b9bc','center');
-    menuText(ctx,'HARD',242,40,10,'#b9b9bc','center');
-    menuText(ctx,'DIFFICULTY',19,48,11,'#8d3848');
-    for(let i=0;i<8;i++)menuText(ctx,'★',158+i*12,49,12,i<settings.difficulty?'#acaa40':'#777b80');
-    menuText(ctx,'TIME LIMIT',19,64,11);
-    menuText(ctx,'YES',156,64,11,settings.timeLimit?'#a6ad3e':'#b5b4b7','center');
-    menuText(ctx,'NO',239,64,11,!settings.timeLimit?'#a6ad3e':'#b5b4b7','center');
-    menuText(ctx,'CONFIG.',19,81,11);
-    menuText(ctx,'1PLAYER',159,81,10,settings.players===1?'#a6ad3e':'#bbb','center');
-    menuText(ctx,'2PLAYER',244,81,10,settings.players===2?'#a6ad3e':'#bbb','center');
-    menuText(ctx,'OPS FIGHTER',19,97,11);
-    menuText(ctx,'SET',165,97,11,'#a6ad3e','center');
-    // Présentation verticale des touches comme sur l'écran SNES.
-    for(let i=0;i<6;i++){
-      const left=['Y','X','L','B','A','R'][i];
-      const right=['Y','X','L','B','A','R'][(i+settings.controlPreset*2)%6];
-      menuText(ctx,left,172,107+i*6,8,'#c9c9c9','center');
-      menuText(ctx,right,242,107+i*6,8,'#c9c9c9','center');
-    }
-    menuText(ctx,'STEREO',19,151,11);
-    menuText(ctx,'STEREO',162,151,10,settings.stereo?'#b1b34a':'#b9b9b9','center');
-    menuText(ctx,'MONAURAL',247,151,10,!settings.stereo?'#b1b34a':'#b9b9b9','center');
-    menuText(ctx,'MUSIC TEST',19,171,11);
-    menuText(ctx,String(settings.musicTest).padStart(2,'0'),163,171,11,'#a6ad3e','center');
-    drawZCursor(ctx,optionSelection===5?138:optionSelection===4?130:optionSelection===3?139:optionSelection===2?128:optionSelection===1?130:135,
-      [48,64,81,97,151,171][optionSelection]);
   }
   function playMusicTest(){
     if(musicTestAudio){musicTestAudio.pause();musicTestAudio=null;}
@@ -596,27 +598,25 @@
   function drawLegalFrame(t){
     if(!legalCtx)return;
     const ctx=legalCtx;
-    ctx.setTransform(2,0,0,2,0,0);
+    ctx.setTransform(1,0,0,1,0,0);
     ctx.imageSmoothingEnabled=false;
     ctx.fillStyle=t<.19?'#1009ac':'#000';
-    ctx.fillRect(0,0,371,189);
+    ctx.fillRect(0,0,640,480);
     if(t<.33)return;
-    ctx.globalAlpha=Math.min(1,Math.max(0,(t-.33)/.22),Math.max(0,(5.20-t)/.18));
-    // Positions tirées des captures vidéo : rangées 7, 58, 82 et 122.
-    pixelSerif(ctx,'HYPER FIGHTING',176,7,193,18,19);
-    pixelSerif(ctx,'© ZIKAPCOM 2027',170,58,264,16,16);
-    pixelSerif(ctx,'ZIKAPCOM · MANSLE-LES-FONTAINES · 2027',185.5,82,384,15,16);
-    pixelSerif(ctx,'PRÉSENTÉ PAR ZIKAMANSLE',176,122,279,21,21);
-    ctx.save();
-    ctx.beginPath();ctx.rect(187,172,126,17);ctx.clip();
-    if(legalPinkSprite){
-      ctx.shadowColor='#542452';ctx.shadowBlur=2;
-      ctx.drawImage(legalPinkSprite,193,172,190,94);
+    const opacity=Math.min(1,Math.max(0,(t-.33)/.22),Math.max(0,(5.2-t)/.18));
+    ctx.globalAlpha=opacity;
+    if(approvedLegal.complete&&approvedLegal.naturalWidth){
+      ctx.drawImage(approvedLegal,0,0,640,480);
     }else{
-      ctx.font='italic bold 31px Georgia,serif';
-      ctx.fillStyle='#d348a5';ctx.fillText('ZIKA',206,194);
+      ctx.fillStyle='#f4aa47';ctx.textAlign='center';
+      ctx.font='bold 36px Georgia,serif';
+      ctx.fillText('ZIKA FIGHTER TURBO',320,55);
+      ctx.fillText('HYPER FIGHTING',320,125);
+      ctx.font='bold 24px Georgia,serif';
+      ctx.fillText('© ZIKAPCOM 2027',320,195);
+      ctx.fillText('© ZIKAMANSLE 2027',320,235);
+      ctx.fillText('PRÉSENTÉ PAR ZIKAMANSLE',320,310);
     }
-    ctx.restore();
     ctx.globalAlpha=1;
   }
   function legalTick(now){
