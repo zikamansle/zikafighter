@@ -16,8 +16,8 @@
       '<p id="zf-sound-error" class="zf-sound-error" hidden>Jingle introuvable : assets/zikacom-intro.mp3</p>',
     '</div>',
     '<div class="zf-screen zf-cinematic" id="zf-cinematic" hidden aria-label="Animation Zika Fighter">',
-      '<div class="zf-cine-logo" aria-hidden="true"><span>ZIKA</span><span>FIGHTER</span></div>',
-      '<div class="zf-blue-band" aria-hidden="true"><div class="zf-pixel-burst"></div></div>',
+      '<div class="zf-cine-logo" aria-label="Logo officiel Zika Fighter"><svg class="zf-official-logo" viewBox="0 0 1408 605" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><defs><filter id="zf-key-main" x="-5%" y="-7%" width="110%" height="114%"><feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2 -0.6 -1.2 0 -0.2" result="colorMask"/><feMorphology in="colorMask" operator="dilate" radius="5" result="fullMask"/><feComposite in="SourceGraphic" in2="fullMask" operator="in"/></filter></defs><image href="./assets/zika-fighter-title.png" width="1408" height="1056" filter="url(#zf-key-main)"/></svg></div>',
+      '<div class="zf-cine-shine" aria-hidden="true"><svg class="zf-official-logo" viewBox="0 0 1408 605" aria-hidden="true" preserveAspectRatio="xMidYMid meet"><defs><filter id="zf-key-shine" x="-5%" y="-7%" width="110%" height="114%"><feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2 -0.6 -1.2 0 -0.2" result="colorMask"/><feMorphology in="colorMask" operator="dilate" radius="5" result="fullMask"/><feComposite in="SourceGraphic" in2="fullMask" operator="in"/></filter></defs><image href="./assets/zika-fighter-title.png" width="1408" height="1056" filter="url(#zf-key-shine)"/></svg></div>',
     '</div>',
     '<div class="zf-screen zf-title" id="zf-title" hidden>',
       '<div class="zf-mark" aria-label="Zika Fighter"><span>ZIKA</span><span>FIGHTER</span></div>',
@@ -37,7 +37,8 @@
   const splash=document.getElementById('zf-splash');
   const title=document.getElementById('zf-title');
   const cinematic=document.getElementById('zf-cinematic');
-  let cinematicTimer=null;
+  let cinematicFrame=null;
+  const CINEMATIC_LENGTH=2.35;
   const startButton=document.getElementById('zf-start');
   const unblock=document.getElementById('zf-unlock-sound');
   const errorText=document.getElementById('zf-sound-error');
@@ -63,6 +64,40 @@
     const t=clamp((seconds-.2)/1.85,0,1);
     overlay.style.setProperty('--zf-logo-opacity',String(t*t*(3-2*t)));
   }
+  function finishCinematic(){
+    if(phase!=='cinematic'||closed)return;
+    if(cinematicFrame!==null)cancelAnimationFrame(cinematicFrame);
+    cinematic.hidden=true;
+    title.hidden=false;
+    phase='title';
+    startButton.focus({preventScroll:true});
+  }
+  function animateCinematic(startedAt){
+    const shine=cinematic.querySelector('.zf-cine-shine');
+    const run=(now)=>{
+      if(phase!=='cinematic'||closed)return;
+      // Temps musical réel lorsque le navigateur autorise la lecture.
+      const t=(!titleMusic.paused && titleMusic.currentTime>0)
+        ? titleMusic.currentTime
+        : Math.max(0,(now-startedAt)/1000);
+      const entry=clamp((t-.13)/.74,0,1);
+      const eased=1-Math.pow(1-entry,3);
+      const scale=.20+.23*eased; // petit logo : 20 à 43 % de sa taille de référence
+      const alpha=clamp((t-.10)/.20,0,1);
+      cinematic.style.setProperty('--zf-cine-size',String(scale));
+      cinematic.style.setProperty('--zf-cine-alpha',String(alpha));
+      // Reflet argenté : un balayage étroit sur les lettres, sans éclairer le fond noir.
+      const sparkle=clamp((t-1.47)/.32,0,1);
+      if(t>=1.47&&t<=1.93){
+        const x=-18+134*sparkle;
+        shine.style.opacity='1';
+        shine.style.clipPath='polygon('+x+'% 0%,'+(x+12)+'% 0%,'+(x-6)+'% 100%,'+(x-18)+'% 100%)';
+      }else{shine.style.opacity='0';}
+      if(t>=CINEMATIC_LENGTH){finishCinematic();return;}
+      cinematicFrame=requestAnimationFrame(run);
+    };
+    cinematicFrame=requestAnimationFrame(run);
+  }
   function showTitle(){
     if(phase!=='splash'||closed)return;
     phase='cinematic';
@@ -71,16 +106,10 @@
     audio.pause();
     splash.hidden=true;
     cinematic.hidden=false;
-    cinematic.classList.add('zf-cinematic-play');
-    // Le thème démarre dès l'introduction du logo et se poursuit au titre.
+    titleMusic.currentTime=0;
+    // On garde le thème fourni par l'utilisateur dès cette première scène.
     playTitleMusic();
-    cinematicTimer=window.setTimeout(()=>{
-      if(phase!=='cinematic'||closed)return;
-      cinematic.hidden=true;
-      title.hidden=false;
-      phase='title';
-      startButton.focus({preventScroll:true});
-    },4200);
+    animateCinematic(performance.now());
   }
   function update(){
     if(phase!=='splash')return;
@@ -134,7 +163,7 @@
   function launch(){
     if(phase!=='title'||closed)return;
     closed=true;
-    if(cinematicTimer!==null)clearTimeout(cinematicTimer);
+    if(cinematicFrame!==null)cancelAnimationFrame(cinematicFrame);
     titleMusic.pause();
     titleMusic.currentTime=0;
     music?.select();
