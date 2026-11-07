@@ -50,3 +50,32 @@
 #zf-intro .zf-unlock-sound{position:absolute;bottom:9%;left:50%;transform:translateX(-50%);z-index:10;background:#07145d;color:#fff;border:3px solid #ffda25;padding:14px 18px;font:700 clamp(12px,1.6vw,20px) "Courier New",monospace;cursor:pointer;max-width:90%;white-space:normal}
 #zf-intro .zf-unlock-sound[hidden],#zf-intro .zf-sound-error[hidden]{display:none!important}
 #zf-intro .zf-sound-error{position:absolute;bottom:1%;padding:5px;background:#500;color:#fff;font:700 13px monospace}
+
+/* Ecran-titre inspiré du rythme de la capture utilisateur : alternance bleu/vert,
+   scintillement arcade et image officielle conservée. Pas de fondu global. */
+#zf-intro.zf-title-ready .zf-title {
+  background-color: #05088f;
+  animation: zf-arcade-bg 2.8s steps(1,end) infinite;
+}
+#zf-intro .zf-title-flash{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:0;
+  z-index:1;
+  background:rgba(255,255,255,.11);
+  animation:zf-arcade-glint 2.8s steps(1,end) infinite;
+}
+#zf-intro .zf-title .zf-start{z-index:2}
+@keyframes zf-arcade-bg {
+  0%,24%{background-color:#05088f;filter:brightness(1)}
+  25%,28%{background-color:#0047ff;filter:brightness(1.22)}
+  29%,56%{background-color:#05088f;filter:brightness(1)}
+  57%,60%{background-color:#55d929;filter:brightness(1.28)}
+  61%,94%{background-color:#05088f;filter:brightness(1)}
+  95%,100%{background-color:#162cf8;filter:brightness(1.12)}
+}
+@keyframes zf-arcade-glint {
+  0%,24%,29%,56%,61%,94%{opacity:0}
+  25%,28%,57%,60%,95%,100%{opacity:1}
+}
