@@ -355,17 +355,17 @@
     raf=requestAnimationFrame(update);
   }
   // La vidéo utilisateur commence par une page de crédits SANS musique.
-  // Jingle CAPCOM à 5,8s dans la capture : le MP3 contient 0,4s de silence initial.
-  // Démarrage du fichier au temps 5,4s, donc première note vers 5,8s.
+  // Corrélation spectrale avec la vidéo de référence : début du MP3 à 5.20s.
+  // Le MP3 commence par un court silence ; la première note est donc plus tardive.
   function legalTick(now){
     if(phase!=='legal')return;
     const t=Math.max(0,(now-legalStartedAt)/1000);
     const smooth=p=>{p=clamp(p,0,1);return p*p*(3-2*p);};
     legal.style.setProperty('--zf-legal-opacity',
-      String(smooth((t-.42)/.50)*(1-smooth((t-4.83)/.52))));
+      String(smooth((t-.42)/.50)*(1-smooth((t-4.73)/.47))));
     legal.style.setProperty('--zf-legal-blue',
       String(1-smooth((t-.06)/.22)));
-    if(t>=5.40){
+    if(t>=5.20){
       cancelAnimationFrame(legalFrame);
       legal.hidden=true;
       splash.hidden=false;
