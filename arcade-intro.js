@@ -467,9 +467,9 @@
     ink('OPTION MODE',724,94,74,'#00baf0','center',700);
     label('DIFFICULTY',0,153,195,51,410);ink('EASY',620,193,51);ink('HARD',1120,193,51);
     for(let i=0;i<5;i++)ink(i<settings.difficulty?'★':'☆',818+i*54,194,55,Y,'center');
-    label('TIME LIMIT',1,155,264,50,465);ink('YES',625,264,53,settings.timeLimit?Y:W);
-    label('CONFIG.',2,154,337,49);ink('1PLAYER',626,337,50,settings.players===1?Y:W);
-    ink('2PLAYER',1008,337,50,settings.players===2?Y:W);
+    label('TIME LIMIT',1,155,264,50,465);ink(settings.timeLimit?'YES':'NO',625,264,53,Y);
+    label('CONFIG.',2,154,337,49);ink('1PLAYER',626,337,50,optionSelection===2&&settings.players===1?Y:W);
+    ink('2PLAYER',1008,337,50,optionSelection===2&&settings.players===2?Y:W);
     label('CPS FIGHTER',3,154,405,49,480);ink('SET',674,406,49,Y);ink('SET',1044,406,49,Y);
     const names=['L. PUNCH','M. PUNCH','H. PUNCH','L. KICK','M. KICK','H. KICK'];
     const ys=[466,511,558,607,656,702],keys=['Y','X','L','B','A','R'];
@@ -513,7 +513,8 @@
       case 0:settings.difficulty=clamp(settings.difficulty+d,1,5);break;
       case 1:settings.timeLimit=!settings.timeLimit;break;
       case 2:settings.players=settings.players===1?2:1;break;
-      case 3:settings.controlPreset=clampPreset(settings.controlPreset+d);break;
+      case 3:if(d<0)settings.controlPreset=clampPreset(settings.controlPreset+1);
+        else settings.controlPresetP2=clampPreset((settings.controlPresetP2||0)+1);break;
       case 4:settings.stereo=!settings.stereo;break;
       case 5:{let i=Math.max(0,musicChoices.indexOf(settings.musicTest));
         settings.musicTest=musicChoices[(i+d+musicChoices.length)%musicChoices.length];break;}
