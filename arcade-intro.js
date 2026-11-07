@@ -258,11 +258,14 @@
     ctx.font='bold 6px "Courier New",monospace';
     ctx.fillStyle='#d99a70';ctx.fillText('© ZIKAPCOM 2027',160,178);
     if(t>=6.28){
-      // Menu de vitesse dans l'esprit du mode Turbo, sans changer le nom du jeu.
-      ctx.textAlign='left';ctx.font='bold 8px "Courier New",monospace';
-      ctx.fillStyle='#f3b454';ctx.fillText('RAPIDE  ★★★',133,148);
-      ctx.fillText('NORMAL',133,159);
-      ctx.fillStyle='#f3e1c2';ctx.fillText('›',122,159);
+      // Menu de vitesse et typographie cuivre/or conformes à la vidéo :
+      // 'TURBO ★★★' sur la première rangée, puis 'NORMAL'.
+      pixelSerif(ctx,'TURBO ★★★',149,145,98,12,15);
+      pixelSerif(ctx,'NORMAL',141,157,66,12,15);
+      // Petit curseur blanc pixellisé au niveau NORMAL.
+      ctx.fillStyle='#fff8e6';ctx.fillRect(98,159,5,5);
+      ctx.fillStyle='#7aa4c7';ctx.fillRect(99,155,4,4);
+      ctx.fillStyle='#1b2c52';ctx.fillRect(98,164,5,2);
     }
     // Les éclairs sont des changements du FOND, pas des flashes blancs.
     const flicker=(t>=5.82&&t<6.13)?Math.sin(Math.PI*(t-5.82)/.31)*.72:0;
