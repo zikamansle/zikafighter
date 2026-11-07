@@ -46,15 +46,40 @@ function start(){
 }
 function playAgain(){start()}
 function menu(){cancelAnimationFrame(anim);status='menu';$('#select').hidden=false;$('#fight').hidden=true;$('#home').hidden=true;window.ZikaArcadeAudio?.stop();Object.keys(keys).forEach(k=>keys[k]=false);Object.keys(p2keys).forEach(k=>p2keys[k]=false)}
-function controls(){return{left:!!keys.left,right:!!keys.right,jump:!!keys.jump,guard:!!keys.guard,punch:!!keys.punch,kick:!!keys.kick,special:!!keys.special}}
-function controls2(){return{left:!!p2keys.left,right:!!p2keys.right,jump:!!p2keys.jump,guard:!!p2keys.guard,punch:!!p2keys.punch,kick:!!p2keys.kick,special:!!p2keys.special}}
+function padControls(index){
+  let pad=null;
+  try{pad=navigator.getGamepads?.()?.[index]||null;}catch(_){}
+  if(!pad)return{left:false,right:false,jump:false,guard:false,punch:false,kick:false,special:false};
+  const pressed=i=>!!pad.buttons?.[i]?.pressed;
+  const ax=pad.axes?.[0]||0,ay=pad.axes?.[1]||0;
+  const preset=Math.max(0,Math.min(2,Number(gameSettings.controlPreset)||0));
+  const attackSets=[
+    {punch:[2,3,4],kick:[0,1,5]},
+    {punch:[0,2,4],kick:[1,3,5]},
+    {punch:[3,4,5],kick:[0,1,2]}
+  ];
+  const keys=attackSets[preset];
+  return {
+    left:pressed(14)||ax<-.5,right:pressed(15)||ax>.5,
+    jump:pressed(12)||ay<-.5,guard:pressed(13)||ay>.5,
+    punch:keys.punch.some(pressed),kick:keys.kick.some(pressed),
+    special:pressed(6)||pressed(7)
+  };
+}
+function mergeControls(k,pad){
+  return {left:!!k.left||pad.left,right:!!k.right||pad.right,
+    jump:!!k.jump||pad.jump,guard:!!k.guard||pad.guard,
+    punch:!!k.punch||pad.punch,kick:!!k.kick||pad.kick,special:!!k.special||pad.special};
+}
+function controls(){return mergeControls(keys,padControls(0))}
+function controls2(){return mergeControls(p2keys,padControls(1))}
 function move(f,inp,dt,now){const enemy=f===p?e:p;f.dir=enemy.x>f.x?1:-1;const stunned=now<f.stunUntil;if(stunned){f.vx*=.92}else{f.guard=!!inp.guard && f.y>=floor && now>=f.actionUntil;let vx=((inp.right?1:0)-(inp.left?1:0))*(f.name==='micka'?288:236)*(1+Math.max(0,Math.min(8,gameSettings.turbo))*0.06);if(f.guard)vx=0;const busy=now<f.actionUntil;f.vx=busy?f.vx*.88:vx;
 if(inp.jump&&f.y>=floor&&!busy&&!f.guard){f.vy=-640;f.action='jump';}if(inp.special)attack(f,'special',now);else if(inp.kick)attack(f,'kick',now);else if(inp.punch)attack(f,'punch',now);if(now>=f.actionUntil)f.action=f.guard?'guard':f.y<floor?'jump':Math.abs(vx)>1?'walk':'idle';}
 f.x=Math.max(70,Math.min(W-70,f.x+f.vx*dt));f.y+=f.vy*dt;f.vy+=1520*dt;if(f.y>=floor){f.y=floor;f.vy=0;}
 }
 function strike(a,b,reach,damage,now,launch=0){if(Math.abs(a.x-b.x)>reach||Math.abs(a.y-b.y)>130||now<b.invulnerable)return false;const actual=b.guard?Math.round(damage*.18):damage;window.ZikaArcadeAudio?.playEffect('hit');b.health=Math.max(0,b.health-actual);b.stunUntil=now+(b.guard?80:210);b.vx=a.dir*(b.guard?60:175);b.vy=launch; a.energy=Math.min(100,a.energy+13);b.energy=Math.min(100,b.energy+6);effects.push({x:b.x,y:b.y-170,r:18,life:.3,kind:'spark',color:b.guard?'#70deff':'#ffda4b'});return true;}
 function attack(f,kind,now){if(now<f.actionUntil||now<f.stunUntil||now<f.nextAttack)return;const foe=f===p?e:p;if(kind==='special'&&f.energy<40)return;
-f.action=kind;window.ZikaArcadeAudio?.playEffect(kind);f.nextAttack=now+(kind==='punch'?230:kind==='kick'?390:760);f.actionUntil=now+(kind==='punch'?260:kind==='kick'?380:650);
+f.action=kind;window.ZikaArcadeAudio?.playEffect(kind);const speed=1+Math.max(0,Math.min(8,gameSettings.turbo))*.06;f.nextAttack=now+(kind==='punch'?230:kind==='kick'?390:760)/speed;f.actionUntil=now+(kind==='punch'?260:kind==='kick'?380:650)/speed;
 if(kind==='special'){f.energy-=40;if(f.name==='pascal'){f.vx=f.dir*680;effects.push({x:f.x,y:f.y-130,r:62,life:.5,kind:'ring',color:'#e1f7ff'});strike(f,foe,190,24,now,-200)}else{effects.push({x:f.x+f.dir*90,y:f.y-145,r:26,life:1.1,kind:'ball',color:'#69eafa',vx:f.dir*680,owner:f})}}
 else strike(f,foe,kind==='punch'?120:150,kind==='punch'?9:14,now,kind==='kick'?-50:0);}
 function ai(now){
