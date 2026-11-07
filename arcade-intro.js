@@ -341,6 +341,7 @@
       pc.fillRect(0,0,480,240);
       pc.globalCompositeOperation='source-over';
       if(phase==='options')renderOptions();
+      if(phase==='legal-preview')drawLegalFrame(1.5);
       const sm=makeCanvas(144,72),sc=sm.getContext('2d',{willReadFrequently:true});
       sc.imageSmoothingEnabled=true;sc.imageSmoothingQuality='high';
       sc.drawImage(src,0,0,144,72);
