@@ -10,8 +10,8 @@
   overlay.setAttribute('aria-label','Introduction Zika Fighter');
   overlay.innerHTML=[
     '<div class="zf-screen zf-splash" id="zf-splash">',
-      '<div class="zf-zikacom-official" aria-label="ZIKACOM"><img src="./assets/zikacom-pixel-logo.svg?v=2" alt="" width="280" height="50"></div>',
-      '<div class="zf-zikacom-shine" aria-hidden="true"><img src="./assets/zikacom-pixel-logo.svg?v=2" alt="" width="280" height="50"></div>',
+      '<div class="zf-zikacom-official" aria-label="ZIKAPCOM"><img id="zf-zikapcom-logo" src="./assets/zikapcom-logo.png" alt="ZIKAPCOM"></div>',
+      '<div class="zf-zikacom-shine" aria-hidden="true"><img src="./assets/zikapcom-logo.png" alt=""></div>',
       '<button type="button" class="zf-unlock-sound" id="zf-unlock-sound" hidden>ACTIVER LE SON POUR LANCER LE JEU</button>',
       '<p id="zf-sound-error" class="zf-sound-error" hidden>Jingle introuvable : assets/zikacom-intro.mp3</p>',
     '</div>',
@@ -22,13 +22,18 @@
     '<div class="zf-screen zf-title" id="zf-title" hidden>',
       '<div class="zf-mark" aria-label="Zika Fighter"><span>ZIKA</span><span>FIGHTER</span></div>',
       '<div class="zf-press" aria-hidden="true">PUSH START</div>',
-      '<div class="zf-copyright">© 2027 ZIKACOM<br>ALL RIGHTS RESERVED</div>',
+      '<div class="zf-copyright">© 2027 ZIKAPCOM<br>ALL RIGHTS RESERVED</div>',
       '<div class="zf-credits">CREDIT 00</div>',
       '<div class="zf-title-flash" aria-hidden="true"></div>',
       '<button type="button" class="zf-start" id="zf-start" aria-label="Commencer Zika Fighter">COMMENCER</button>',
     '</div>'
   ].join('');
   document.body.appendChild(overlay);
+  const zikapcomLogo=document.getElementById('zf-zikapcom-logo');
+  zikapcomLogo.addEventListener('error',()=>{
+    // Text fallback until approved PNG is added to assets.
+    overlay.classList.add('zf-zikapcom-fallback');
+  });
   for(const [filename,cls] of [['zikacom-splash.png','zf-splash-ready'],['zika-fighter-title.png','zf-title-ready']]){
     const img=new Image();
     img.onload=()=>{if(img.naturalWidth>0)overlay.classList.add(cls);};
@@ -62,46 +67,19 @@
   const visualStartedAt=performance.now();
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
   function fade(seconds){
-    // CAPCOM-style: fondu d'entrée, tenue, reflet mobile sur les lettres, sortie.
-    // Séquence pilotée par le temps de lecture effectif du jingle.
-    const smooth=n=>{const t=clamp(n,0,1);return t*t*(3-2*t);};
+    const smooth=n=>{const t=clamp(n,0,1);return t*t*(3-2*t)};
     const entrance=smooth((seconds-.45)/.9);
-    // La musique s'éteint vers 3,8 s ; fond noir avant la transition de 5,695 s.
     const departure=1-smooth((seconds-3.15)/.67);
     overlay.style.setProperty('--zf-logo-opacity',String(entrance*departure));
+    // CAPCOM reference: metallic palette cycles across ALL letter pixels.
+    // No rectangular travelling stripe. Emphasis on last audible note.
+    const rise=smooth((seconds-2.46)/.29);
+    const fall=1-smooth((seconds-2.75)/.28);
+    const pulse=Math.max(0,Math.min(rise,fall));
+    overlay.style.setProperty('--zf-palette-pulse',String(pulse));
     const shine=document.querySelector('.zf-zikacom-shine');
-    // Dernière note / accord final à partir d'environ 2,5 s, puis décroissance
-    // sonore jusqu'à 3,8 s. Brillance sur l'attaque de cette note, pas le silence.
-    const start=2.46, end=3.03;
-    if(seconds>=start && seconds<=end){
-      const t=(seconds-start)/(end-start);
-      // Référence CAPCOM : ligne lumineuse horizontale qui REMONTE
-      // du bas vers le haut, puis REDESCEND vers le bas.
-      // Un aller-retour complet sur la dernière note du jingle (2,46–3,03 s).
-      const travel=t<.5 ? smooth(t*2) : smooth((1-t)*2);
-      const y=110-120*travel;
-      const top=y-12, bottom=y+12;
-      const glow=Math.min(1,smooth(t/.12),smooth((1-t)/.12));
-      shine.style.opacity=String(glow*.95);
-      shine.style.clipPath='polygon(0 '+top+'%,100% '+top+'%,100% '+bottom+'%,0 '+bottom+'%)';
-      // La palette du logo change AVEC la lumière :
-      // or chaud en montée, jaune pâle/blanc au sommet, or ambré en descente.
-      const crest=1-Math.abs(2*t-1);
-      const pale=smooth((crest-.28)/.72)*glow;
-      const warmth=(t<.5 ? (1-crest)*.45 : (1-crest)*.85)*glow;
-      overlay.style.setProperty('--zf-logo-glow',String(.08+.36*glow+.14*pale));
-      overlay.style.setProperty('--zf-logo-desaturate',String(.42*pale));
-      overlay.style.setProperty('--zf-logo-hue',String(-9*warmth));
-      overlay.style.setProperty('--zf-shine-gold',String(t<.5 ? 0 : 1));
-      overlay.style.setProperty('--zf-logo-contrast',String(1+.12*glow));
-    }else{
-      shine.style.opacity='0';
-      shine.style.clipPath='none';
-      overlay.style.setProperty('--zf-logo-glow','0');
-      overlay.style.setProperty('--zf-logo-desaturate','0');
-      overlay.style.setProperty('--zf-logo-hue','0');
-      overlay.style.setProperty('--zf-logo-contrast','1');
-    }
+    shine.style.opacity=String(pulse*.42);
+    shine.style.clipPath='none';
   }
   function finishCinematic(){
     if(phase!=='cinematic'||closed)return;
