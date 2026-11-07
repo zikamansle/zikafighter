@@ -193,63 +193,86 @@
   }
   function renderCinematic(t){
     if(!mctx)return;
-    const w=movie.width,h=movie.height,ctx=mctx;
+    const ctx=mctx,w=movie.width,h=movie.height;
     ctx.imageSmoothingEnabled=false;
-    ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
-    const sprite=titleSpriteCanvas;
-    if(!sprite){
-      ctx.fillStyle='#ffd726';ctx.font='italic bold 38px Impact,sans-serif';
-      ctx.textAlign='center';ctx.fillText('ZIKA FIGHTER',w/2,h*.3);return;
+    ctx.fillStyle='#000';
+    ctx.fillRect(0,0,w,h);
+    const image=titleSpriteCanvas;
+    if(!image){
+      ctx.fillStyle='#ffdf32';ctx.font='italic bold 27px Impact,sans-serif';
+      ctx.textAlign='center';ctx.fillText('ZIKA FIGHTER',w/2,91);
+      return;
     }
-    const paint=(image,x,y,ww,hh,rotation=0,flipX=1,alpha=1)=>{
-      ctx.save();ctx.translate(x,y);ctx.rotate(rotation);ctx.scale(flipX,1);
-      ctx.globalAlpha=alpha;ctx.drawImage(image,-ww/2,-hh/2,ww,hh);ctx.restore();
+    const drawFlat=(img,x,y,ww,hh,ang=0)=>{
+      ctx.save();ctx.translate(x,y);ctx.rotate(ang);
+      ctx.drawImage(img,-ww/2,-hh/2,ww,hh);
+      ctx.restore();
     };
-    if(t<1.37){
-      // Identique à l'ouverture vidéo : très petit et au tiers supérieur du noir.
-      paint(sprite,w*.5,h*.22,160,80);
-      return;
-    }
-    if(t<2.22){
-      // Grand lettrage envahissant l'écran : aucune rotation de l'image entière.
-      const p=easeOut((t-1.37)/.85);
-      paint(fighterHalf||sprite,w*.5,h*.47,330+1620*p,105+530*p);
-      return;
-    }
-    // Le fond n'est PAS tout bleu : c'est uniquement une bande centrale.
-    ctx.fillStyle='#2558b7';
-    ctx.fillRect(0,109,w,145);
-    if(t<3.37){
-      // Effet SNES : rotation Y simulée par écrasement horizontal,
-      // mouvement de bascule et séparation temporaire en colonnes.
-      const p=easeInOut((t-2.22)/1.15);
-      const turn=(1-p)*Math.PI*2.3;
-      const y=h*.50+Math.sin(turn)*30*(1-p);
-      const size=150+305*p;
-      const flip=Math.cos(turn);
-      const sx=Math.sign(flip||1)*Math.max(.06,Math.abs(flip));
-      const tilt=Math.sin(turn)*.22*(1-p);
-      if(p<.56){
-        // Éclats colorés organisés selon les morceaux de l'image,
-        // et non des rectangles jaunes inventés.
-        const columns=10;
-        for(let k=0;k<columns;k++){
-          const sw=sprite.width/columns;
-          const dw=size/columns;
-          const offset=Math.sin(k*2.2+turn)*65*(1-p/.56);
-          ctx.save();
-          ctx.translate(w*.5,y);
-          ctx.rotate(tilt);
-          ctx.scale(sx,1);
-          ctx.drawImage(sprite,k*sw,0,sw,sprite.height,-size/2+k*dw,offset-size*.25,dw+1,size*.5);
-          ctx.restore();
-        }
-      }else{
-        paint(sprite,w*.5,y,size,size*.5,tilt,sx);
+    // Rotation Y en perspective : bandes verticales avec profondeurs
+    // et tailles différentes, au lieu d'écraser toute l'image en 2D.
+    const drawTurn=(x,y,width,height,rotY,rotZ)=>{
+      const columns=96;
+      const sn=Math.sin(rotY),cs=Math.cos(rotY);
+      const strips=[];
+      for(let i=0;i<columns;i++){
+        const pos=(i+.5)/columns-.5;
+        const depth=pos*sn*.9;
+        const perspective=1/(1+depth);
+        const px=pos*width*cs*perspective;
+        const ph=height*perspective;
+        const pw=Math.max(.25,(width/columns)*Math.abs(cs)*perspective);
+        strips.push({i,px,ph,pw,depth});
       }
+      strips.sort((a,b)=>b.depth-a.depth);
+      ctx.save();ctx.translate(x,y);ctx.rotate(rotZ);
+      for(const strip of strips){
+        const {i,px,ph,pw}=strip;
+        const srcX=i*image.width/columns;
+        const dwidth=pw+1;
+        ctx.drawImage(image,srcX,0,image.width/columns+.2,image.height,
+          px-dwidth/2,-ph/2,dwidth,ph);
+      }
+      ctx.restore();
+    };
+    // Repères directement relevés sur la vidéo utilisateur.
+    if(t<1.37){
+      drawFlat(image,w*.50,h*.215,150,75);
       return;
     }
-    paint(sprite,w*.5,h*.5,455,227);
+    if(t<2.14){
+      // Le lettrage gigantesque passe si près que ses lettres sont coupées.
+      // Grossissement saccadé sur les frames, comme la version SNES.
+      const p=easeOut((t-1.37)/.77);
+      const snap=Math.floor(p*17)/17;
+      drawFlat(fighterHalf||image,w*.50,h*.51,260+1800*snap,115+710*snap);
+      return;
+    }
+    // La référence ne met qu'une bande horizontale bleue au centre.
+    ctx.fillStyle='#2053b1';ctx.fillRect(0,113,w,130);
+    if(t<2.39){
+      // Morphing initial : les pixels du titre se rassemblent en un ruban
+      // minuscule, vertical, puis prennent du volume.
+      const p=easeInOut((t-2.14)/.25);
+      drawTurn(w/2,h/2,145+75*p,120+42*p,1.48+p*.75,-.63+p*.5);
+      return;
+    }
+    if(t<3.20){
+      // Le véritable mouvement observé : titre tournant en perspective
+      // avec rotation et agrandissement simultanés.
+      const p=easeInOut((t-2.39)/.81);
+      const spin=2.16*Math.PI*(1-p);
+      const roll=(-1.14)*(1-p);
+      const scale=170+278*p;
+      drawTurn(w/2,h/2,scale,scale*.49,spin,roll);
+      return;
+    }
+    if(t<3.54){
+      // Décélération jusqu'à la pose frontale définitive.
+      const p=easeOut((t-3.20)/.34);
+      drawTurn(w/2,h*.50,448,222,(1-p)*.40,(1-p)*-.12);
+      return;
+    }
+    drawFlat(image,w/2,h*.50,448,222);
   }
   function animateCinematic(startedAt){
     // Le temps réel de la musique pilote cette seconde introduction.
