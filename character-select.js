@@ -69,7 +69,7 @@ let opened=false,activePlayer=0;
 const chosen=[0,1],pointerCursor=[0,1];
 let music=null;
 function getMusic(){
- if(!music){music=new Audio('./assets/audio/3-character-select.mp3');music.loop=true;music.preload='auto';}
+ if(!music){music=new Audio('./assets/audio/Player Select EXTENDED Street Fighter 2 SNES.mp3');music.loop=true;music.preload='auto';}
  return music;
 }
 function changeVolume(){
