@@ -245,16 +245,16 @@
   const randomMark=preview.querySelector('.zf-stage-confirm-random');
   const picture=art.querySelector('#zf-stage-confirm-image');
   const error=art.querySelector('#zf-stage-image-error');
-  art.hidden=!!chosen.random;
-  randomMark.hidden=!chosen.random;
-  // Double sécurité contre les anciennes règles CSS : jamais ? et photo ensemble.
-  randomMark.style.display=chosen.random?'':'none';
-  art.style.display=chosen.random?'none':'';
+  // Même pour ALÉATOIRE : afficher l'arène réellement tirée avant le VS.
+  art.hidden=false;
+  randomMark.hidden=true;
+  randomMark.style.display='none';
+  art.style.display='';
   picture.removeAttribute('src');
-  picture.hidden=!!chosen.random;
+  picture.hidden=false;
   error.hidden=true;
-  if(!chosen.random){
-    // Source officielle en priorité, puis copie locale : ne jamais substituer
+  {
+    // Source officielle nue en priorité, puis copie locale : ne jamais substituer
     // par erreur le décor d'une autre arène.
     const options=[s.imageUrl||catalogue()?.imageFor?.(s.id),s.image?'./assets/stages/'+encodeURIComponent(s.image):null].filter(Boolean);
     let attempt=0;
@@ -267,7 +267,7 @@
     if(options.length)picture.src=options[0];
     else{picture.hidden=true;error.hidden=false;}
   }
-  preview.querySelector('#zf-stage-flight-name').dataset.stageName=chosen.random?'ALÉATOIRE':s.name.toUpperCase();
+  preview.querySelector('#zf-stage-flight-name').dataset.stageName=s.name.toUpperCase();
   drawStageTexts();
   preview.hidden=false;
   screen.classList.add('zf-stage-confirming');
