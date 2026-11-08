@@ -1,0 +1,19 @@
+name: Zika Fighter - contrôles statiques SNES
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  snes-regressions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Vérifier le 4:3, les combattants, les arènes et le JavaScript
+        run: node tests/smoke-static.mjs
