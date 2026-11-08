@@ -57,8 +57,9 @@ root.innerHTML=[
     }catch(_){
       ctx.fillStyle='#050062';ctx.fillRect(22,120,76,16);
     }
-    drawArcadeSelectionText();
     root.querySelector('.zf-select-cabinet').classList.add('reference-ready');
+    // Le 1P bleu de la capture est maintenant visible : ne pas le redessiner.
+    drawArcadeSelectionText();
   });
   reference.src='https://static.wixstatic.com/media/685632_0fee1909f2e04b08aa3ede8c582e66f9~mv2.png';
 
