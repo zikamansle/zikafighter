@@ -181,7 +181,7 @@ for(const path of [
   assert.ok(html.includes('./'+path+'?'),'Portraits non chargés : '+path);
 }
 
-const embedded=html.match(/<script>([\s\S]*?)<\/script>/);
+const embedded=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].at(-1);
 assert.ok(embedded,'Moteur principal introuvable');
 new vm.Script(embedded[1],{filename:'index-inline.js'});
 for(const path of [
