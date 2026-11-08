@@ -76,10 +76,31 @@ function changeVolume(){
 }
 function startMusic(){
  window.ZikaArcadeAudio?.stop?.();
+ selectionFadeToken++;
  const player=getMusic();changeVolume();
  if(player.paused)void player.play().catch(err=>console.warn('Zika Fighter : musique de sélection',err));
 }
-function stopMusic(){if(music){music.pause();music.currentTime=0;}}
+let selectionFadeToken=0;
+function stopMusic(){
+ selectionFadeToken++;
+ if(music){music.pause();music.currentTime=0;}
+}
+function fadeOutSelectionMusic(duration=450){
+ const player=music;if(!player||player.paused)return Promise.resolve();
+ const token=++selectionFadeToken;
+ const from=player.volume;
+ const start=performance.now();
+ return new Promise(resolve=>{
+  const frame=now=>{
+   if(token!==selectionFadeToken){resolve();return;}
+   const progress=Math.min(1,(now-start)/duration);
+   player.volume=Math.max(0,from*(1-progress));
+   if(progress>=1){player.pause();player.currentTime=0;resolve();}
+   else requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+ });
+}
 function ensureSelectionMusic(){
  // Ne jamais réinitialiser currentTime entre PLAYER SELECT et STAGE SELECT.
  const player=getMusic();changeVolume();
@@ -331,7 +352,7 @@ function pollPad(now){
 requestAnimationFrame(pollPad);
 window.addEventListener('zika:settings-changed',changeVolume);
 window.ZikaFighterCharacterSelect={
- open:enter,playMusic:startMusic,ensureMusic:ensureSelectionMusic,stopMusic,playConfirmSound:playCharacterConfirmSound,
+ open:enter,playMusic:startMusic,ensureMusic:ensureSelectionMusic,stopMusic,fadeOutMusic:fadeOutSelectionMusic,playConfirmSound:playCharacterConfirmSound,
  prewarm:()=>{
    window.ZikaArcadeAudio?.preloadClip?.(confirmSoundFile);
    confirmationFallback.load();
