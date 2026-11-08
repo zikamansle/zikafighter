@@ -155,6 +155,7 @@ fighters.forEach((f,i)=>{
 function showPortrait(side,index){
  const panel=root.querySelector('#zf-select-preview-'+side),f=fighters[index],src=portrait(index);
  panel.classList.toggle('has-photo',!!src);
+ panel.classList.toggle('zf-bonus-portrait',f.slug==='zika');
  panel.querySelector('strong').textContent=f.name.toUpperCase();
  panel.querySelector('.zf-select-initials').textContent=initials(f.name);
  const previous=panel.querySelector('img');
@@ -273,6 +274,8 @@ function render(){
  p1Name.dataset.long=String(fighters[chosen[0]].name.length>7);
  const p2Label=root.querySelector('#zf-select-player-2-label');
  p2Label.hidden=count()!==2;
+ // Le portrait droit reste réservé au joueur 2 en mode deux joueurs.
+ root.querySelector('#zf-select-preview-2').hidden=count()!==2;
  if(count()===2){const p2Name=root.querySelector('#zf-player-2-name');p2Name.textContent=fighters[chosen[1]].name.toUpperCase();p2Name.dataset.long=String(fighters[chosen[1]].name.length>7);}
  drawArcadeSelectionText();
  root.querySelector('#zf-select-help').textContent=count()===2
