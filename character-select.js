@@ -16,20 +16,37 @@ const oldStage=document.getElementById('stage'),oldStart=document.getElementById
 root.classList.add('zf-select-screen');
 root.innerHTML=[
 '<div class="zf-select-cabinet" role="group" aria-label="Sélection des vingt combattants">',
-'<div class="zf-select-heading"><h1>PLAYER SELECT</h1><small id="zf-select-mode">GAME START</small></div>',
-'<div class="zf-select-upper">',
+'<canvas id="zf-select-reference" width="320" height="240" aria-hidden="true"></canvas>',
+'<div class="zf-select-heading"><h1>PLAYER SELECT</h1><small>START</small></div>',
 '<div class="zf-select-preview left" id="zf-select-preview-1"><span class="zf-select-initials"></span><strong></strong></div>',
-'<div class="zf-world" aria-label="Carte du monde stylisée">',
-'<svg viewBox="0 0 400 245" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">',
-'<path class="land" d="M25 37L65 20 86 28 99 13 133 21 146 49 128 66 118 91 98 93 93 119 72 112 60 94 38 90 28 67Z M107 130L139 125 160 146 154 181 134 215 116 222 103 197 106 167 95 148Z M188 30L231 18 269 26 298 17 329 29 364 20 380 42 367 61 339 59 328 83 303 95 285 109 264 96 245 75 222 70 208 55Z M216 106L251 109 270 136 267 162 249 198 230 207 215 179 207 151 195 133Z M310 168L342 157 370 166 374 186 360 198 334 191 317 201Z"/>',
-'<path d="M0 81H400 M0 162H400 M100 0V245 M200 0V245 M300 0V245" fill="none" stroke="#bde3f4" opacity=".25"/>',
-'<circle cx="204" cy="64" r="5" fill="#ffe776" stroke="#fff" stroke-width="2"/>',
-'</svg><label>MANSLE-LES-FONTAINES</label></div>',
-'<div class="zf-select-preview right" id="zf-select-preview-2"><span class="zf-select-initials"></span><strong></strong></div>',
-'</div><div class="zf-select-roster-wrap"><div class="zf-select-roster" id="zf-select-roster"></div></div>',
-'<div class="zf-select-help" id="zf-select-help">FLÈCHES : CHOISIR · START : CONFIRMER</div></div>',
-'<div class="zf-select-controls" id="zf-select-controls"><label for="stage">ARÈNE</label></div>'
+'<div class="zf-select-player-label"><b>1P</b><strong id="zf-player-1-name">PASCAL</strong></div>',
+'<div class="zf-select-player-label right-player" id="zf-select-player-2-label" hidden><b>2P</b><strong id="zf-player-2-name">MICKA</strong></div>',
+'<div class="zf-select-preview right" id="zf-select-preview-2" hidden><span class="zf-select-initials"></span><strong></strong></div>',
+'<div class="zf-select-roster-wrap"><div class="zf-select-roster" id="zf-select-roster"></div></div>',
+'<div class="zf-select-help" id="zf-select-help">FLÈCHES : CHOISIR · START : CONFIRMER</div>',
+'</div><div class="zf-select-controls" id="zf-select-controls"><label for="stage">ARÈNE</label></div>'
 ].join('');
+
+  // Carte, typographie PLAYER SELECT et START repris de la capture fournie.
+  // L'intégralité des anciens portraits du jeu d'origine reste hors du recadrage.
+  const reference=new Image();
+  reference.crossOrigin='anonymous';
+  reference.decoding='async';
+  reference.addEventListener('load',()=>{
+    const canvas=root.querySelector('#zf-select-reference');
+    const ctx=canvas.getContext('2d',{alpha:false});
+    ctx.imageSmoothingEnabled=false;
+    ctx.fillStyle='#070779';ctx.fillRect(0,0,320,240);
+    // Capture 1582 × 893, scène SNES centrée x140..1370.
+    // Cette partie contient uniquement le titre, START et la carte du monde.
+    ctx.drawImage(reference,140,0,1230,490,0,0,320,136);
+    // Masquer les anciens textes 1P/KEN de la capture :
+    // le nom est maintenant rendu selon le combattant sélectionné.
+    ctx.fillStyle='#070779';ctx.fillRect(3,94,74,42);
+    root.querySelector('.zf-select-cabinet').classList.add('reference-ready');
+  });
+  reference.src='https://static.wixstatic.com/media/685632_0fee1909f2e04b08aa3ede8c582e66f9~mv2.png';
+
 const roster=root.querySelector('#zf-select-roster'),toolbar=root.querySelector('#zf-select-controls');
 if(oldStage)toolbar.appendChild(oldStage);
 let opened=false,activePlayer=0;
@@ -91,8 +108,12 @@ function render(){
   if(src&&!current){const im=new Image();im.alt='';im.src=src;picture.prepend(im);}
   if(!src&&current)current.remove();
  }
- showPortrait(1,chosen[0]);showPortrait(2,count()===2?chosen[1]:(chosen[0]+1)%fighters.length);
- root.querySelector('#zf-select-mode').textContent=count()===2?'V.S. BATTLE':'GAME START';
+ showPortrait(1,chosen[0]);
+ showPortrait(2,count()===2?chosen[1]:(chosen[0]+1)%fighters.length);
+ root.querySelector('#zf-player-1-name').textContent=fighters[chosen[0]].name.toUpperCase();
+ const p2Label=root.querySelector('#zf-select-player-2-label');
+ p2Label.hidden=count()!==2;
+ if(count()===2)root.querySelector('#zf-player-2-name').textContent=fighters[chosen[1]].name.toUpperCase();
  root.querySelector('#zf-select-help').textContent=count()===2
   ?(activePlayer===0?'1P : CHOISIR · START CONFIRMER':'2P : CHOISIR · START CONFIRMER')
   :'FLÈCHES : CHOISIR · START : CONFIRMER';
