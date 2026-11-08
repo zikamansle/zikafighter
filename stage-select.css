@@ -91,20 +91,6 @@
   font:900 clamp(8px,1.03vw,12px)/1.05 monospace;
   color:#f3bf80;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-#select #zf-stage-screen .zf-stage-flight[hidden]{display:none!important}
-#select #zf-stage-screen .zf-stage-flight{
-  position:absolute;inset:0;z-index:10;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:6%;background:#030b3ef4;color:#f5c889;
-  text-shadow:none;
-}
-#select #zf-stage-screen .zf-stage-flight span,
-#select #zf-stage-screen .zf-stage-flight strong{
-  display:block;width:72%;max-width:72%;height:auto;
-}
-#select #zf-stage-screen .zf-stage-flight canvas{
-  display:block;width:100%;height:auto;image-rendering:pixelated;
-}
 @media(max-width:650px){
   #select #zf-stage-screen{border-top-width:1px}
   #select #zf-stage-screen .zf-stage-grid{gap:2px;border-width:1px;padding:1px 2px}
