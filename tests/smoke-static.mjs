@@ -129,7 +129,7 @@ assert.ok(html.includes('html:not(.zf-intro-booted) body>main'),
   'Protection contre le flash du HTML avant l’introduction absente');
 assert.ok(read('arcade-intro.js').includes("classList.add('zf-intro-booted')"),
   'Le montage de l’introduction doit activer la page après création du masque');
-assert.ok(html.includes('arcade-intro.js?v=20261108-clean-first-paint-v18'),
+assert.ok(html.includes('arcade-intro.js?v=20261108-mode7-rotation-v19'),
   'L’ancienne version de l’intro reste en cache');
 
 for(const path of [
