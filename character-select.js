@@ -326,7 +326,7 @@ function finish(){
  const transition=()=>{
   opened=false;stopMusic();
   const player1=fighters[chosen[0]].slug;
-  const player2=fighters[count()===2?chosen[1]:(chosen[0]+1)%fighters.length].slug;
+  const player2=fighters[count()===2?chosen[1]:(chosen[0]+1)%visibleCount()].slug;
   bridge()?.setFighter?.(player1);
   bridge()?.setOpponent?.(player2);
   // Après la sélection des combattants, ouvrir obligatoirement les arènes.
