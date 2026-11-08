@@ -1,0 +1,59 @@
+/* Arènes : deuxième écran APRÈS les personnages. Portraits 1P et 2P réservés. */
+#select.zf-stage-phase .zf-select-controls{display:none!important}
+#zf-stage-screen[hidden]{display:none!important}
+#zf-stage-screen{
+ position:relative;box-sizing:border-box;aspect-ratio:4/3;width:100%;overflow:hidden;
+ background:#03064b;color:#e9d19f;border:4px solid #080b28;image-rendering:pixelated;
+ font-family:"Courier New",monospace;box-shadow:inset 0 0 0 3px #152364;
+}
+#zf-stage-screen .zf-stage-heading{
+ font:900 clamp(19px,3.8vw,46px)/1.05 Georgia,serif;text-shadow:3px 3px #4b2943,5px 5px #0c061a;
+ color:#f5bf77;text-transform:uppercase;letter-spacing:.025em;
+ margin:1.5% 0 .5%;
+}
+#zf-stage-screen .zf-stage-heroes{height:44%;display:grid;grid-template-columns:24% 52% 24%;align-items:stretch;gap:0}
+#zf-stage-screen .zf-stage-hero{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;overflow:hidden;padding:0 3px}
+#zf-stage-screen .zf-stage-hero b{color:#4dc5ff;font:900 clamp(17px,3vw,33px)/1 monospace;align-self:flex-start}
+#zf-stage-screen .zf-stage-hero-right b{align-self:flex-end;color:#ffd36e}
+#zf-stage-screen .zf-stage-hero img{object-fit:contain;object-position:center bottom;width:100%;height:75%;image-rendering:pixelated}
+#zf-stage-screen .zf-stage-hero span{height:9%;max-width:100%;font:900 clamp(9px,1.25vw,15px)/1 monospace;color:#ffd596;overflow:hidden;white-space:nowrap}
+#zf-stage-screen .zf-stage-feature{display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+#zf-stage-screen .zf-stage-image{
+ width:96%;height:76%;border:3px solid #f1c783;box-shadow:0 0 0 2px #1e1751;
+ background-color:#192555;background-position:center;background-size:contain;background-repeat:no-repeat;
+ image-rendering:pixelated
+}
+#zf-stage-screen .zf-stage-feature strong{
+ max-width:100%;margin-top:1%;font:900 clamp(9px,1.6vw,18px)/1 monospace;
+ color:#f4cb86;text-overflow:ellipsis;overflow:hidden;white-space:nowrap
+}
+#zf-stage-screen .zf-stage-grid{
+ margin:1% 3% 0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));
+ gap:4px;height:39%;overflow-y:auto;scrollbar-width:thin
+}
+#zf-stage-screen .zf-stage-slot{
+ min-width:0;min-height:0;border:2px solid #6979a2;border-radius:0;
+ padding:0;position:relative;display:block;cursor:pointer;overflow:hidden;
+ background:linear-gradient(#1d3972,#081538);box-shadow:inset 0 0 0 1px #2f487b;color:#f7e4c9
+}
+#zf-stage-screen .zf-stage-slot img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+#zf-stage-screen .zf-stage-slot-title{
+ position:absolute;inset:auto 0 0;background:#050a2dca;padding:2px;
+ font:900 clamp(7px,.86vw,11px)/1.06 monospace;text-transform:uppercase
+}
+#zf-stage-screen .zf-stage-slot.no-art .zf-stage-slot-title{top:0;display:grid;place-items:center;background:transparent}
+#zf-stage-screen .zf-stage-slot.current{
+ border:3px solid #ffcf68;box-shadow:inset 0 0 0 2px #fff6ca,0 0 0 2px #b55231;
+ animation:zf-stage-cursor .55s steps(2,end) infinite;z-index:2
+}
+@keyframes zf-stage-cursor{50%{filter:brightness(1.5)}}
+#zf-stage-screen .zf-stage-help{margin:1% auto;font:900 clamp(9px,1.3vw,15px)/1 monospace;color:#f6bc78}
+#zf-stage-screen .zf-stage-flight[hidden]{display:none!important}
+#zf-stage-screen .zf-stage-flight{
+ position:absolute;inset:0;z-index:10;background:#030b3df2;display:flex;
+ flex-direction:column;align-items:center;justify-content:center;gap:5%;
+ color:#f6c580;font:900 clamp(19px,4vw,48px)/1 monospace;text-shadow:3px 3px #36213d;
+}
+#zf-stage-screen .zf-stage-flight strong{font-size:clamp(13px,2vw,28px)}
+#zf-stage-screen .zf-stage-airplane{font-size:clamp(30px,7vw,100px);animation:zf-fly 1.8s ease-in-out 1}
+@keyframes zf-fly{from{transform:translate(-180px,50px) scale(.45)}to{transform:translate(180px,-50px) scale(1.2)}}
