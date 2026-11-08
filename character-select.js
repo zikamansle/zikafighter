@@ -285,13 +285,22 @@ function render(){
   ?(activePlayer===0?'1P : CHOISIR · START CONFIRMER':'2P : CHOISIR · START CONFIRMER')
   :'FLÈCHES : CHOISIR · START : CONFIRMER';
 }
+function playCursorMoveSound(){
+ // Réutiliser LE bruitage de déplacement déjà fourni pour les menus,
+ // quel que soit le joueur (1P ou 2P), la souris, le clavier ou la manette.
+ if(window.ZikaFighterMenuSfx?.move)window.ZikaFighterMenuSfx.move();
+ else window.ZikaArcadeAudio?.playEffect?.('move');
+}
 function choose(index,player=activePlayer){
  if(!opened||window.ZikaFighterScreens?.busy)return;
  const i=(index+fighters.length)%fighters.length;
+ // Un clic sur la même case confirme le personnage; il ne déplace pas le curseur.
+ if(i===pointerCursor[player])return;
  chosen[player]=i;pointerCursor[player]=i;
  if(player===0)bridge()?.setFighter?.(fighters[i].slug);
  else bridge()?.setOpponent?.(fighters[i].slug);
- window.ZikaArcadeAudio?.playEffect?.('move');render();
+ playCursorMoveSound();
+ render();
 }
 function move(dx,dy){const i=pointerCursor[activePlayer],x=i%10,y=Math.floor(i/10);
  choose(((y+dy+2)%2)*10+(x+dx+10)%10);
@@ -323,11 +332,21 @@ root.querySelector('#zf-select-start-control').addEventListener('click',()=>{if(
 if(oldStart){oldStart.textContent='GAME START';toolbar.appendChild(oldStart);
  oldStart.addEventListener('click',event=>{if(!opened)return;event.preventDefault();event.stopImmediatePropagation();confirm();},true);
 }
+let lastRepeatedMove=0;
 document.addEventListener('keydown',event=>{
- if(!opened||window.ZikaFighterScreens?.busy||event.repeat)return;
+ if(!opened||window.ZikaFighterScreens?.busy)return;
  const code=event.code;
  if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','KeyA','KeyD','KeyW','KeyS','Enter','Space','NumpadEnter'].includes(code))return;
  event.preventDefault();event.stopImmediatePropagation();
+ const isMove=!['Enter','Space','NumpadEnter'].includes(code);
+ // Une touche maintenue avance régulièrement, avec un son pour chaque case
+ // plutôt qu'un seul déplacement suivi d'un silence.
+ if(event.repeat){
+  if(!isMove)return; // Ne jamais confirmer deux fois sur une touche maintenue.
+  const now=performance.now();
+  if(now-lastRepeatedMove<90)return;
+  lastRepeatedMove=now;
+ }
  if(code==='ArrowLeft'||code==='KeyA')move(-1,0);
  else if(code==='ArrowRight'||code==='KeyD')move(1,0);
  else if(code==='ArrowUp'||code==='KeyW')move(0,-1);
