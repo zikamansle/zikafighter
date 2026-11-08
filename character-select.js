@@ -30,39 +30,8 @@ root.innerHTML=[
 '</div><div class="zf-select-controls" id="zf-select-controls"><label for="stage">ARÈNE</label></div>'
 ].join('');
 
-  // Carte, typographie PLAYER SELECT et START repris de la capture fournie.
-  // L'intégralité des anciens portraits du jeu d'origine reste hors du recadrage.
-  const reference=new Image();
-  reference.crossOrigin='anonymous';
-  reference.decoding='async';
-  reference.addEventListener('load',()=>{
-    const canvas=root.querySelector('#zf-select-reference');
-    const ctx=canvas.getContext('2d',{alpha:false});
-    ctx.imageSmoothingEnabled=false;
-    ctx.fillStyle='#040062';ctx.fillRect(0,0,320,240);
-    // Le CDN peut redimensionner la référence : recadrer en coordonnées relatives.
-    const scaleX=reference.naturalWidth/1582;
-    const scaleY=reference.naturalHeight/893;
-    ctx.drawImage(reference,140*scaleX,0,1230*scaleX,490*scaleY,0,0,320,136);
-    // La capture contient un véritable « 1P » bleu à conserver.
-    // Seul le nom KEN est incrusté dans le décor : le nettoyer
-    // sur les lignes 120–135 (coordonnées du canevas 320×240).
-    // Le vieux nettoyage y=94..135 effaçait aussi le 1P original.
-    try{
-      for(let y=120;y<136;y++){
-        const background=ctx.getImageData(12,y,1,1).data;
-        ctx.fillStyle='rgb('+background[0]+','+background[1]+','+background[2]+')';
-        ctx.fillRect(22,y,76,1);
-      }
-    }catch(_){
-      ctx.fillStyle='#050062';ctx.fillRect(22,120,76,16);
-    }
-    root.querySelector('.zf-select-cabinet').classList.add('reference-ready');
-    // Le 1P bleu de la capture est maintenant visible : ne pas le redessiner.
-    drawArcadeSelectionText();
-  });
-  reference.src='https://static.wixstatic.com/media/685632_0fee1909f2e04b08aa3ede8c582e66f9~mv2.png';
-
+  // Typographie tracée localement via zf-pixel-lettering.js :
+  // plus de capture déformée, ni ancien 1P ou KEN caché dans un fond.
 const roster=root.querySelector('#zf-select-roster'),toolbar=root.querySelector('#zf-select-controls');
 if(oldStage)toolbar.appendChild(oldStage);
 let opened=false,activePlayer=0;
@@ -234,26 +203,46 @@ function arcadeName(ctx,text,x,y,maxWidth){
  ctx.restore();
 }
 
+let zfCursorBlink=true;
 function drawArcadeSelectionText(){
  const c=root.querySelector('#zf-select-type');
  if(!c)return;
  const ctx=c.getContext('2d');
  ctx.setTransform(1,0,0,1,0,0);
- ctx.clearRect(0,0,320,240);ctx.imageSmoothingEnabled=false;
- const first=fighters[chosen[0]];
- // Les repères 1P et 2P restent visibles même sans la vieille carte.
- ctx.font='bold 14px monospace';
- ctx.fillStyle='#142c83';ctx.fillText('1P',7,52);
- ctx.fillStyle='#51c8ff';ctx.fillText('1P',6,51);
- // Noms entre les deux zones : ne jamais recouvrir les portraits ni le bandeau.
- arcadeName(ctx,first.name.toUpperCase(),4,137,62);
+ ctx.clearRect(0,0,320,240);
+ ctx.imageSmoothingEnabled=false;
+ const bitmap=window.ZikaFighterPixelText;
+ if(!bitmap)return;
+ // Un atlas unique en pixels SNES : jamais de Georgia, Times ou monospace.
+ bitmap.draw(ctx,'PLAYER SELECT',160,11,{align:'center',maxWidth:170,scale:1.52,variant:'title'});
+ bitmap.draw(ctx,'START',278,3,{align:'center',maxWidth:55,scale:1.38,variant:'title'});
+ bitmap.draw(ctx,'1P',8,35,{tone:'blue',maxWidth:32,scale:1.75,variant:'title'});
+ bitmap.draw(ctx,fighters[chosen[0]].name,4,137,{maxWidth:63,scale:1.43,variant:'title'});
  if(count()===2){
-   ctx.font='bold 14px monospace';
-   ctx.fillStyle='#13235a';ctx.fillText('2P',285,52);
-   ctx.fillStyle='#85e1ff';ctx.fillText('2P',284,51);
-   arcadeName(ctx,fighters[chosen[1]].name.toUpperCase(),254,137,62);
+   bitmap.draw(ctx,'2P',282,35,{tone:'blue',maxWidth:32,scale:1.55,variant:'title'});
+   bitmap.draw(ctx,fighters[chosen[1]].name,316,137,{align:'right',maxWidth:63,scale:1.43,variant:'title'});
  }
+ // Repères 1P/2P : attachés à la case sélectionnée, au lieu de
+ // simples bordures CSS et de surbrillance du visage.
+ const cabinet=root.querySelector('.zf-select-cabinet');
+ const bounds=cabinet?.getBoundingClientRect();
+ if(!opened||!zfCursorBlink||!bounds?.width)return;
+ const marker=(index,text,tone)=>{
+   const cell=roster.children[index];
+   if(!cell||cell.hidden)return;
+   const rect=cell.getBoundingClientRect();
+   const px=(rect.left-bounds.left)*320/bounds.width;
+   const py=(rect.top-bounds.top)*240/bounds.height;
+   bitmap.draw(ctx,text,px+2,Math.max(29,py-5),{tone,maxWidth:17,scale:.88,variant:'compact'});
+ };
+ marker(pointerCursor[0],'1P','blue');
+ if(count()===2)marker(pointerCursor[1],'2P','red');
 }
+setInterval(()=>{
+ if(!opened||window.ZikaFighterScreens?.busy)return;
+ zfCursorBlink=!zfCursorBlink;
+ drawArcadeSelectionText();
+},320);
 
 function render(){
  if(!opened)return;
