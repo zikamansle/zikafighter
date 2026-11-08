@@ -15,7 +15,7 @@
   '</div>',
   '<div class="zf-stage-grid" id="zf-stage-grid" role="group" aria-label="Arènes disponibles"></div>',
   '<div class="zf-stage-help" id="zf-stage-help" aria-live="polite">FLÈCHES : CHOISIR · START : VALIDER</div>',
-  '<div class="zf-stage-flight" id="zf-stage-flight" hidden><span aria-label="STAGE APPROACH"><canvas id="zf-flight-text" width="320" height="30" aria-hidden="true"></canvas></span><strong id="zf-stage-flight-name"><canvas id="zf-flight-stage" width="320" height="54" aria-hidden="true"></canvas></strong></div>'
+  '<div class="zf-stage-flight" id="zf-stage-flight" hidden><span aria-label="STAGE APPROACH"><canvas id="zf-flight-text" width="320" height="30" aria-hidden="true"></canvas></span><strong id="zf-stage-flight-name"><canvas id="zf-flight-stage" width="320" height="54" aria-hidden="true"></canvas></strong><div id="zf-stage-confirm-card" class="zf-stage-confirm-card"><div class="zf-stage-confirm-art"></div><span class="zf-stage-confirm-random">?</span></div></div>'
  ].join('');
  root.querySelector('.zf-select-cabinet').appendChild(screen);
  const grid=screen.querySelector('#zf-stage-grid');
@@ -227,8 +227,17 @@
   const ownToken=stageToken;
   // La musique de PLAYER SELECT reste continue pendant l'annonce du stage.
   window.ZikaFighterBridge?.setStage?.(s.id);
-  // Aucun visuel de transition : la sélection ne déclenche que les sons.
-  screen.querySelector('#zf-stage-flight').hidden=true;
+  // Afficher le stage sélectionné centré sous son titre. Aucun avion dessiné.
+  const preview=screen.querySelector('#zf-stage-flight');
+  const art=preview.querySelector('.zf-stage-confirm-art');
+  const randomMark=preview.querySelector('.zf-stage-confirm-random');
+  const img=chosen.random?'':(s.imageUrl||catalogue()?.imageFor?.(s.id)||'');
+  art.style.backgroundImage=img?'url("'+img.replace(/"/g,'%22')+'")':'none';
+  art.hidden=!!chosen.random;
+  randomMark.hidden=!chosen.random;
+  preview.querySelector('#zf-stage-flight-name').dataset.stageName=chosen.random?'ALÉATOIRE':s.name.toUpperCase();
+  drawStageTexts();
+  preview.hidden=false;
   // Laisser entendre le clic de validation avant le bruit d'avion.
   await new Promise(done=>setTimeout(done,220));
   if(!active||stageToken!==ownToken)return;
@@ -237,9 +246,18 @@
   if(!chosen.random)await catalogue()?.announce(s.id);
   if(!active||stageToken!==ownToken)return;
   active=false;screen.classList.remove('zf-stage-active');root.classList.remove('zf-stage-phase');
-  // Passer à la bande-son de combat seulement à l'ouverture effective du combat.
-  window.ZikaFighterCharacterSelect?.stopMusic?.();
-  window.ZikaFighterBridge?.start?.();
+  const player1=window.ZikaFighterBridge?.getMatchSelection?.()?.player||'pascal';
+  const player2=window.ZikaFighterBridge?.getMatchSelection?.()?.opponent||'micka';
+  // Fondre uniquement la musique PLAYER SELECT pendant l'entrée sur VS.
+  // La musique VS démarre à son volume normal, sans fondu audio.
+  void window.ZikaFighterCharacterSelect?.fadeOutMusic?.(450);
+  const launch=()=>window.ZikaFighterBridge?.start?.();
+  if(window.ZikaFighterVersus?.show){
+    window.ZikaFighterVersus.show({player1,player2,onComplete:launch});
+  }else{
+    window.ZikaFighterCharacterSelect?.stopMusic?.();
+    launch();
+  }
  }
  document.addEventListener('keydown',event=>{
   if(!active||confirming||window.ZikaFighterScreens?.busy)return;
