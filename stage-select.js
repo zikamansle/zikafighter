@@ -204,7 +204,7 @@
     window.ZikaFighterCharacterSelect.playConfirmSound();
   }else window.ZikaFighterMenuSfx?.confirm?.();
   const ownToken=stageToken;
-  window.ZikaFighterCharacterSelect?.stopMusic?.();
+  // La musique de PLAYER SELECT reste continue pendant l'annonce du stage.
   window.ZikaFighterBridge?.setStage?.(s.id);
   const flight=screen.querySelector('#zf-stage-flight');
   flight.hidden=false;
@@ -216,6 +216,8 @@
   await catalogue()?.announce(s.id);
   if(!active||stageToken!==ownToken)return;
   active=false;screen.classList.remove('zf-stage-active');root.classList.remove('zf-stage-phase');
+  // Passer à la bande-son de combat seulement à l'ouverture effective du combat.
+  window.ZikaFighterCharacterSelect?.stopMusic?.();
   window.ZikaFighterBridge?.start?.();
  }
  document.addEventListener('keydown',event=>{
