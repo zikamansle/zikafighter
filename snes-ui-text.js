@@ -39,10 +39,11 @@
    const width=ctx.measureText(text).width;
    const anchor=opts.align==='center'?'center':opts.align==='right'?'right':'left';
    const color=opts.tone==='cyan'||opts.tone==='blue'?'#58ccff':
+       opts.tone==='red'?'#ff6269':
        opts.tone==='cream'?'#f5f4e8':'#ffc17b';
    ctx.textAlign=anchor;ctx.textBaseline='top';
    ctx.lineJoin='miter';ctx.miterLimit=2;
-   ctx.strokeStyle=opts.tone==='cyan'?'#071c6b':'#31152f';
+   ctx.strokeStyle=opts.tone==='cyan'?'#071c6b':opts.tone==='red'?'#640b24':'#31152f';
    ctx.lineWidth=Math.max(.6,size/15);
    ctx.strokeText(text,Math.round(x),Math.round(y));
    ctx.fillStyle=color;
