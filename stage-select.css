@@ -149,3 +149,7 @@
   display:block;color:#f6c966;font:900 clamp(25px,4.5vw,55px)/1 'ZikaSFII',monospace;
   text-shadow:2px 3px #7a2032;image-rendering:pixelated;
 }
+
+/* Validation de stage : aucune animation ou icône d'avion à l'écran. */
+#select #zf-stage-screen .zf-stage-flight{display:none!important}
+#select #zf-stage-screen .zf-stage-airplane{display:none!important;animation:none!important}
