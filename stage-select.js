@@ -198,7 +198,7 @@
    planeAudio=sound;sound.preload='auto';
    sound.volume=Math.max(0,Math.min(1,Number(window.ZikaFighterSettings?.fxVolume??8)/10));
    let done=false;
-   const timeout=setTimeout(finish,3100);
+   const timeout=setTimeout(finish,1100);
    planeFinish=finish;
    function finish(){
     if(done)return;done=true;clearTimeout(timeout);
@@ -235,6 +235,9 @@
   const error=art.querySelector('#zf-stage-image-error');
   art.hidden=!!chosen.random;
   randomMark.hidden=!chosen.random;
+  // Double sécurité contre les anciennes règles CSS : jamais ? et photo ensemble.
+  randomMark.style.display=chosen.random?'':'none';
+  art.style.display=chosen.random?'none':'';
   picture.removeAttribute('src');
   picture.hidden=!!chosen.random;
   error.hidden=true;
@@ -258,11 +261,16 @@
   screen.classList.add('zf-stage-confirming');
   root.classList.add('zf-stage-confirm-view');
   // Laisser entendre le clic de validation avant le bruit d'avion.
-  await waitOrSkip(220);
+  await waitOrSkip(90);
   if(!active||stageToken!==ownToken)return;
   await playAirplane();
   if(!active||stageToken!==ownToken)return;
-  if(!chosen.random&&!skipRequested)await catalogue()?.announce(s.id);
+  if(!chosen.random&&!skipRequested){
+    // L'annonce reste audible, mais ne retarde pas indéfiniment l'écran VS.
+    const voicePromise=catalogue()?.announce(s.id);
+    await Promise.race([voicePromise,waitOrSkip(1450)]);
+    window.ZikaArcadeAudio?.stopStageVoice?.();
+  }
   if(!active||stageToken!==ownToken)return;
   active=false;screen.classList.remove('zf-stage-active','zf-stage-confirming');root.classList.remove('zf-stage-phase','zf-stage-confirm-view');
   const player1=window.ZikaFighterBridge?.getMatchSelection?.()?.player||'pascal';
@@ -270,7 +278,7 @@
   // Fondre uniquement la musique PLAYER SELECT pendant l'entrée sur VS.
   // La musique VS démarre à son volume normal, sans fondu audio.
   if(window.ZikaFighterCharacterSelect?.fadeOutMusic)
-    await window.ZikaFighterCharacterSelect.fadeOutMusic(450);
+    await window.ZikaFighterCharacterSelect.fadeOutMusic(260);
   else window.ZikaFighterCharacterSelect?.stopMusic?.();
   if(stageToken!==ownToken)return;
   const launch=()=>window.ZikaFighterBridge?.start?.();
