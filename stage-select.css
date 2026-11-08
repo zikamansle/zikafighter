@@ -105,14 +105,6 @@
 #select #zf-stage-screen .zf-stage-flight canvas{
   display:block;width:100%;height:auto;image-rendering:pixelated;
 }
-#select #zf-stage-screen .zf-stage-airplane{
-  font-size:clamp(28px,5vw,72px);
-  animation:zf-arena-flight 1.8s ease-in-out 1;
-}
-@keyframes zf-arena-flight{
-  from{transform:translate(-135%,35%) scale(.45)}
-  to{transform:translate(135%,-35%) scale(1.2)}
-}
 @media(max-width:650px){
   #select #zf-stage-screen{border-top-width:1px}
   #select #zf-stage-screen .zf-stage-grid{gap:2px;border-width:1px;padding:1px 2px}
@@ -122,8 +114,6 @@
   #select #zf-stage-screen .zf-stage-heading{font-size:clamp(10px,2.8vw,15px)}
 }
 
-/* Arène des Partenaires : même clignotement que toutes les autres cases.
-   Le clignotement est activé seulement dans STAGE SELECT. */
 /* Un seul indicateur clignotant pour TOUTES les arènes, partenaires inclus.
    Ne dépend ni de l'image ni du focus. */
 #select #zf-stage-screen.zf-stage-active .zf-stage-slot.current{
@@ -150,27 +140,6 @@
   text-shadow:2px 3px #7a2032;image-rendering:pixelated;
 }
 
-/* Validation de stage : aucune animation ou icône d'avion à l'écran. */
-#select #zf-stage-screen .zf-stage-flight[hidden]{display:none!important}
-#select #zf-stage-screen .zf-stage-airplane{display:none!important;animation:none!important}
-
-/* Confirmation : carte d'arène sous le titre, sans icône d'avion. */
-#select #zf-stage-screen .zf-stage-flight:not([hidden]){
- display:flex!important;flex-direction:column;align-items:center;justify-content:center;
- gap:4%;background:#030b3ef4;
-}
-#select #zf-stage-screen .zf-stage-confirm-card{
- width:48%;height:52%;display:grid;place-items:center;
- border:2px solid #a4b4d2;background:#081142;overflow:hidden;
-}
-#select #zf-stage-screen .zf-stage-confirm-art{
- width:100%;height:100%;background-size:contain;background-repeat:no-repeat;background-position:center;
-}
-#select #zf-stage-screen .zf-stage-confirm-random{
- font:900 clamp(26px,5vw,62px)/1 'ZikaSFII',monospace;color:#f4d37c;
-}
-#select #zf-stage-screen .zf-stage-confirm-art[hidden],#select #zf-stage-screen .zf-stage-confirm-random[hidden]{display:none!important}
-
 /* Confirmation du décor : seul le nom, UNE ligne et une grande vignette.
    Le panneau se déploie sur l'écran 4:3 le temps de l'annonce, sans
    changer le bandeau des arènes en mode sélection. */
@@ -193,7 +162,7 @@
   justify-content:center;
   gap:3%;
   padding:8% 4% 7%;
-  background:#07063ff5;
+  background:#07063f;
 }
 #select #zf-stage-screen .zf-stage-flight #zf-stage-flight-name{
   display:flex;
@@ -243,3 +212,17 @@
  #select #zf-stage-screen .zf-stage-flight:not([hidden]){padding:8% 3% 6%}
  #select #zf-stage-screen .zf-stage-flight .zf-stage-confirm-card{width:84%;height:61%;border-width:1px}
 }
+
+/* Un seul écran visible pendant la validation : pas de texte de sélection,
+   de miniature ou de portraits filtrant sous la confirmation. */
+#select.zf-stage-confirm-view .zf-select-cabinet > #zf-select-type,
+#select.zf-stage-confirm-view .zf-select-cabinet > .zf-select-roster-wrap,
+#select.zf-stage-confirm-view .zf-select-cabinet > .zf-select-preview,
+#select.zf-stage-confirm-view .zf-select-cabinet > .zf-select-player-label,
+#select.zf-stage-confirm-view #zf-stage-screen > .zf-stage-heading,
+#select.zf-stage-confirm-view #zf-stage-screen > .zf-stage-grid,
+#select.zf-stage-confirm-view #zf-stage-screen > .zf-stage-help{
+  visibility:hidden!important;
+}
+#select.zf-stage-confirm-view #zf-stage-screen{z-index:12;overflow:visible}
+#select.zf-stage-confirm-view #zf-stage-flight{background:#07063f!important}
