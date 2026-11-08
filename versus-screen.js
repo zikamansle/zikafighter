@@ -18,6 +18,11 @@
  let canSkip=false,skipHandler=null,lastPadPressed=false;
  let padRequest=0;
  const labels=['',''];
+ const selectedSlugs=['',''];
+ // Orientation des illustrations sources : visage tourné vers la gauche
+ // de l'image. Toutes les autres sont frontales ou orientées à droite.
+ const sourceFacingLeft=new Set(['elo','djo','bene','kev','fabienne-2']);
+
  function stop(){
   session++;ended=true;
   soundtrack.onended=null;soundtrack.onerror=null;
@@ -41,16 +46,21 @@
   ctx.fillStyle='#d72228';
   ctx.fillRect(140,159,43,24);
  }
- function drawPortrait(image,x){
+ function drawPortrait(image,x,side,slug){
   if(!image?.complete||!image.naturalWidth)return;
-  // L'illustration reste intacte ; cadrage tête/poitrine dans la case SNES.
+  // La gauche regarde vers le centre (droite), la droite vers le centre (gauche).
+  // On reflète uniquement l'affichage horizontal, jamais le fichier original.
   const dx=x,dy=37,dw=90,dh=108;
   const ratio=dw/dh,sourceRatio=image.naturalWidth/image.naturalHeight;
   let sx=0,sy=0,sw=image.naturalWidth,sh=image.naturalHeight;
   if(sourceRatio>ratio){sw=image.naturalHeight*ratio;sx=(image.naturalWidth-sw)/2;}
   else{sh=image.naturalWidth/ratio;sy=Math.max(0,(image.naturalHeight-sh)*.12);}
+  const originalFacesLeft=sourceFacingLeft.has(slug);
+  const wantLeft=side===2;
+  const flip=originalFacesLeft!==wantLeft;
   ctx.save();ctx.beginPath();ctx.rect(dx,dy,dw,dh);ctx.clip();
-  ctx.drawImage(image,sx,sy,sw,sh,dx,dy,dw,dh);
+  if(flip){ctx.translate(dx+dw,0);ctx.scale(-1,1);ctx.drawImage(image,sx,sy,sw,sh,0,dy,dw,dh);}
+  else ctx.drawImage(image,sx,sy,sw,sh,dx,dy,dw,dh);
   ctx.restore();
  }
  function draw(){
@@ -58,8 +68,8 @@
   ctx.imageSmoothingEnabled=false;
   // Bleu homogène de la capture ; aucun dégradé et aucune bordure de portrait.
   ctx.fillStyle='#07005f';ctx.fillRect(0,0,320,240);
-  drawPortrait(portraitImages[0],29);
-  drawPortrait(portraitImages[1],201);
+  drawPortrait(portraitImages[0],29,1,selectedSlugs[0]);
+  drawPortrait(portraitImages[1],201,2,selectedSlugs[1]);
   const font=window.ZikaSNESText;
   if(font?.ready){
    font.draw(ctx,'START',288,0,{face:'game',tone:'cream',align:'right',scale:.50,maxWidth:53});
@@ -109,6 +119,7 @@
  function show({player1,player2,onComplete}={}){
   stop();ended=false;const token=session;
   onFinish=onComplete;labels[0]=niceName(player1);labels[1]=niceName(player2);
+  selectedSlugs[0]=player1;selectedSlugs[1]=player2;
   loadPortraits(player1,player2,token);
   const finish=()=>{
    if(ended||token!==session)return;
