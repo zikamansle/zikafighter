@@ -171,3 +171,14 @@ body.zf-in-selection main{max-width:990px;padding:6px 6px 20px;margin:0 auto}
 }
 #select .zf-fighter-slot.p1{--zf-cursor-color:#2aafff}
 #select .zf-fighter-slot.p2{--zf-cursor-color:#f13b52}
+
+/* Sélection personnages : curseur FIN 16 bits (sans gros angles). */
+#select .zf-fighter-slot.p1,#select .zf-fighter-slot.p2{
+  border:1px solid var(--zf-cursor-color)!important;
+  outline:1px solid #f7f5df!important;
+  outline-offset:-3px!important;
+  box-shadow:none!important;
+}
+#select .zf-fighter-slot.p1::after,#select .zf-fighter-slot.p2::after{
+  content:none!important;display:none!important;
+}
