@@ -1,5 +1,5 @@
 /* Zika Fighter - accueil arcade. Aucune dépendance externe. */
-#zf-intro{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;background:#0810a8;color:#fff;font-family:"ZikaCPS1",sans-serif;user-select:none}
+#zf-intro{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;background:#000;color:#fff;font-family:"ZikaCPS1",sans-serif;user-select:none}
 #zf-intro[hidden]{display:none!important}
 #zf-intro *{box-sizing:border-box}
 #zf-intro .zf-screen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;overflow:hidden;text-align:center}
@@ -160,7 +160,7 @@
    tenue silencieuse puis fondu vers ZIKAPCOM. Aucune fausse licence Nintendo. */
 #zf-intro .zf-legal{background:#000!important;isolation:isolate}
 #zf-intro .zf-legal::before{content:"";position:absolute;inset:0;
-  background:#10179e;opacity:var(--zf-legal-blue,1);z-index:2;pointer-events:none}
+  background:#000;opacity:0;z-index:2;pointer-events:none}
 #zf-intro .zf-legal-content{position:relative;width:min(96vw,960px);
   height:min(100vh,440px);font-family:"ZikaSFII",monospace;
   text-align:center;opacity:var(--zf-legal-opacity,0);font-weight:900;
