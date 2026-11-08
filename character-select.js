@@ -6,11 +6,11 @@ root.dataset.zfRosterLoaded='1';
 const fighters=[
 ['Pascal','#a7a7d5'],['Micka','#d4a052'],['Emma','#c96599'],['Julie','#49b5b4'],
 ['Antho','#d9b142'],['Fabrice','#c9a24f'],['Sandy','#a972c4'],
-['Fabienne 1','#dc849e'],['Fabienne 2','#985577'],['Billy','#69abb7'],
+['Fabienne','#dc849e'],['Fabienne','#985577'],['Billy','#69abb7'],
 ['Ludo','#e4a067'],['Ju','#8d8bc6'],['Béné','#6e9cdb'],['Kév','#7fb371'],
 ['Loïc','#5fab7f'],['Laura','#e9ac8a'],['Val','#bfa3d8'],['Victor','#687fb4'],
 ['Élo','#d474ae'],['Djo','#9cacce'],['Zika','#e9b64d']
-].map(([name,color],id)=>({name,color,id,slug:name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}));
+].map(([name,color],id)=>({name,color,id,slug:(id===7?'fabienne-1':id===8?'fabienne-2':name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''))}));
 // Les 20 personnages humains seulement. Zika est réservé à une future option bonus.
 const bridge=()=>window.ZikaFighterBridge;
 const oldStage=document.getElementById('stage'),oldStart=document.getElementById('start');
@@ -155,11 +155,11 @@ function drawArcadeSelectionText(){
  font.draw(ctx,'START',282,1,{align:'center',scale:.54,maxWidth:59});
  // Le nom se trouve juste AU-DESSUS du grand portrait.
  // Le seul 1P visible est celui attaché à la vignette active.
- font.draw(ctx,fighters[chosen[0]].name,4,29,
-   {scale:.46,maxWidth:64,face:'game',tone:'cream'});
+ font.draw(ctx,fighters[chosen[0]].name,35,27,
+   {align:'center',scale:.72,maxWidth:67,face:'game',tone:'cream'});
  if(count()===2){
-   font.draw(ctx,fighters[chosen[1]].name,316,29,
-     {align:'right',scale:.46,maxWidth:64,face:'game',tone:'cream'});
+   font.draw(ctx,fighters[chosen[1]].name,285,27,
+     {align:'center',scale:.72,maxWidth:67,face:'game',tone:'cream'});
  }
  // Curseurs 1P/2P en pixels — pas de filtre sur la photographie.
  const rect=root.querySelector('.zf-select-cabinet')?.getBoundingClientRect();
