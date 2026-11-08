@@ -73,58 +73,30 @@ let music=null;
 // Deux lecteurs persistants préchargés. Contrairement à cloneNode(), le
 // navigateur ne perd pas le son lorsque l'écran change pendant la lecture.
 const confirmSoundFile='./assets/audio/SFII-character-confirm.mp3';
-const confirmVoices=[new Audio(confirmSoundFile),new Audio(confirmSoundFile)];
-let confirmVoiceIndex=0;
-let activeConfirmationDucks=0;
-for(const sound of confirmVoices){
- sound.preload='auto';
- sound.loop=false;
-}
+// Le MP3 fourni par l'utilisateur emprunte le même bus audio normalisé que
+// les déplacements, les sons du menu et les coups du combat.
+const confirmationFallback=new Audio(confirmSoundFile);
+confirmationFallback.preload='auto';
+window.ZikaArcadeAudio?.preloadClip?.(confirmSoundFile);
 function playCharacterConfirmSound(){
- const raw=Number(window.ZikaFighterSettings?.fxVolume??8);
- const fx=Number.isFinite(raw)?Math.max(0,Math.min(10,raw)):8;
- const sound=confirmVoices[confirmVoiceIndex++%confirmVoices.length];
- let handledFailure=false;
- let restored=false;
- let ducked=false;
- const restoreMusic=()=>{
-  if(restored)return;
-  restored=true;
-  sound.removeEventListener('ended',restoreMusic);
-  sound.removeEventListener('error',onError);
-  if(ducked){
-   activeConfirmationDucks=Math.max(0,activeConfirmationDucks-1);
-   if(activeConfirmationDucks===0)changeVolume();
-  }
- };
- const onError=(err)=>{
-  if(handledFailure)return;
-  handledFailure=true;
-  console.warn('Zika Fighter : confirmation sonore indisponible, bruitage de secours',err);
-  restoreMusic();
-  if(fx>0){
+ const audio=window.ZikaArcadeAudio;
+ const useMenuConfirmation=()=>{
    if(window.ZikaFighterMenuSfx?.confirm)window.ZikaFighterMenuSfx.confirm();
    else window.ZikaArcadeAudio?.playEffect?.('confirm');
-  }
  };
+ if(audio?.playClip){
+   audio.playClip(confirmSoundFile,useMenuConfirmation);
+   return;
+ }
+ // Repli pour environnement sans Web Audio (le MP3 d'origine reste intact).
  try{
-  sound.pause();
-  sound.currentTime=0;
-  sound.muted=false;
-  sound.volume=fx/10;
-  sound.addEventListener('ended',restoreMusic,{once:true});
-  sound.addEventListener('error',onError,{once:true});
-  if(music&&!music.paused&&fx>0){
-   ducked=true;
-   if(activeConfirmationDucks===0)music.volume*=.16;
-   activeConfirmationDucks++;
-  }
-  // L'élément audio reste référencé pendant la transition et le combat.
-  const result=sound.play();
-  if(result&&typeof result.catch==='function')result.catch(onError);
-  // Précaution : aucune panne réseau ne doit laisser la musique réduite.
-  setTimeout(restoreMusic,2500);
- }catch(err){onError(err);}
+   confirmationFallback.pause();
+   confirmationFallback.currentTime=0;
+   const raw=Number(window.ZikaFighterSettings?.fxVolume??8);
+   confirmationFallback.volume=Math.max(0,Math.min(1,raw/10));
+   const result=confirmationFallback.play();
+   if(result?.catch)result.catch(useMenuConfirmation);
+ }catch(_){useMenuConfirmation();}
 }
 function getMusic(){
  if(!music){music=new Audio('./assets/audio/Player Select EXTENDED Street Fighter 2 SNES.mp3');music.loop=true;music.preload='auto';}
@@ -434,7 +406,8 @@ window.addEventListener('zika:settings-changed',changeVolume);
 window.ZikaFighterCharacterSelect={
  open:enter,playMusic:startMusic,stopMusic,
  prewarm:()=>{
-   for(const sound of confirmVoices)sound.load();
+   window.ZikaArcadeAudio?.preloadClip?.(confirmSoundFile);
+   confirmationFallback.load();
    const m=getMusic();m.volume=0;if(m.paused)void m.play().catch(()=>{});
  },
  getFighters:()=>fighters.map(f=>({...f})),
