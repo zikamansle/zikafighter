@@ -24,10 +24,14 @@
 @keyframes zf-out{to{opacity:0}}
 @media(max-width:650px){#zf-intro .zf-mark{margin-top:-2vh}#zf-intro .zf-press{margin-top:9vh}}
 @media(prefers-reduced-motion:reduce){#zf-intro *,#zf-intro:before{animation-duration:.01ms!important;animation-iteration-count:1!important}}
-/* Visuels définitifs choisis : remplacer les lettres CSS par les captures validées. */
-#zf-intro.zf-title-ready .zf-title{background:#080eac url("./assets/zika-fighter-title.png") center center/contain no-repeat}
-#zf-intro.zf-title-ready .zf-title:before{display:none}
-#zf-intro.zf-title-ready .zf-title .zf-mark,#zf-intro.zf-title-ready .zf-title .zf-press,#zf-intro.zf-title-ready .zf-title .zf-copyright,#zf-intro.zf-title-ready .zf-title .zf-credits{visibility:hidden}
+/* Le titre est rendu exclusivement par le canevas SNES 4:3.
+   Ne jamais recharger l'ancien PNG avec un titre double derrière. */
+#zf-intro.zf-title-ready .zf-title{background:#000!important}
+#zf-intro .zf-title:before{display:none}
+#zf-intro.zf-title-ready .zf-title .zf-mark,
+#zf-intro.zf-title-ready .zf-title .zf-press,
+#zf-intro.zf-title-ready .zf-title .zf-copyright,
+#zf-intro.zf-title-ready .zf-title .zf-credits{visibility:hidden}
 #zf-intro.zf-splash-ready .zf-splash{background:#0712b8!important}
 #zf-intro.zf-splash-ready .zf-splash .zf-publisher{visibility:hidden}
 
@@ -51,45 +55,10 @@
 #zf-intro .zf-unlock-sound[hidden],#zf-intro .zf-sound-error[hidden]{display:none!important}
 #zf-intro .zf-sound-error{position:absolute;bottom:1%;padding:5px;background:#500;color:#fff;font:700 13px "ZikaSFII",monospace}
 
-/* Ecran-titre inspiré du rythme de la capture utilisateur : alternance bleu/vert,
-   scintillement arcade et image officielle conservée. Pas de fondu global. */
-#zf-intro.zf-title-ready .zf-title {
-  background-color: #05088f;
-  animation: zf-arcade-bg 2.8s steps(1,end) infinite;
-}
-#zf-intro .zf-title-flash{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  opacity:0;
-  z-index:1;
-  background:rgba(255,255,255,.11);
-  animation:zf-arcade-glint 2.8s steps(1,end) infinite;
-}
+/* Le fond ne varie qu'en fonction du mode sélectionné :
+   TURBO=bleu, NORMAL=vert, OPTION/PRESS START=noir. */
+#zf-intro .zf-title-flash{display:none!important}
 #zf-intro .zf-title .zf-start{z-index:2}
-@keyframes zf-arcade-bg {
-  0%,24%{background-color:#05088f;filter:brightness(1)}
-  25%,28%{background-color:#0047ff;filter:brightness(1.22)}
-  29%,56%{background-color:#05088f;filter:brightness(1)}
-  57%,60%{background-color:#55d929;filter:brightness(1.28)}
-  61%,94%{background-color:#05088f;filter:brightness(1)}
-  95%,100%{background-color:#162cf8;filter:brightness(1.12)}
-}
-@keyframes zf-arcade-glint {
-  0%,24%,29%,56%,61%,94%{opacity:0}
-  25%,28%,57%,60%,95%,100%{opacity:1}
-}
-
-/* Teinte visible même lorsque le PNG validé couvre la totalité de l'écran. */
-#zf-intro .zf-title-flash{mix-blend-mode:screen;background:#fff}
-#zf-intro.zf-title-ready .zf-title-flash{animation:zf-title-color-strobe 2.8s steps(1,end) infinite}
-@keyframes zf-title-color-strobe{
-  0%,24%,29%,56%,61%,94%{opacity:0;background:transparent}
-  25%,28%{opacity:.16;background:#5daaff}
-  57%,60%{opacity:.24;background:#71ff38}
-  95%,100%{opacity:.13;background:#fff}
-}
-
 /* PREMIÈRE ANIMATION VALIDABLE : logo officiel petit, noir pur, reflet sur les lettres.
    L'image d'origine est détournée du fond bleu par un filtre SVG conservant les pixels
    rouges/jaunes ainsi que leurs contours. Pas de bande bleue ni de zoom gigantesque. */
@@ -185,7 +154,7 @@
 }
 
 /* Affichage plus fin de l'introduction ZIKA FIGHTER uniquement. */
-#zf-intro #zf-cinematic-canvas{image-rendering:auto!important;}
+#zf-intro #zf-cinematic-canvas{image-rendering:pixelated!important;}
 
 /* ÉCRAN DE CRÉDITS - d'après la référence 132457 : bleu initial, noir et or,
    tenue silencieuse puis fondu vers ZIKAPCOM. Aucune fausse licence Nintendo. */
@@ -218,7 +187,7 @@
 }
 #zf-intro #zf-title-canvas{
  width:100%;height:100%;display:block;object-fit:contain;
- image-rendering:auto;pointer-events:none;
+ image-rendering:pixelated;pointer-events:none;
 }
 
 /* Crédits avant ZIKAPCOM : Canvas 16 bits à la place de typographies web. */
