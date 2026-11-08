@@ -300,3 +300,22 @@
 #select #zf-stage-screen .zf-stage-flight .zf-stage-confirm-card [hidden]{
   display:none!important;
 }
+
+/* v54 : aperçu de stage maximal, sans aucune bordure. */
+#select #zf-stage-screen .zf-stage-flight:not([hidden]){
+ grid-template-rows:15% minmax(0,1fr)!important;
+ gap:1%!important;
+ padding:3% 1.5% 3%!important;
+}
+#select #zf-stage-screen .zf-stage-flight .zf-stage-confirm-card{
+ width:97%!important;height:100%!important;max-height:100%!important;
+ aspect-ratio:auto!important;border:0!important;
+ box-shadow:none!important;outline:0!important;
+ background:transparent!important;overflow:hidden;
+}
+#select #zf-stage-screen .zf-stage-flight .zf-stage-confirm-art{
+ width:100%;height:100%;background:transparent!important;
+}
+#select #zf-stage-screen .zf-stage-flight #zf-stage-confirm-image{
+ width:100%;height:100%;object-fit:contain;
+}
