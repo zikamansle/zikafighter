@@ -109,7 +109,7 @@ assert.match(introCss,/background-image:none!important/,
   'Interdire la vieille image bleue derrière le Canvas du titre');
 assert.match(introCss,/\.zf-title-flash\{/,
   'Neutraliser les anciens flashs de la page titre');
-assert.ok(html.includes('arcade-intro.js?v=20261108-stepwise-start-v28'),
+assert.ok(/arcade-intro\\.js\\?v=zf-20261109-/.test(html),
   'Forcer le rechargement de la nouvelle introduction');
 assert.ok(html.includes('snes-fonts.css?'),
   'Les polices doivent être intégrées au jeu entier');
@@ -171,8 +171,8 @@ assert.ok(html.includes('html:not(.zf-intro-booted) body>main'),
   'Protection contre le flash du HTML avant l’introduction absente');
 assert.ok(read('arcade-intro.js').includes("classList.add('zf-intro-booted')"),
   'Le montage de l’introduction doit activer la page après création du masque');
-assert.ok(html.includes('arcade-intro.js?v=20261108-stepwise-start-v28'),
-  'L’ancienne version de l’intro reste en cache');
+assert.ok(/arcade-intro\\.js\\?v=zf-20261109-/.test(html),
+  'Le script de démarrage doit utiliser la version de cache courante');
 
 for(const path of [
   'data/approved-portrait-thumbs.js','data/approved-portrait-heroes.js'
@@ -186,10 +186,46 @@ assert.ok(embedded,'Moteur principal introuvable');
 new vm.Script(embedded[1],{filename:'index-inline.js'});
 for(const path of [
   'arcade-audio.js','arcade-intro.js','character-select.js','stage-select.js',
-  'stage-audio.js','screen-transitions.js','snes-ui-text.js','portrait-thumbs-normalize.js'
+  'stage-audio.js','stage-music.js','versus-screen.js','screen-transitions.js','snes-ui-text.js','portrait-thumbs-normalize.js'
 ]){
   new vm.Script(read(path),{filename:path});
 }
+// Après suppression de la fausse confirmation, aucun panneau orphelin.
+assert.doesNotMatch(stages,/zf-stage-flight|zf-stage-confirm-view/,
+  'Ancien écran de confirmation encore intégré');
+assert.doesNotMatch(stageCss,/zf-stage-flight|zf-stage-confirming|zf-stage-confirm-view/,
+  'Styles obsolètes de confirmation présents');
+
+// La sélection précharge les deux portraits pendant l'annonce de l'arène.
+const vsCode=read('versus-screen.js');
+assert.match(stages,/ZikaFighterVersus\?\.preload\?\./,
+  'Préchargement VS pendant le choix du stage manquant');
+assert.match(vsCode,/portraitCache=new Map\(\)/,
+  'Cache portraits VS manquant');
+assert.match(vsCode,/if\(selection\)selection\.hidden=true/,
+  'Ancien écran non masqué sous le fondu noir');
+
+// Les 21 musiques doivent exister, sans piste synthétique parasite.
+const musicCode=read('stage-music.js');
+const trackIds=[...musicCode.slice(musicCode.indexOf('const stageIds=['),
+  musicCode.indexOf('];',musicCode.indexOf('const stageIds=[')))
+  .matchAll(/'([a-z-]+)'/g)].map(match=>match[1]);
+assert.equal(trackIds.length,21,'21 identifiants musicaux nécessaires');
+assert.equal(new Set(trackIds).size,21,'Identifiants musicaux uniques');
+for(const id of trackIds)
+  assert.ok(existsSync(join(root,'assets/audio/stages',id+'.mp3')),
+    'Musique de stage manquante : '+id);
+assert.doesNotMatch(html,/ZikaArcadeAudio\?\.startTitle\(\)/,
+  'Ne pas relancer la mélodie de test pendant les combats');
+
+// Pas de fond bleu avant les crédits, ni de cache CSS obsolète.
+assert.match(html,/html,body\{margin:0;min-height:100%;background:#000;/,
+  'Le fond initial doit rester noir');
+assert.doesNotMatch(introSrc,/c\.fillStyle=t<\.19\?'#120b98'/,
+  'Ancien flash bleu du canvas légal');
+assert.match(html,/arcade-intro\.css\?v=20261109-startup-black-v6/,
+  'Le CSS corrigé du démarrage doit être chargé');
+
 console.log('Zika Fighter : tests statiques OK — '+fighterCount+
   ' combattants, 21 arènes, format 4:3, portraits préservés.');
 console.log('Attention : contrôle visuel, audio et combat réel encore à effectuer.');
