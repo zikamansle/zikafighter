@@ -155,6 +155,7 @@
   let titleSelection=0,optionSelection=0,optionsFrame=0;
   // Etape distincte avant le choix TURBO / NORMAL / OPTION.
   let titleMenuOpen=false;
+  let battleSubmenuOpen=false,battleSelection=0,pendingGameMode='turbo';
   let musicTestAudio=null,seTestAudio=null;
 
   let titleFrame=0;
@@ -382,6 +383,7 @@
     title.hidden=false;
     phase='title';
     titleMenuOpen=false;
+    battleSubmenuOpen=false;
     titleSelection=0;
     titleFrame=requestAnimationFrame(drawTitleFrame);
     startButton.focus({preventScroll:true});
@@ -412,8 +414,9 @@
     ctx.font='bold 6px "Courier New",monospace';
     ctx.fillStyle='#d99a70';ctx.fillText('© ZIKAPCOM 2027',160,178);
     if(titleMenuOpen){
-      // Les choix sont affichés après un appui sur START uniquement.
-      drawTitleChoices(ctx);
+      // Deuxième écran du jeu original : GAME START / V.S. BATTLE.
+      if(battleSubmenuOpen)drawBattleSubmenu(ctx);
+      else drawTitleChoices(ctx);
     }else if(Math.floor(performance.now()/480)%2===0){
       // Ecran-titre SNES : PRESS START clignotant.
       ctx.save();
@@ -534,6 +537,76 @@
     }
     ctx.restore();
     ctx.imageSmoothingEnabled=oldSmooth;
+  }
+
+
+  // Police et dégradés extraits de la capture du menu SNES fournie.
+  // Le jeu garde son propre logo ZIKA FIGHTER en haut de l'écran.
+  const battleChoicesReference=new Image();
+  battleChoicesReference.crossOrigin='anonymous';
+  battleChoicesReference.decoding='async';
+  const battleChoiceRects={
+    game:[507,653,306,59],
+    versus:[510,715,321,59]
+  };
+  let battleChoiceSprites=null;
+  function cropBattleChoice(rect){
+    const [x,y,w,h]=rect;
+    const cv=document.createElement('canvas');
+    cv.width=w;cv.height=h;
+    const c=cv.getContext('2d',{willReadFrequently:true});
+    c.drawImage(battleChoicesReference,x,y,w,h,0,0,w,h);
+    const pixels=c.getImageData(0,0,w,h),d=pixels.data;
+    // Pixels chauds et reliefs clairs conservés ; fond sombre transparent.
+    for(let i=0;i<d.length;i+=4){
+      const r=d[i],g=d[i+1],b=d[i+2];
+      const strength=Math.max(r,g,b);
+      const warm=r>g+7&&r>b+12;
+      const bright=strength>92&&r>=g*.95&&g>b*.82;
+      const alpha=(warm||bright)?Math.max(0,Math.min(255,(strength-42)*4.2)):0;
+      d[i+3]=alpha;
+    }
+    c.putImageData(pixels,0,0);
+    return cv;
+  }
+  function prepareBattleChoices(){
+    if(!battleChoicesReference.complete||!battleChoicesReference.naturalWidth)return;
+    try{
+      const image={};
+      for(const [name,rect] of Object.entries(battleChoiceRects))
+        image[name]=cropBattleChoice(rect);
+      battleChoiceSprites=image;
+    }catch(err){
+      battleChoiceSprites=null;
+      console.warn('Zika Fighter : police GAME START indisponible',err);
+    }
+  }
+  battleChoicesReference.addEventListener('load',prepareBattleChoices);
+  battleChoicesReference.src='https://static.wixstatic.com/media/685632_48fffa2998304f8b9ac0c600bbf792ef~mv2.png';
+  if(battleChoicesReference.complete&&battleChoicesReference.naturalWidth)prepareBattleChoices();
+  const battleRows=[139,157];
+  function drawBattleSubmenu(ctx){
+    ctx.save();
+    ctx.imageSmoothingEnabled=false;
+    if(battleChoiceSprites){
+      const names=['game','versus'];
+      names.forEach((name,index)=>{
+        const sprite=battleChoiceSprites[name];
+        const x=115,y=battleRows[index]-11,w=name==='game'?104:111,h=17;
+        ctx.globalAlpha=index===battleSelection?1:.73;
+        ctx.drawImage(sprite,x,y,w,h);
+      });
+      ctx.globalAlpha=1;
+    }else{
+      // Le menu reste utilisable même sans accès au serveur d'images.
+      menuText(ctx,'GAME START',115,battleRows[0]+2,12,battleSelection===0?'#edaf70':'#b8a9a1');
+      menuText(ctx,'V.S. BATTLE',115,battleRows[1]+2,12,battleSelection===1?'#edaf70':'#b8a9a1');
+    }
+    // Un seul curseur, déplacé entre deux lignes.
+    if(titleChoiceSprites&&titleChoiceSprites.cursor)
+      ctx.drawImage(titleChoiceSprites.cursor,92,battleRows[battleSelection]-12,14,14);
+    else drawZCursor(ctx,92,battleRows[battleSelection]);
+    ctx.restore();
   }
 
   // Option Mode, dessin natif 4:3 selon capture approuvée 1448 x 1086.
@@ -871,6 +944,7 @@
     if(seTestAudio){seTestAudio.pause();seTestAudio=null;}
     optionsScreen.hidden=true;title.hidden=false;phase='title';
     titleMenuOpen=true;
+    battleSubmenuOpen=false;
     if(titleMusic.paused)playTitleMusic();
     // Le titre reprend sur son menu stable, pas au début de la rotation.
     titleVisualStartedAt=performance.now()-7000;
@@ -879,7 +953,7 @@
   }
   function openTitleMenu(){
     if(phase!=='title'||closed||titleMenuOpen)return false;
-    titleMenuOpen=true;titleSelection=0;
+    titleMenuOpen=true;battleSubmenuOpen=false;titleSelection=0;
     cursorConfirm();
     return true;
   }
@@ -900,7 +974,7 @@
     errorText.hidden=true;
     legal.hidden=true;splash.hidden=true;cinematic.hidden=true;
     optionsScreen.hidden=true;title.hidden=false;
-    phase='title';titleMenuOpen=false;titleSelection=0;
+    phase='title';titleMenuOpen=false;battleSubmenuOpen=false;titleSelection=0;
     // Fin du générique visuel ; l'écran PRESS START reste stable.
     titleVisualStartedAt=performance.now()-7000;
     if(titleMusic.paused)playTitleMusic();
@@ -912,13 +986,35 @@
     startButton.focus({preventScroll:true});
     return true;
   }
+  function enterBattleSubmenu(){
+    if(phase!=='title'||!titleMenuOpen||battleSubmenuOpen)return;
+    pendingGameMode=titleSelection===1?'normal':'turbo';
+    battleSelection=0;
+    battleSubmenuOpen=true;
+    cursorConfirm();
+  }
+  function returnToModeMenu(){
+    if(phase!=='title'||!battleSubmenuOpen)return;
+    battleSubmenuOpen=false;
+    cursorMove();
+  }
+  function activateBattleSelection(){
+    if(phase!=='title'||!battleSubmenuOpen)return;
+    settings.mode=pendingGameMode;
+    if(pendingGameMode==='normal')settings.turbo=0;
+    else settings.turbo=clamp(settings.turbo,0,4);
+    // GAME START = CPU ; V.S. BATTLE = duel entre deux joueurs.
+    settings.players=battleSelection===1?2:1;
+    settings.matchType=battleSelection===1?'versus':'arcade';
+    persistSettings();
+    cursorConfirm();
+    launch();
+  }
   function activateTitleSelection(){
     if(phase!=='title')return;
-    cursorConfirm();
-    if(titleSelection===2){openOptions();return;}
-    if(titleSelection===0){settings.turbo=clamp(settings.turbo,0,4);persistSettings();}
-    if(titleSelection===1){settings.turbo=0;persistSettings();}
-    launch();
+    if(battleSubmenuOpen){activateBattleSelection();return;}
+    if(titleSelection===2){cursorConfirm();openOptions();return;}
+    enterBattleSubmenu();
   }
   // Frises et positions relevées sur la capture 1311-30 (320x180 virtuels).
   // Aucune interpolation temporelle entre frames SNES de 1/30 s.
@@ -1157,8 +1253,15 @@
     if(!titleMenuOpen){openTitleMenu();return;}
     const rect=titleCanvas.getBoundingClientRect();
     const y=(event.clientY-rect.top)/Math.max(1,rect.height)*180;
-    // Un clic sur le logo n'envoie pas directement au combat :
-    // il faut sélectionner l'une des trois lignes du menu.
+    if(battleSubmenuOpen){
+      if(y<122||y>172)return;
+      const previous=battleSelection;
+      battleSelection=Math.abs(battleRows[0]-y)<=Math.abs(battleRows[1]-y)?0:1;
+      if(previous!==battleSelection)cursorMove();
+      activateBattleSelection();
+      return;
+    }
+    // Un clic sur le logo n'envoie pas directement au combat.
     if(y<126||y>175)return;
     if(y>=126&&y<=175){
       const rows=titleChoiceTop.map(v=>v+6);
@@ -1230,7 +1333,18 @@
   document.addEventListener('keydown',event=>{
     if(closed||!overlay.isConnected)return;
     if(phase==='title'&&!titleMenuOpen)return;
-    if(phase==='title'){
+    if(phase==='title'&&battleSubmenuOpen){
+      const before=battleSelection;
+      if(['ArrowUp','ArrowDown','KeyW','KeyZ','KeyS'].includes(event.code)){
+        battleSelection=(battleSelection+1)%2;
+        if(before!==battleSelection)cursorMove();
+      }else if(['Enter','Space','NumpadEnter'].includes(event.code)){
+        activateBattleSelection();
+      }else if(['Escape','Backspace','KeyB'].includes(event.code)){
+        returnToModeMenu();
+      }else return;
+      event.preventDefault();event.stopImmediatePropagation();
+    }else if(phase==='title'){
       const oldSelection=titleSelection,oldTurbo=settings.turbo;
       if(['ArrowUp','KeyW','KeyZ'].includes(event.code)){
         titleSelection=(titleSelection+2)%3;
@@ -1315,6 +1429,10 @@
           if(action==='select')skipIntroToPressStart();
         }else if(phase==='title'&&!titleMenuOpen){
           if(action==='select')openTitleMenu();
+        }else if(phase==='title'&&battleSubmenuOpen){
+          if(action==='up'||action==='down'){
+            battleSelection=(battleSelection+1)%2;cursorMove();
+          }else if(action==='back')returnToModeMenu();
         }else if(phase==='title'){
           const priorSelection=titleSelection, priorTurbo=settings.turbo;
           if(action==='up')titleSelection=(titleSelection+2)%3;
