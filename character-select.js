@@ -11,8 +11,7 @@ const fighters=[
 ['Loïc','#5fab7f'],['Laura','#e9ac8a'],['Val','#bfa3d8'],['Victor','#687fb4'],
 ['Élo','#d474ae'],['Djo','#9cacce']
 ].map(([name,color],id)=>({name,color,id,slug:name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}));
-// Le 21e personnage reste secret : KeyZ sur la sélection révèle son portrait.
-fighters.push({name:'Zika',color:'#2ec4e6',id:20,slug:'zika'});
+// Les 20 personnages humains seulement. Zika est réservé à une future option bonus.
 const bridge=()=>window.ZikaFighterBridge;
 const oldStage=document.getElementById('stage'),oldStart=document.getElementById('start');
 root.classList.add('zf-select-screen');
@@ -141,12 +140,12 @@ const photos=fighters.map(f=>{
  im.src=known||'./assets/fighters/'+f.slug+'.png';
  return im;
 });
-// Zika reste le combattant bonus ; sa photo est également disponible.
+// Zika conserve son portrait dans les ressources, mais n'apparaît pas dans les 20 cases.
 window.ZikaFighterPortraits=Object.freeze({...portraitSources});
 window.ZikaFighterLargePortraits=Object.freeze({...largePortraitSources});
 function portrait(i){return photos[i]?.complete&&photos[i]?.naturalWidth>0?photos[i].src:null;}
 function initials(name){return name.split(' ').filter(Boolean).map(p=>p[0]).join('').slice(0,2).toUpperCase();}
-fighters.slice(0,20).forEach((f,i)=>{
+fighters.forEach((f,i)=>{
  const cell=document.createElement('button');cell.type='button';cell.className='zf-fighter-slot';
  cell.dataset.index=String(i);cell.style.setProperty('--fighter-color',f.color);cell.setAttribute('aria-label',f.name);
  cell.innerHTML='<span class="photo"><span class="initial"></span></span><span class="name"></span>';
@@ -228,10 +227,9 @@ if(oldStart){oldStart.textContent='GAME START';toolbar.appendChild(oldStart);
 document.addEventListener('keydown',event=>{
  if(!opened||window.ZikaFighterScreens?.busy||event.repeat)return;
  const code=event.code;
- if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','KeyA','KeyD','KeyW','KeyS','KeyZ','Enter','Space','NumpadEnter'].includes(code))return;
+ if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','KeyA','KeyD','KeyW','KeyS','Enter','Space','NumpadEnter'].includes(code))return;
  event.preventDefault();event.stopImmediatePropagation();
- if(code==='KeyZ')choose(20);
- else if(code==='ArrowLeft'||code==='KeyA')move(-1,0);
+ if(code==='ArrowLeft'||code==='KeyA')move(-1,0);
  else if(code==='ArrowRight'||code==='KeyD')move(1,0);
  else if(code==='ArrowUp'||code==='KeyW')move(0,-1);
  else if(code==='ArrowDown'||code==='KeyS')move(0,1);
