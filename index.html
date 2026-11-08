@@ -31,23 +31,34 @@ function applyGameSettings(next){
 }
 window.addEventListener('zika:settings-changed',e=>applyGameSettings(e.detail));
 window.ZikaFighterGameSettings=()=>settingsSnapshot();
-let p,e,clock=99,started=0,last=0,anim=0,status='menu',effects=[],winCount=0,koTime=0;
+let p,e,clock=99,started=0,last=0,anim=0,status='menu',effects=[],koTime=0;
+let roundNumber=1,roundWins=[0,0];
 function create(name,x,dir){return {name,x,y:floor,vx:0,vy:0,dir,health:100,energy:0,guard:false,action:'idle',actionUntil:0,nextAttack:0,stunUntil:0,hitDone:false,invulnerable:0};}
-function start(){
-  cancelAnimationFrame(anim);applyGameSettings(window.ZikaFighterSettings||null);
+function updateRoundScore(){
+  $('#name1').textContent=names[p.name]+' ●'.repeat(roundWins[0]);
+  $('#name2').textContent=names[e.name]+' ●'.repeat(roundWins[1])+(gameSettings.players===2?' · JOUEUR 2':' · CPU');
+}
+function beginRound(){
   status='ready';
   Object.keys(keys).forEach(k=>keys[k]=false);
   Object.keys(p2keys).forEach(k=>p2keys[k]=false);
   p=create(config.player,300,1);
-  e=create(config.opponent&&config.opponent!==config.player?config.opponent:(config.player==='pascal'?'micka':'pascal'),850,-1);
-  clock=99;effects=[];koTime=0;started=performance.now()+1450;last=performance.now();
-  $('#select').hidden=true;$('#fight').hidden=false;$('#home').hidden=false;$('#end').hidden=true;
+  // Les combats miroir sont autorisés quand deux joueurs prennent le même personnage.
+  e=create(config.opponent||'micka',850,-1);
+  clock=99;effects=[];started=performance.now()+1450;last=performance.now();
+  $('#round').innerHTML='ROUND '+roundNumber+'<br><strong>FIGHT!</strong>';
   $('#round').style.display='grid';
-  $('#name1').textContent=names[p.name];
-  $('#name2').textContent=names[e.name]+(gameSettings.players===2?' · JOUEUR 2':' · CPU');
-  window.ZikaArcadeAudio?.startTitle();
+  updateRoundScore();
   window.ZikaArcadeAudio?.playEffect('round');
   window.ZikaArcadeAudio?.playVoice('round');
+}
+function start(){
+  cancelAnimationFrame(anim);applyGameSettings(window.ZikaFighterSettings||null);
+  roundNumber=1;roundWins=[0,0];koTime=0;
+  $('#select').hidden=true;$('#fight').hidden=false;$('#home').hidden=false;$('#end').hidden=true;
+  window.ZikaArcadeAudio?.stop();
+  window.ZikaArcadeAudio?.startTitle();
+  beginRound();
   anim=requestAnimationFrame(frame);
 }
 function playAgain(){start()}
@@ -115,11 +126,38 @@ if(im.complete&&im.naturalWidth){const displayH=350;const displayW=im.naturalWid
 if(special){ctx.save();ctx.globalAlpha=.35;ctx.strokeStyle=f.name==='pascal'?'#fded78':'#77dfff';ctx.lineWidth=13;ctx.beginPath();ctx.ellipse(0,-160,100+Math.sin(now*.02)*9,153,0,0,2*Math.PI);ctx.stroke();ctx.restore()}ctx.restore();}
 function draw(now){ctx.clearRect(0,0,W,H);const bg=images[config.stage];if(bg.complete&&bg.naturalWidth){ctx.drawImage(bg,0,bg.naturalHeight*.11,bg.naturalWidth,bg.naturalHeight*.77,0,0,W,H)}else{ctx.fillStyle='#2870bd';ctx.fillRect(0,0,W,H)}ctx.fillStyle='#05091e36';ctx.fillRect(0,floor-4,W,H-floor+4);ctx.fillStyle='#a3b2d733';ctx.fillRect(0,floor,W,3);
 const duo=[p,e].sort((a,b)=>a.x-b.x);for(const f of duo)drawFigure(f,now);for(const fx of effects){ctx.save();ctx.globalAlpha=Math.min(1,fx.life*4);ctx.strokeStyle=fx.color;ctx.fillStyle=fx.color;ctx.shadowColor=fx.color;ctx.shadowBlur=24;if(fx.kind==='ball'){ctx.beginPath();ctx.arc(fx.x,fx.y,fx.r,0,2*Math.PI);ctx.fill();ctx.fillStyle='#f9ffff';ctx.beginPath();ctx.arc(fx.x,fx.y,fx.r*.45,0,2*Math.PI);ctx.fill()}else{ctx.lineWidth=9;ctx.beginPath();ctx.arc(fx.x,fx.y,fx.r+(1-fx.life)*25,0,2*Math.PI);ctx.stroke()}ctx.restore()}}
-function end(winner){status='done';window.ZikaArcadeAudio?.stop();window.ZikaArcadeAudio?.playEffect('ko');window.ZikaArcadeAudio?.playVoice(winner?'win':'lose');if(winner&&p.health>=100)window.ZikaArcadeAudio?.playVoice('perfect');$('#verdict').textContent=winner?'VICTOIRE !':'DÉFAITE';if(winner)winCount++;const showVerdict=()=>{$('#end').hidden=false;};if(window.ZikaFighterScreens)window.ZikaFighterScreens.change(showVerdict,{out:200,hold:35,in:200});else showVerdict();}
-function frame(now){const dt=Math.min(.035,(now-last)/1000||.016);last=now;if(!p||!e)return;if(status==='ready'&&now>=started){status='fight';$('#round').style.display='none';window.ZikaArcadeAudio?.playVoice('fight')}if(status==='fight'){
+function end(winner){
+  if(status!=='fight')return;
+  window.ZikaArcadeAudio?.playEffect('ko');
+  if(winner===null){
+    status='between';koTime=performance.now()+1800;
+    $('#round').textContent='DOUBLE K.O. · MANCHE NULLE';
+    $('#round').style.display='grid';
+    return;
+  }
+  const winnerIndex=winner?0:1;
+  roundWins[winnerIndex]++;
+  updateRoundScore();
+  if(roundWins[winnerIndex]<2){
+    status='between';koTime=performance.now()+1800;
+    $('#round').textContent=names[winner?p.name:e.name]+' GAGNE LA MANCHE';
+    $('#round').style.display='grid';
+    return;
+  }
+  status='done';
+  window.ZikaArcadeAudio?.stop();
+  window.ZikaArcadeAudio?.playVoice(winner?'win':'lose');
+  if(winner&&p.health>=100)window.ZikaArcadeAudio?.playVoice('perfect');
+  $('#round').style.display='none';
+  $('#verdict').textContent=winner?'VICTOIRE !':'DÉFAITE';
+  const showVerdict=()=>{$('#end').hidden=false;};
+  if(window.ZikaFighterScreens)window.ZikaFighterScreens.change(showVerdict,{out:200,hold:35,in:200});
+  else showVerdict();
+}
+function frame(now){const dt=Math.min(.035,(now-last)/1000||.016);last=now;if(!p||!e)return;if(status==='between'&&now>=koTime){roundNumber++;beginRound();}if(status==='ready'&&now>=started){status='fight';$('#round').style.display='none';window.ZikaArcadeAudio?.playVoice('fight')}if(status==='fight'){
 clock=gameSettings.timeLimit?Math.max(0,99-(now-started)/1000):99;move(p,controls(),dt,now);move(e,gameSettings.players===2?controls2():ai(now),dt,now);if(Math.abs(p.x-e.x)<90){const delta=(90-Math.abs(p.x-e.x))/2;const sgn=p.x<e.x?1:-1;p.x-=delta*sgn;e.x+=delta*sgn;}
-for(const fx of effects){if(fx.kind==='ball'){fx.x+=fx.vx*dt;const foe=fx.owner===p?e:p;if(Math.abs(fx.x-foe.x)<60&&Math.abs(fx.y-(foe.y-145))<90){foe.health=Math.max(0,foe.health-(foe.guard?5:21));foe.stunUntil=now+210;foe.vy=-120;fx.owner.energy=Math.min(100,fx.owner.energy+12);effects.push({x:foe.x,y:foe.y-160,r:35,life:.28,kind:'spark',color:'#80e7ff'});fx.life=0}}fx.life-=dt;}effects=effects.filter(fx=>fx.life>0);if(p.health<=0||e.health<=0||(gameSettings.timeLimit&&clock<=0))end(p.health>=e.health);
-}draw(now);$('#timer').textContent=gameSettings.timeLimit?Math.ceil(clock):'∞';$('#hp1').style.width=p.health+'%';$('#hp2').style.width=e.health+'%';$('#sp1').style.width=p.energy+'%';$('#sp2').style.width=e.energy+'%';if(status!=='menu')anim=requestAnimationFrame(frame)}
+for(const fx of effects){if(fx.kind==='ball'){fx.x+=fx.vx*dt;const foe=fx.owner===p?e:p;if(Math.abs(fx.x-foe.x)<60&&Math.abs(fx.y-(foe.y-145))<90){foe.health=Math.max(0,foe.health-(foe.guard?5:21));foe.stunUntil=now+210;foe.vy=-120;fx.owner.energy=Math.min(100,fx.owner.energy+12);effects.push({x:foe.x,y:foe.y-160,r:35,life:.28,kind:'spark',color:'#80e7ff'});fx.life=0}}fx.life-=dt;}effects=effects.filter(fx=>fx.life>0);if(p.health<=0||e.health<=0||(gameSettings.timeLimit&&clock<=0))end(p.health===e.health?null:p.health>e.health);
+}draw(now);$('#timer').textContent=gameSettings.timeLimit?Math.ceil(clock):'∞';$('#hp1').style.width=p.health+'%';$('#hp2').style.width=e.health+'%';$('#sp1').style.width=p.energy+'%';$('#sp2').style.width=e.energy+'%';if(status!=='menu'&&status!=='done')anim=requestAnimationFrame(frame)}
 const commonKeys={KeyA:'left',KeyQ:'left',KeyD:'right',KeyZ:'jump',KeyW:'jump',KeyS:'guard'};
 const singlePlayerArrows={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'jump',ArrowDown:'guard',Space:'jump'};
 const presetAttacks=[
@@ -180,7 +218,8 @@ window.ZikaFighterBridge={
   setOpponent:key=>{if(names[key])config.opponent=key;},
   getPlayers:()=>Number(gameSettings.players)||1,
   start,
-  returnToSelection:menu
+  returnToSelection:menu,
+  getMatchState:()=>({status,roundNumber,roundWins:[...roundWins],player:p?.name||null,opponent:e?.name||null})
 };
 })();
 </script><script defer src="./arcade-audio.js?v=20261107-user-clips-v3"></script>
