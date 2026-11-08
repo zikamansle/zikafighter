@@ -18,7 +18,7 @@ root.classList.add('zf-select-screen');
 root.innerHTML=[
 '<div class="zf-select-cabinet" role="group" aria-label="Sélection des vingt combattants">',
 '<canvas id="zf-select-reference" width="320" height="240" aria-hidden="true"></canvas>',
-'<canvas id="zf-select-type" width="320" height="180" aria-hidden="true"></canvas>',
+'<canvas id="zf-select-type" width="320" height="240" aria-hidden="true"></canvas>',
 '<div class="zf-select-heading"><h1>PLAYER SELECT</h1><small>START</small></div>',
 '<button type="button" id="zf-select-start-control" aria-label="Confirmer le personnage sélectionné"></button>',
 '<div class="zf-select-preview left" id="zf-select-preview-1"><span class="zf-select-initials"></span><strong></strong></div>',
@@ -202,8 +202,8 @@ const zfNameGlyphs={
 function arcadeName(ctx,text,x,y,maxWidth){
  const chars=Array.from(text.toUpperCase());
  const width=Math.max(1,chars.length*8-1);
- const sx=Math.min(1.15,maxWidth/width);
- const sy=1.03;
+ const sx=Math.min(1.55,maxWidth/width);
+ const sy=1.35;
  ctx.save();
  ctx.translate(x,y);
  ctx.scale(sx,sy);
@@ -239,18 +239,18 @@ function drawArcadeSelectionText(){
  if(!c)return;
  const ctx=c.getContext('2d');
  ctx.setTransform(1,0,0,1,0,0);
- ctx.clearRect(0,0,320,180);ctx.imageSmoothingEnabled=false;
+ ctx.clearRect(0,0,320,240);ctx.imageSmoothingEnabled=false;
  const first=fighters[chosen[0]];
  // Les repères 1P et 2P restent visibles même sans la vieille carte.
- ctx.font='bold 10px monospace';
- ctx.fillStyle='#142c83';ctx.fillText('1P',7,36);
- ctx.fillStyle='#51c8ff';ctx.fillText('1P',6,35);
- arcadeName(ctx,first.name.toUpperCase(),5,98,56);
+ ctx.font='bold 15px monospace';
+ ctx.fillStyle='#142c83';ctx.fillText('1P',11,117);
+ ctx.fillStyle='#51c8ff';ctx.fillText('1P',10,116);
+ arcadeName(ctx,first.name.toUpperCase(),7,122,100);
  if(count()===2){
-   ctx.font='bold 10px monospace';
-   ctx.fillStyle='#13235a';ctx.fillText('2P',287,36);
-   ctx.fillStyle='#85e1ff';ctx.fillText('2P',286,35);
-   arcadeName(ctx,fighters[chosen[1]].name.toUpperCase(),256,98,58);
+   ctx.font='bold 16px monospace';
+   ctx.fillStyle='#13235a';ctx.fillText('2P',248,119);
+   ctx.fillStyle='#85e1ff';ctx.fillText('2P',247,118);
+   arcadeName(ctx,fighters[chosen[1]].name.toUpperCase(),212,123,102);
  }
 }
 
