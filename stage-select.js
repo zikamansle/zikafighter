@@ -8,11 +8,6 @@
  screen.setAttribute('aria-label',"Choix de l'arène");
  screen.innerHTML=[
   '<h2 class="zf-stage-heading" aria-label="STAGE SELECT"><canvas id="zf-stage-title-pixels" width="320" height="22" aria-hidden="true"></canvas></h2>',
-  '<div class="zf-stage-heroes">',
-    '<div class="zf-stage-hero"><b>1P</b><img id="zf-stage-player1" alt=""><span id="zf-stage-name1"></span></div>',
-    '<div class="zf-stage-feature"><div class="zf-stage-image" id="zf-stage-image"></div><strong id="zf-stage-title"></strong></div>',
-    '<div class="zf-stage-hero zf-stage-hero-right"><b id="zf-stage-player2-label">CPU</b><img id="zf-stage-player2" alt=""><span id="zf-stage-name2"></span></div>',
-  '</div>',
   '<div class="zf-stage-grid" id="zf-stage-grid" role="group" aria-label="Arènes disponibles"></div>',
   '<div class="zf-stage-help" id="zf-stage-help" aria-live="polite">FLÈCHES : CHOISIR · START : VALIDER</div>',
   '<div class="zf-stage-flight" id="zf-stage-flight" hidden><strong id="zf-stage-flight-name"><canvas id="zf-flight-stage" width="320" height="36" aria-hidden="true"></canvas></strong><div id="zf-stage-confirm-card" class="zf-stage-confirm-card"><div class="zf-stage-confirm-art"></div><span class="zf-stage-confirm-random">?</span></div></div>'
@@ -51,15 +46,9 @@
  const actualStages=()=>catalogue()?.available()||[];
  const list=()=>[randomOption,...actualStages()];
  const get=id=>catalogue()?.get(id)||null;
- const imgPreview=src=>{
-   const image=screen.querySelector('#zf-stage-image');
-   image.style.backgroundImage=src?'url("'+src.replace(/"/g,'%22')+'")':'none';
-   image.classList.toggle('zf-stage-image-missing',!src);
- };
  function draw(){
   const items=list();if(cursor>=items.length)cursor=0;
   const stage=items[cursor];if(!stage)return;
-  const title=screen.querySelector('#zf-stage-title');title.textContent=stage.name.toUpperCase();
   screen.querySelector('#zf-stage-flight-name').dataset.stageName=stage.name.toUpperCase();
   drawStageTexts();
   // Grand décor d'origine chargé au lancement du combat, pas à chaque déplacement.
@@ -147,23 +136,14 @@
   const direction=dx||dy;
   if(direction)choose(cursor+(direction>0?1:-1));
  }
- function previewHero(selector,nameSelector,sourceSelector,slug){
-  const target=screen.querySelector(selector),name=screen.querySelector(nameSelector);
-  const portraits=window.ZikaFighterLargePortraits||window.ZikaFighterPortraits||{};
-  const src=portraits[slug]||root.querySelector(sourceSelector)?.src;
-  if(src)target.src=src;else target.removeAttribute('src');
-  name.textContent=(slug||'').toUpperCase().replace(/-/g,' ');
- }
  function open(choice={}){
   if(!catalogue())return false;
   stageToken++;active=true;confirming=false;cursor=0;selected=null;
   screen.classList.remove('zf-stage-confirming');
+  root.classList.remove('zf-stage-confirm-view');
   // Même piste audio, même position de lecture : aucun redémarrage ni silence.
   window.ZikaFighterCharacterSelect?.ensureMusic?.();
-  // Ne jamais masquer les portraits : personnages en haut, stages en bas.
-  previewHero('#zf-stage-player1','#zf-stage-name1','#zf-select-preview-1 img',choice.player1||'pascal');
-  previewHero('#zf-stage-player2','#zf-stage-name2','#zf-select-preview-2 img',choice.player2||'micka');
-  screen.querySelector('#zf-stage-player2-label').textContent=choice.twoPlayers?'2P':'CPU';
+  // Les portraits validés restent dans l'écran supérieur de PLAYER SELECT.
   screen.querySelector('#zf-stage-flight').hidden=true;
   screen.hidden=false;root.hidden=false;
   root.classList.add('zf-stage-phase');
@@ -176,7 +156,7 @@
  function close(){
   stageToken++;active=false;confirming=false;screen.hidden=false;
   screen.classList.remove('zf-stage-active','zf-stage-confirming');
-  root.classList.remove('zf-stage-phase');
+  root.classList.remove('zf-stage-phase','zf-stage-confirm-view');
   screen.querySelector('#zf-stage-flight').hidden=true;
   screen.querySelector('#zf-stage-help').textContent='PERSONNAGES 7–7–6 · PUIS CHOIX DU STAGE';
  }
@@ -238,6 +218,7 @@
   drawStageTexts();
   preview.hidden=false;
   screen.classList.add('zf-stage-confirming');
+  root.classList.add('zf-stage-confirm-view');
   // Laisser entendre le clic de validation avant le bruit d'avion.
   await new Promise(done=>setTimeout(done,220));
   if(!active||stageToken!==ownToken)return;
@@ -245,7 +226,7 @@
   if(!active||stageToken!==ownToken)return;
   if(!chosen.random)await catalogue()?.announce(s.id);
   if(!active||stageToken!==ownToken)return;
-  active=false;screen.classList.remove('zf-stage-active','zf-stage-confirming');root.classList.remove('zf-stage-phase');
+  active=false;screen.classList.remove('zf-stage-active','zf-stage-confirming');root.classList.remove('zf-stage-phase','zf-stage-confirm-view');
   const player1=window.ZikaFighterBridge?.getMatchSelection?.()?.player||'pascal';
   const player2=window.ZikaFighterBridge?.getMatchSelection?.()?.opponent||'micka';
   // Fondre uniquement la musique PLAYER SELECT pendant l'entrée sur VS.
