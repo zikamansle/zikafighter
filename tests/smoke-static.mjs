@@ -37,6 +37,33 @@ assert.match(selectCss,/grid-template-columns:repeat\(7,/,
   'Grille 7–7–6 obligatoire');
 assert.match(selectCss,/grid-template-rows:repeat\(3,/,
   'Trois rangées de combattants');
+// Nouvelle sélection : un seul repère 1P mobile et repère rouge 2P.
+assert.ok(html.includes('portrait-thumbs-normalize.js?'),
+  'Charger la normalisation des fonds et cadrages des miniatures');
+assert.match(select,/function thumbnail\(i\)/,
+  'Utiliser la vignette recadrée plutôt que la source entière');
+assert.match(select,/normalizedThumbnails\[index\]/,
+  'Mettre en cache les 20 vignettes homogénéisées');
+assert.doesNotMatch(select,/font\.draw\(ctx,'1P',33,20/,
+  'Ancien 1P fixe inutile');
+assert.doesNotMatch(select,/font\.draw\(ctx,'1P',6,43/,
+  'Deuxième 1P fixe inutile');
+assert.match(select,/marker\(pointerCursor\[0\],'1P','cyan'\)/,
+  'Conserver seulement le repère bleu du curseur 1P');
+assert.match(select,/marker\(pointerCursor\[1\],'2P','red'\)/,
+  'Le curseur 2P doit être rouge');
+assert.match(select,/font\.draw\(ctx,fighters\[chosen\[0\]\]\.name,4,29/,
+  'Nom du combattant 1 placé en haut du grand portrait');
+assert.match(select,/font\.draw\(ctx,fighters\[chosen\[1\]\]\.name,316,29/,
+  'Nom du combattant 2 placé en haut du grand portrait');
+assert.match(selectCss,/zf-snes-cursor-red/,
+  'Animation rouge distincte pour le curseur 2P');
+assert.match(selectCss,/object-fit:cover/,
+  'Un même cadrage sans marges pour les miniatures');
+assert.ok(html.indexOf('<script defer src="./portrait-thumbs-normalize.js')<
+          html.indexOf('<script defer src="./character-select.js'),
+  'Normalisation des vignettes chargée avant la sélection');
+
 // Aucun atlas de lettres inventé ne doit être réintroduit.
 assert.ok(!html.includes('zf-pixel-lettering.js'),
   'Rejet de l’alphabet artificiel invalidé par l’utilisateur');
@@ -159,7 +186,7 @@ assert.ok(embedded,'Moteur principal introuvable');
 new vm.Script(embedded[1],{filename:'index-inline.js'});
 for(const path of [
   'arcade-audio.js','arcade-intro.js','character-select.js','stage-select.js',
-  'stage-audio.js','screen-transitions.js','snes-ui-text.js'
+  'stage-audio.js','screen-transitions.js','snes-ui-text.js','portrait-thumbs-normalize.js'
 ]){
   new vm.Script(read(path),{filename:path});
 }
