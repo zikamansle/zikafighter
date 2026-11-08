@@ -1105,27 +1105,13 @@
     }
     // Phase A : petit logo sur NOIR.
     if(t<1.20){paint(sprite,160,52,90,43);return;}
-    // Phase B — grand ZIKA façon TURBO SNES, avec le temps de LIRE.
-    // Entrée 0,85 s, maintien intégral 1,00 s, sortie 0,70 s.
-    // La taille diminue pendant l'entrée puis grossit à la sortie :
-    // le texte reste entier et lisible au centre du 4:3.
+    // Grand ZIKA : défilement latéral continu, sans pause au centre.
+    // 2,55 secondes de mouvement régulier, quantifié à 30 FPS SNES.
     if(t<3.75){
       const frame=Math.max(0,Math.floor((t-1.20)*30));
-      let x=160,width=306;
-      if(frame<26){
-        const u=frame/26;
-        const easeIn=u*u*(3-2*u);
-        width=475-Math.round(169*easeIn);
-        x=Math.round(320+width/2-(320+width/2-160)*easeIn);
-      }else if(frame<56){
-        // 30 images, soit une seconde entière pour lire ZIKA.
-        x=160;width=306;
-      }else{
-        const u=Math.min(1,(frame-56)/21);
-        const easeOut=u*u*(3-2*u);
-        width=306+Math.round(169*easeOut);
-        x=Math.round(160-(160+width/2)*easeOut);
-      }
+      const progress=Math.min(1,frame/76);
+      const width=306;
+      const x=Math.round(320+width/2-(320+width)*progress);
       if(giantLetters)paint(giantLetters,x,82,width,Math.round(width*.27));
       return;
     }
