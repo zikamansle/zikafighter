@@ -384,7 +384,7 @@
       mosaic=sc.getImageData(0,0,144,72);
       // Résolutions successives observées : quelques gros blocs,
       // puis un logo de plus en plus détaillé durant la rotation.
-      coarseSprites=[[48,24],[56,28],[64,32],[80,40],[96,48],[112,56],[144,72],[160,80]].map(([ww,hh])=>{
+      coarseSprites=[[96,48],[104,52],[112,56],[120,60],[128,64],[136,68],[144,72],[160,80]].map(([ww,hh])=>{
         const layer=makeCanvas(ww,hh),layerCtx=layer.getContext('2d');
         // Réduction uniquement pour fabriquer une tuile — jamais de lissage
         // à l'affichage sur les frames SNES.
@@ -1086,9 +1086,10 @@
     // Pas de zoom 740 px hors champ : le logo devient entier avant de tourner.
     if(t<2.13){
       const frame=Math.max(0,Math.floor((t-1.20)*30));
-      const p=Math.min(1,frame/21);
+      // Le logo entre complètement dès la première moitié du balayage.
+      const p=Math.min(1,frame/12);
       const easeInOut=p*p*(3-2*p);
-      const x=370-Math.round(210*easeInOut);
+      const x=330-Math.round(170*easeInOut);
       const width=260+Math.round(48*easeInOut);
       paint(sprite,x,68,width,Math.round(width*.47));
       return;
@@ -1101,9 +1102,9 @@
     const tier=progress<.15?0:progress<.29?1:progress<.43?2:
       progress<.57?3:progress<.70?4:progress<.81?5:progress<.93?6:7;
     const tile=coarseSprites[tier]||sprite;
-    const angle=(1-p)*Math.PI*5;
+    const angle=(1-p)*Math.PI*2;
     const squeeze=Math.cos(angle);
-    const flip=Math.sign(squeeze||1)*Math.max(.06,Math.abs(squeeze));
+    const flip=Math.sign(squeeze||1)*Math.max(.25,Math.abs(squeeze));
     const ww=88+Math.round(148*p);
     paint(tile,160,64+Math.round(5*Math.sin(angle)*(1-p)),ww,
       Math.round(ww*.47),-.64*(1-p),flip);
