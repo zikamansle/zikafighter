@@ -75,6 +75,7 @@ let music=null;
 const confirmSoundFile='./assets/audio/SFII-character-confirm.mp3';
 const confirmVoices=[new Audio(confirmSoundFile),new Audio(confirmSoundFile)];
 let confirmVoiceIndex=0;
+let activeConfirmationDucks=0;
 for(const sound of confirmVoices){
  sound.preload='auto';
  sound.loop=false;
@@ -85,17 +86,21 @@ function playCharacterConfirmSound(){
  const sound=confirmVoices[confirmVoiceIndex++%confirmVoices.length];
  let handledFailure=false;
  let restored=false;
+ let ducked=false;
  const restoreMusic=()=>{
   if(restored)return;
   restored=true;
   sound.removeEventListener('ended',restoreMusic);
   sound.removeEventListener('error',onError);
-  changeVolume();
+  if(ducked){
+   activeConfirmationDucks=Math.max(0,activeConfirmationDucks-1);
+   if(activeConfirmationDucks===0)changeVolume();
+  }
  };
  const onError=(err)=>{
   if(handledFailure)return;
   handledFailure=true;
-  console.warn('Zika Fighter : MP3 de confirmation indisponible, son de secours',err);
+  console.warn('Zika Fighter : confirmation sonore indisponible, bruitage de secours',err);
   restoreMusic();
   if(fx>0){
    if(window.ZikaFighterMenuSfx?.confirm)window.ZikaFighterMenuSfx.confirm();
@@ -109,11 +114,16 @@ function playCharacterConfirmSound(){
   sound.volume=fx/10;
   sound.addEventListener('ended',restoreMusic,{once:true});
   sound.addEventListener('error',onError,{once:true});
-  // La piste 10 min reste en cours, mais baisse le temps du signal de
-  // confirmation pour que celui-ci soit réellement perceptible.
-  if(music&&!music.paused)music.volume*=.16;
+  if(music&&!music.paused&&fx>0){
+   ducked=true;
+   if(activeConfirmationDucks===0)music.volume*=.16;
+   activeConfirmationDucks++;
+  }
+  // L'élément audio reste référencé pendant la transition et le combat.
   const result=sound.play();
   if(result&&typeof result.catch==='function')result.catch(onError);
+  // Précaution : aucune panne réseau ne doit laisser la musique réduite.
+  setTimeout(restoreMusic,2500);
  }catch(err){onError(err);}
 }
 function getMusic(){
