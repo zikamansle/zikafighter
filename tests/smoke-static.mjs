@@ -57,7 +57,7 @@ const introSrc=read('arcade-intro.js');
 const introCss=read('arcade-intro.css');
 assert.match(introSrc,/const CINEMATIC_LENGTH=3\.60;/,
   'Conserver les images de stabilisation de la rotation 30 FPS');
-assert.match(introSrc,/coarseSprites=\[\[48,24\],\[56,28\]/,
+assert.match(introSrc,/coarseSprites=\[\[96,48\],\[104,52\]/,
   'Mosaïque SNES progressive obligatoire');
 assert.match(introSrc,/paint\(sprite,x,68,width,Math\.round\(width\*\.47\)\)/,
   'Le logo défilant doit rester entier et lisible');
@@ -69,7 +69,7 @@ assert.match(introCss,/background-image:none!important/,
   'Interdire la vieille image bleue derrière le Canvas du titre');
 assert.match(introCss,/\.zf-title-flash\{/,
   'Neutraliser les anciens flashs de la page titre');
-assert.ok(html.includes('arcade-intro.js?v=20261108-readable-sweep-v21'),
+assert.ok(html.includes('arcade-intro.js?v=20261108-rotation-readable-v22'),
   'Forcer le rechargement de la nouvelle introduction');
 assert.ok(html.includes('snes-fonts.css?'),
   'Les polices doivent être intégrées au jeu entier');
@@ -131,7 +131,7 @@ assert.ok(html.includes('html:not(.zf-intro-booted) body>main'),
   'Protection contre le flash du HTML avant l’introduction absente');
 assert.ok(read('arcade-intro.js').includes("classList.add('zf-intro-booted')"),
   'Le montage de l’introduction doit activer la page après création du masque');
-assert.ok(html.includes('arcade-intro.js?v=20261108-readable-sweep-v21'),
+assert.ok(html.includes('arcade-intro.js?v=20261108-rotation-readable-v22'),
   'L’ancienne version de l’intro reste en cache');
 
 for(const path of [
