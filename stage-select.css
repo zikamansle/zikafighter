@@ -57,3 +57,67 @@
 #zf-stage-screen .zf-stage-flight strong{font-size:clamp(13px,2vw,28px)}
 #zf-stage-screen .zf-stage-airplane{font-size:clamp(30px,7vw,100px);animation:zf-fly 1.8s ease-in-out 1}
 @keyframes zf-fly{from{transform:translate(-180px,50px) scale(.45)}to{transform:translate(180px,-50px) scale(1.2)}}
+
+/* Même écran que les personnages : les 20 arènes occupent la zone inférieure.
+   Aucune carte, aucun second écran lors du choix de l'arène. */
+#select #zf-stage-screen{
+  position:absolute;box-sizing:border-box;left:0;right:0;top:58%;bottom:0;
+  width:100%;height:42%;aspect-ratio:auto;overflow:hidden;border:0;box-shadow:none;
+  background:#050642;z-index:3;display:flex;flex-direction:column;
+  justify-content:stretch;gap:0;
+}
+#select #zf-stage-screen[hidden]{display:none!important}
+#select #zf-stage-screen .zf-stage-heading{
+  flex:0 0 10%;height:10%;margin:0;display:flex;align-items:center;
+  justify-content:center;line-height:1;white-space:nowrap;
+  font:900 clamp(12px,2.15vw,26px)/1 Georgia,"Times New Roman",serif;
+  color:#f4c17c;text-shadow:1px 1px #feecd5,2px 2px #5f2b4b,3px 4px #10071e;
+}
+#select #zf-stage-screen .zf-stage-heroes{display:none!important}
+#select #zf-stage-screen .zf-stage-grid{
+  flex:1;display:grid;
+  grid-template-columns:repeat(10,minmax(0,1fr));
+  grid-template-rows:repeat(2,minmax(0,1fr));
+  gap:3px;height:auto;min-height:0;margin:0 2% 1%;
+  padding:2px;overflow:visible;
+  background:#05062c;border:2px solid #9691ae;
+}
+#select #zf-stage-screen .zf-stage-slot{
+  width:100%;height:100%;min-width:0;min-height:0;
+  box-sizing:border-box;background:#13235b;border:1px solid #7b8eac;
+  display:flex;align-items:center;flex-direction:column;
+}
+#select #zf-stage-screen .zf-stage-slot img{
+  width:100%;height:76%;flex:1;display:block;
+  object-fit:cover;object-position:center;image-rendering:pixelated;
+}
+#select #zf-stage-screen .zf-stage-slot-title{
+  position:static;display:block;flex:0 0 20%;max-width:100%;min-height:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  text-align:center;line-height:1.1;
+  font:900 clamp(5px,.72vw,9px)/1.1 monospace;
+  padding:1px 0;color:#f4dfae;background:#081031;
+}
+#select #zf-stage-screen .zf-stage-slot.current{
+  border:2px solid #e8c57e;
+  box-shadow:inset 0 0 0 1px #fff4c8,0 0 0 1px #ab533b;
+}
+#select #zf-stage-screen:not(.zf-stage-active) .zf-stage-slot{
+  cursor:default;filter:saturate(.82);
+}
+#select #zf-stage-screen:not(.zf-stage-active) .zf-stage-slot.current{
+  border:1px solid #7b8eac;box-shadow:none;animation:none;
+}
+#select #zf-stage-screen .zf-stage-help{
+  flex:0 0 7%;height:7%;margin:0 auto;
+  font:900 clamp(6px,1vw,11px)/1.05 monospace;
+  color:#edc68c;white-space:nowrap;
+}
+#select #zf-stage-screen .zf-stage-flight{
+  position:absolute;inset:0;z-index:10;background:#040a38f0;
+}
+@media(max-width:650px){
+ #select #zf-stage-screen .zf-stage-grid{gap:1px;border-width:1px}
+ #select #zf-stage-screen .zf-stage-slot-title{font-size:5px}
+ #select #zf-stage-screen .zf-stage-help{font-size:6px}
+}
