@@ -2,13 +2,13 @@
    Un portrait à gauche, carte du monde en haut, 20 portraits en deux rangées. */
 #select.zf-select-screen{
   max-width:1000px;margin:0 auto;padding:0;overflow:hidden;
-  border:0;border-radius:0;background:#070b76;color:#fff;text-align:center;
+  border:0;border-radius:0;background:#040062;color:#fff;text-align:center;
   box-shadow:0 12px 42px #000a;
 }
 #select.zf-select-screen[hidden]{display:none!important}
 #select .zf-select-cabinet{
   position:relative;aspect-ratio:4/3;width:100%;overflow:hidden;
-  background:#090a7a;isolation:isolate;border:4px solid #060527;
+  background:#040062;isolation:isolate;border:4px solid #060527;
   box-shadow:inset 0 0 12px #030218;
 }
 #select #zf-select-reference{
