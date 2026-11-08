@@ -1,0 +1,55 @@
+/* Zika Fighter — typographies identifiées Street Fighter.
+ * CPS-1 Fighter : Omegaville, CC BY-SA 3.0 (annonces, grands titres).
+ * Street Fighter II (Large) : Patrick H. Lauke (redux), CC BY 3.0
+ * (scores et texte des combats). Usage limité aux recréations pertinentes.
+ * Attribution détaillée : docs/FONT_CREDITS.md
+ */
+@font-face{
+ font-family:'ZikaCPS1';
+ src:url('./assets/fonts/cps-1-fighter.woff2') format('woff2');
+ font-weight:100 1000;
+ font-display:block;
+}
+@font-face{
+ font-family:'ZikaSFII';
+ src:url('./assets/fonts/sfii-large.woff2') format('woff2');
+ font-weight:100 1000;
+ font-display:block;
+}
+@font-face{
+ font-family:'ZikaSFIIColour';
+ src:url('./assets/fonts/sfii-large-colour.woff2') format('woff2');
+ font-weight:100 1000;
+ font-display:block;
+}
+:root{
+ --zika-font-title:'ZikaCPS1',sans-serif;
+ --zika-font-game:'ZikaSFII',monospace;
+}
+html body, html body button, html body input, html body select,
+html body textarea, html body .mark, html body .name,
+html body .timer, html body .round, html body .end,
+html body .hint,html body footer, html body .zf-select-help{
+ font-family:var(--zika-font-game)!important;
+ font-synthesis:none;
+}
+html body h1,html body h2,html body .zf-select-heading,
+html body .zf-stage-heading,html body .round strong,
+html body .end h2{
+ font-family:var(--zika-font-title)!important;
+ font-synthesis:none;
+}
+#zf-intro, #zf-intro *, #zf-intro button,
+#zf-intro .zf-press,#zf-intro .zf-legal-head,
+#zf-intro .zf-legal-rights,#zf-intro .zf-legal-studio,
+#zf-intro .zf-legal-license,#zf-intro .zf-copyright{
+ font-family:var(--zika-font-game)!important;
+ font-synthesis:none;
+}
+#zf-intro .zf-mark, #zf-intro .zf-publisher,
+#zf-intro .zf-zikacom-official,#zf-intro .zf-start{
+ font-family:var(--zika-font-title)!important;
+ font-synthesis:none;
+}
+/* Conserver les pixels nets à l'échelle d'une image de console 4:3. */
+#select canvas,#zf-intro canvas{image-rendering:pixelated}
