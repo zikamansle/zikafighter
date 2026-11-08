@@ -32,3 +32,7 @@ Sources :
 ## Aucune confusion de versions
 
 Le jeu attendu est **Street Fighter II Turbo: Hyper Fighting, Super Nintendo 1993** ; les captures, animations et sprites *arcade* et **Super Street Fighter II Turbo** sont hors périmètre.
+
+## Rejet de la première reconstruction (08/11/2026)
+
+La version `zf-pixel-lettering.js` créée le 08/11 a été refusée, car son alphabet 7×9 et ses empattements inventés ne correspondent pas aux caractères SNES. Fichier supprimé du dépôt. Ne plus présenter ces glyphes comme « SNES », ni réintroduire une fonte CSS approximative. Extraction des caractères authentiques du sprite sheet SNES **encore à faire**.

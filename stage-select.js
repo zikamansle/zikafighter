@@ -7,7 +7,7 @@
  screen.id='zf-stage-screen';screen.hidden=false;
  screen.setAttribute('aria-label',"Choix de l'arène");
  screen.innerHTML=[
-  '<h2 class="zf-stage-heading" aria-label="STAGE SELECT"><canvas id="zf-stage-heading-canvas" width="320" height="14" aria-hidden="true"></canvas></h2>',
+  '<h2 class="zf-stage-heading">STAGE SELECT</h2>',
   '<div class="zf-stage-heroes">',
     '<div class="zf-stage-hero"><b>1P</b><img id="zf-stage-player1" alt=""><span id="zf-stage-name1"></span></div>',
     '<div class="zf-stage-feature"><div class="zf-stage-image" id="zf-stage-image"></div><strong id="zf-stage-title"></strong></div>',
@@ -19,26 +19,6 @@
  ].join('');
  root.querySelector('.zf-select-cabinet').appendChild(screen);
  const grid=screen.querySelector('#zf-stage-grid');
- // Un même alphabet de pixels pour le haut de la sélection,
- // le bandeau d'arènes et les noms : aucune fonte web.
- function drawStageHeading(){
-  const canvas=screen.querySelector('#zf-stage-heading-canvas'),p=window.ZikaFighterPixelText;
-  if(!canvas||!p)return;
-  const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,14);
-  p.draw(ctx,'STAGE SELECT',160,1,{align:'center',maxWidth:145,scale:1.30,variant:'title'});
- }
- function drawStageLabel(canvas,name){
-  const p=window.ZikaFighterPixelText;if(!p||!canvas)return;
-  const ctx=canvas.getContext('2d');
-  ctx.clearRect(0,0,200,34);
-  const parts=p.lines(name,18);
-  const lines=parts.length>3?[parts[0],parts.slice(1).join(' ')]:parts;
-  const pitch=lines.length===3?11:13;
-  const y=lines.length===1?11:lines.length===2?4:1;
-  lines.slice(0,3).forEach((line,i)=>p.draw(ctx,line,100,y+pitch*i,
-   {tone:'cream',variant:'compact',align:'center',maxWidth:192,scale:1.2}));
- }
- drawStageHeading();
  let active=false,confirming=false,cursor=0,selected=null,lastPadInputAt=0,padConfirmDown=false,stageToken=0;
  const list=()=>catalogue()?.available()||[];
  const get=id=>catalogue()?.get(id)||null;
@@ -66,14 +46,7 @@
   list().forEach((s,index)=>{
    const button=document.createElement('button');button.type='button';
    button.className='zf-stage-slot';button.dataset.pos=String(index);
-   const title=document.createElement('span');title.className='zf-stage-slot-title';
-   const labelCanvas=document.createElement('canvas');
-   labelCanvas.className='zf-stage-slot-label-canvas';
-   labelCanvas.width=200;labelCanvas.height=34;
-   labelCanvas.setAttribute('aria-hidden','true');
-   button.setAttribute('aria-label',s.name);
-   drawStageLabel(labelCanvas,s.name);
-   title.appendChild(labelCanvas);
+   const title=document.createElement('span');title.className='zf-stage-slot-title';title.textContent=s.name;
    // 21 miniatures originales regroupées dans un SEUL bandeau horizontal.
    // Royaume de Zika n'est affiché que lorsque son déblocage est validé.
    const art=document.createElement('div');
@@ -87,13 +60,7 @@
    art.style.backgroundSize='contain';
    art.style.backgroundRepeat='no-repeat';
    art.style.backgroundPosition='center center';
-   const cursorBadge=document.createElement('canvas');
-   cursorBadge.className='zf-stage-cursor-bitmap';
-   cursorBadge.width=32;cursorBadge.height=18;
-   cursorBadge.setAttribute('aria-hidden','true');
-   window.ZikaFighterPixelText?.draw(cursorBadge.getContext('2d'),'1P',2,2,
-     {tone:'blue',variant:'compact',maxWidth:28,scale:1.15});
-   button.append(art,title,cursorBadge);
+   button.append(art,title);
    button.addEventListener('click',()=>{
     if(!active||confirming)return;
     if(index===cursor)confirm();

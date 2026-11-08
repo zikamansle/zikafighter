@@ -22,9 +22,8 @@
   display:block;visibility:visible!important;pointer-events:none;
   /* Le vrai titre et START proviennent de la référence approuvée,
      sans réinterprétation de leurs caractères ni de leur relief. */
-  /* Les titres sont dessinés sur la grille 320x240 par zf-pixel-lettering.js.
-     Aucun fond photographique, ancien titre ou texte Wix superposé. */
-  background:none;
+  background-image:url("https://static.wixstatic.com/media/685632_531e2c5c545244bb82df966c634c1800~mv2.png");
+  background-repeat:no-repeat;background-position:left top;background-size:100% auto;
 }
 #select .zf-select-heading h1,#select .zf-select-heading small{
   visibility:hidden!important; /* texte accessible préservé dans le DOM */
@@ -78,20 +77,16 @@
 #select .zf-fighter-slot.has-photo .initial{display:none}
 #select .zf-fighter-slot .name{display:none!important}
 #select .zf-fighter-slot.p1{
-  z-index:2;border:2px solid #51cfff;
-  box-shadow:inset 0 0 0 1px #e8ffff,0 0 0 1px #063ba7;
+  z-index:2;border:3px solid #4ac9ff;
+  box-shadow:inset 0 0 0 1px #ebffff,0 0 0 1px #125dd3;
 }
 #select .zf-fighter-slot.p2{
-  z-index:2;border:2px solid #ff655e;
-  box-shadow:inset 0 0 0 1px #ffe3bc,0 0 0 1px #94233c;
+  z-index:2;border:3px solid #ffdc63;
+  box-shadow:inset 0 0 0 1px #fff6c7,0 0 0 1px #ad6b19;
 }
-/* Le visage ne clignote jamais : seuls les pixels du cadre se déplacent. */
-#select .zf-fighter-slot.focused{animation:zf-cursor-edge .32s steps(1,end) infinite}
-@keyframes zf-cursor-edge{
-  0%,49%{outline:1px solid #ecfaff;outline-offset:-1px}
-  50%,100%{outline:1px solid #194cc0;outline-offset:-1px}
-}
-#select .zf-fighter-slot:focus-visible{outline:1px solid #fff;outline-offset:-1px}
+#select .zf-fighter-slot.focused{animation:zf-portrait-focus .6s steps(2,end) infinite}
+@keyframes zf-portrait-focus{50%{filter:brightness(1.32)}}
+#select .zf-fighter-slot:focus-visible{outline:2px solid white;outline-offset:-2px}
 /* Les grandes vues ne passent JAMAIS sur les cases 7/7/6. */
 #select .zf-select-preview,
 #select #zf-select-preview-2{
