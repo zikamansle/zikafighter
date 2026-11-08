@@ -18,6 +18,7 @@ root.classList.add('zf-select-screen');
 root.innerHTML=[
 '<div class="zf-select-cabinet" role="group" aria-label="Sélection des vingt combattants">',
 '<canvas id="zf-select-reference" width="320" height="240" aria-hidden="true"></canvas>',
+'<canvas id="zf-select-type" width="320" height="240" aria-hidden="true"></canvas>',
 '<div class="zf-select-heading"><h1>PLAYER SELECT</h1><small>START</small></div>',
 '<button type="button" id="zf-select-start-control" aria-label="Confirmer le personnage sélectionné"></button>',
 '<div class="zf-select-preview left" id="zf-select-preview-1"><span class="zf-select-initials"></span><strong></strong></div>',
@@ -43,17 +44,20 @@ root.innerHTML=[
     const scaleX=reference.naturalWidth/1582;
     const scaleY=reference.naturalHeight/893;
     ctx.drawImage(reference,140*scaleX,0,1230*scaleX,490*scaleY,0,0,320,136);
-    // Effacer uniquement les anciens libellés "1P KEN", ligne par ligne,
-    // en gardant le bleu d'origine (y compris ses variations de pixels).
+    // La capture contient un véritable « 1P » bleu à conserver.
+    // Seul le nom KEN est incrusté dans le décor : le nettoyer
+    // sur les lignes 120–135 (coordonnées du canevas 320×240).
+    // Le vieux nettoyage y=94..135 effaçait aussi le 1P original.
     try{
-      for(let y=94;y<136;y++){
-        const color=ctx.getImageData(318,y,1,1).data;
-        ctx.fillStyle='rgb('+color[0]+','+color[1]+','+color[2]+')';
-        ctx.fillRect(3,y,74,1);
+      for(let y=120;y<136;y++){
+        const background=ctx.getImageData(12,y,1,1).data;
+        ctx.fillStyle='rgb('+background[0]+','+background[1]+','+background[2]+')';
+        ctx.fillRect(22,y,76,1);
       }
     }catch(_){
-      ctx.fillStyle='#040062';ctx.fillRect(3,94,74,42);
+      ctx.fillStyle='#050062';ctx.fillRect(22,120,76,16);
     }
+    drawArcadeSelectionText();
     root.querySelector('.zf-select-cabinet').classList.add('reference-ready');
   });
   reference.src='https://static.wixstatic.com/media/685632_0fee1909f2e04b08aa3ede8c582e66f9~mv2.png';
@@ -163,6 +167,41 @@ function showPortrait(side,index){
  const previous=panel.querySelector('img');if(previous)previous.remove();
  if(src){const im=new Image();im.src=largePortraitSources[f.slug]||src;im.alt=f.name;panel.prepend(im);}
 }
+// Nom dynamique en caractères pixelisés sur un vrai canevas 320×240.
+// Les textes du fond (PLAYER SELECT / START / 1P) viennent de la vraie
+// capture SNES et ne sont donc plus masqués par des polices CSS.
+function arcadeName(ctx,text,x,y,maxWidth){
+ ctx.save();ctx.textBaseline='top';
+ ctx.font='bold 15px Georgia,"Times New Roman",serif';
+ const width=Math.max(1,ctx.measureText(text).width);
+ const scale=Math.min(1,maxWidth/width);
+ ctx.translate(x,y);ctx.scale(scale,1);
+ ctx.fillStyle='#21102d';ctx.fillText(text,2,2);
+ ctx.fillStyle='#8a3f4c';ctx.fillText(text,1,1);
+ ctx.fillStyle='#b77258';ctx.fillText(text,0,1);
+ ctx.fillStyle='#ffcf83';ctx.fillText(text,0,0);
+ ctx.restore();
+}
+function drawArcadeSelectionText(){
+ const c=root.querySelector('#zf-select-type');
+ if(!c)return;
+ const ctx=c.getContext('2d');
+ ctx.setTransform(1,0,0,1,0,0);
+ ctx.clearRect(0,0,320,240);ctx.imageSmoothingEnabled=false;
+ const first=fighters[chosen[0]];
+ if(!root.querySelector('.zf-select-cabinet').classList.contains('reference-ready')){
+   // Secours lorsque la capture du fond ne peut pas être chargée.
+   ctx.font='bold 15px monospace';ctx.fillStyle='#4dc8ff';ctx.fillText('1P',31,116);
+ }
+ arcadeName(ctx,first.name.toUpperCase(),27,121,97);
+ if(count()===2){
+   ctx.font='bold 16px monospace';
+   ctx.fillStyle='#13235a';ctx.fillText('2P',248,119);
+   ctx.fillStyle='#85e1ff';ctx.fillText('2P',247,118);
+   arcadeName(ctx,fighters[chosen[1]].name.toUpperCase(),219,123,94);
+ }
+}
+
 function render(){
  if(!opened)return;
  for(const cell of roster.children){
@@ -183,6 +222,7 @@ function render(){
  const p2Label=root.querySelector('#zf-select-player-2-label');
  p2Label.hidden=count()!==2;
  if(count()===2){const p2Name=root.querySelector('#zf-player-2-name');p2Name.textContent=fighters[chosen[1]].name.toUpperCase();p2Name.dataset.long=String(fighters[chosen[1]].name.length>7);}
+ drawArcadeSelectionText();
  root.querySelector('#zf-select-help').textContent=count()===2
   ?(activePlayer===0?'1P : CHOISIR · START CONFIRMER':'2P : CHOISIR · START CONFIRMER')
   :'FLÈCHES : CHOISIR · START : CONFIRMER';
