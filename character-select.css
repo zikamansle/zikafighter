@@ -144,3 +144,30 @@ body.zf-in-selection main{max-width:990px;padding:6px 6px 20px;margin:0 auto}
 #select .zf-fighter-slot.p2{--zf-cursor-color:#ed3541}
 #select .zf-fighter-slot.p1.focused,#select .zf-fighter-slot.p2.focused{animation:none}
 @keyframes zf-selection-square-blink{0%,49%{border-color:var(--zf-cursor-color)}50%,100%{border-color:#fff}}
+
+/* Curseur de sélection 16 bits, sans superposition ni contour blanc générique.
+ * Le repère 1P/2P est dessiné au-dessus dans le canvas SNES. */
+#select .zf-fighter-slot.p1,
+#select .zf-fighter-slot.p2{
+ border:2px solid var(--zf-cursor-color)!important;
+ outline:2px solid #090c32!important;
+ outline-offset:-4px!important;
+ box-shadow:inset 0 0 0 2px #f9f5d8!important;
+}
+#select .zf-fighter-slot.p1::after,
+#select .zf-fighter-slot.p2::after{
+ content:"";position:absolute;inset:0;z-index:4;
+ border:0!important;border-radius:0!important;box-shadow:none!important;
+ animation:none!important;pointer-events:none;
+ background:
+  linear-gradient(var(--zf-cursor-color),var(--zf-cursor-color)) left top/8px 3px no-repeat,
+  linear-gradient(var(--zf-cursor-color),var(--zf-cursor-color)) left top/3px 8px no-repeat,
+  linear-gradient(var(--zf-cursor-color),var(--zf-cursor-color)) right top/8px 3px no-repeat,
+  linear-gradient(var(--zf-cursor-color),var(--zf-cursor-color)) right top/3px 8px no-repeat,
+  linear-gradient(var(--zf-cursor-color),var(--zf-cursor-color)) left bottom/8px 3px no-repeat,
+  linear-gradient(var(--zf-cursor-color),var(--zf-cursor-color)) left bottom/3px 8px no-repeat,
+  linear-gradient(var(--zf-cursor-color),var(--zf-cursor-color)) right bottom/8px 3px no-repeat,
+  linear-gradient(var(--zf-cursor-color),var(--zf-cursor-color)) right bottom/3px 8px no-repeat;
+}
+#select .zf-fighter-slot.p1{--zf-cursor-color:#2aafff}
+#select .zf-fighter-slot.p2{--zf-cursor-color:#f13b52}
