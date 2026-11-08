@@ -15,7 +15,7 @@
   '</div>',
   '<div class="zf-stage-grid" id="zf-stage-grid" role="group" aria-label="Arènes disponibles"></div>',
   '<div class="zf-stage-help" id="zf-stage-help" aria-live="polite">FLÈCHES : CHOISIR · START : VALIDER</div>',
-  '<div class="zf-stage-flight" id="zf-stage-flight" hidden><span>STAGE APPROACH</span><strong id="zf-stage-flight-name"></strong><div class="zf-stage-airplane" aria-hidden="true">✈</div></div>'
+  '<div class="zf-stage-flight" id="zf-stage-flight" hidden><span aria-label="STAGE APPROACH"><canvas id="zf-flight-text" width="320" height="30" aria-hidden="true"></canvas></span><strong id="zf-stage-flight-name"><canvas id="zf-flight-stage" width="320" height="54" aria-hidden="true"></canvas></strong><div class="zf-stage-airplane" aria-hidden="true">✈</div></div>'
  ].join('');
  root.querySelector('.zf-select-cabinet').appendChild(screen);
  const grid=screen.querySelector('#zf-stage-grid');
@@ -24,6 +24,15 @@
    const heading=screen.querySelector('#zf-stage-title-pixels');
    const ctx=heading.getContext('2d');ctx.clearRect(0,0,320,22);
    font.draw(ctx,'STAGE SELECT',160,1,{align:'center',scale:.63,maxWidth:165});
+   const flightText=screen.querySelector('#zf-flight-text');
+   const ft=flightText.getContext('2d');ft.clearRect(0,0,320,30);
+   font.draw(ft,'STAGE APPROACH',160,3,{align:'center',scale:.61,maxWidth:208});
+   const flightStage=screen.querySelector('#zf-flight-stage');
+   const fs=flightStage.getContext('2d');fs.clearRect(0,0,320,54);
+   const stageName=screen.querySelector('#zf-stage-flight-name').dataset.stageName||'';
+   const parts=font.wrap(stageName,18).slice(0,3);
+   parts.forEach((line,i)=>font.draw(fs,line,160,2+i*17,
+      {align:'center',scale:.56,maxWidth:285}));
    for(const tile of grid.querySelectorAll('.zf-stage-slot-name-bitmap')){
      const label=tile.dataset.stageName;
      const g=tile.getContext('2d');g.clearRect(0,0,200,36);
@@ -50,7 +59,8 @@
   const items=list();if(cursor>=items.length)cursor=0;
   const stage=items[cursor];if(!stage)return;
   const title=screen.querySelector('#zf-stage-title');title.textContent=stage.name.toUpperCase();
-  screen.querySelector('#zf-stage-flight-name').textContent=stage.name.toUpperCase();
+  screen.querySelector('#zf-stage-flight-name').dataset.stageName=stage.name.toUpperCase();
+  drawStageTexts();
   // Grand décor d'origine chargé au lancement du combat, pas à chaque déplacement.
   for(const node of grid.children)node.classList.toggle('current',Number(node.dataset.pos)===cursor);
   // Le curseur d'arène affiche son repère 1P avec le même alphabet SNES.
