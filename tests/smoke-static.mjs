@@ -14,6 +14,7 @@ const selectCss=read('character-select.css');
 const stages=read('stage-select.js');
 const stageCss=read('stage-select.css');
 const stageAudio=read('stage-audio.js');
+const pixelFont=read('zf-pixel-lettering.js');
 const fightersData=JSON.parse(read('data/fighters.json'));
 const stageData=JSON.parse(read('data/stages.json'));
 
@@ -37,6 +38,20 @@ assert.match(selectCss,/grid-template-columns:repeat\(7,/,
   'Grille 7–7–6 obligatoire');
 assert.match(selectCss,/grid-template-rows:repeat\(3,/,
   'Trois rangées de combattants');
+assert.match(pixelFont,/window\.ZikaFighterPixelText=/,
+  'Atlas pixel partagé obligatoire');
+assert.ok(html.indexOf('zf-pixel-lettering.js')<html.indexOf('character-select.js'),
+  'Le lettrage pixel doit être chargé AVANT la sélection des personnages');
+assert.match(select,/bitmap\.draw\(ctx,'PLAYER SELECT'/,
+  'Titre PLAYER SELECT dessiné en pixels, pas une image ou une fonte CSS');
+assert.doesNotMatch(selectCss,/background-image:url\("https:\/\/static\.wixstatic\.com\/media\/685632_531e/,
+  'Ne pas remettre la capture titre Wix obsolète');
+assert.match(stages,/drawStageLabel\(labelCanvas,s\.name\)/,
+  'Chaque nom d’arène utilise le même alphabet pixel');
+assert.match(selectCss,/zf-cursor-edge/,
+  'Le curseur des personnages doit animer le cadre sans éclaircir les visages');
+assert.doesNotMatch(selectCss,/zf-portrait-focus/,
+  'Ne pas faire clignoter les visages pendant la sélection');
 assert.match(selectCss,/object-fit:contain/,
   'Ne jamais déformer les portraits approuvés');
 assert.doesNotMatch(selectCss,/object-fit:fill/,
@@ -87,7 +102,7 @@ assert.ok(embedded,'Moteur principal introuvable');
 new vm.Script(embedded[1],{filename:'index-inline.js'});
 for(const path of [
   'arcade-audio.js','arcade-intro.js','character-select.js','stage-select.js',
-  'stage-audio.js','screen-transitions.js'
+  'stage-audio.js','screen-transitions.js','zf-pixel-lettering.js'
 ]){
   new vm.Script(read(path),{filename:path});
 }
