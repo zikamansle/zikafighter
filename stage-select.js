@@ -44,7 +44,8 @@
    const title=document.createElement('span');title.className='zf-stage-slot-title';title.textContent=s.name;
    const art=document.createElement('img');
    art.alt='';art.loading='lazy';
-   art.src=catalogue().imageFor(s.id);
+   // Miniature légère, tirée de l'illustration originale et non recadrée.
+   art.src='./assets/stages/thumbs/'+encodeURIComponent(s.id)+'.webp';
    art.onerror=()=>{art.remove();button.classList.add('no-art')};
    button.append(art,title);
    button.addEventListener('click',()=>{
