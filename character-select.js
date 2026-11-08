@@ -251,7 +251,7 @@ function enter(){
 function finish(){
  if(!opened||window.ZikaFighterScreens?.busy)return;
  const transition=()=>{
-  opened=false;stopMusic();
+  opened=false; // Conserver la musique pendant la transition et le choix de l'arène.
   const player1=fighters[chosen[0]].slug;
   const player2=fighters[count()===2?chosen[1]:(chosen[0]+1)%visibleCount()].slug;
   bridge()?.setFighter?.(player1);
@@ -264,7 +264,7 @@ function finish(){
   document.body.classList.remove('zf-in-selection');
   bridge()?.start?.();
  };
- if(window.ZikaFighterScreens)window.ZikaFighterScreens.change(transition,{out:185,hold:45,in:185});
+ if(window.ZikaFighterScreens)window.ZikaFighterScreens.change(transition,{out:320,hold:100,in:320});
  else transition();
 }
 function confirm(){
