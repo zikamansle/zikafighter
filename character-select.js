@@ -166,7 +166,7 @@ function drawArcadeSelectionText(){
   const x=Math.round((b.left-rect.left)*320/rect.width);
   const y=Math.round((b.top-rect.top)*240/rect.height);
   // Les portraits restent immobiles, seul le repère/contour clignote.
-  if(blinkFrame)font.draw(ctx,text,x+1,y+2,{tone,scale:.27,maxWidth:15});
+  if(blinkFrame)font.draw(ctx,text,x+1,Math.max(24,y-8),{tone,scale:.22,maxWidth:13,face:'game'});
  }
  marker(pointerCursor[0],'1P','cyan');
  if(count()===2)marker(pointerCursor[1],'2P','cream');
