@@ -61,7 +61,7 @@ assert.match(introSrc,/coarseSprites=\[\[96,48\],\[104,52\]/,
   'Mosaïque SNES progressive obligatoire');
 assert.match(introSrc,/paint\(giantLetters,x,82,width,Math\.round\(width\*\.27\)\)/,
   'Le mot ZIKA géant doit défiler, pas le logo entier');
-assert.match(introSrc,/const progress=Math\\.min\\(1,frame\\/76\\)/,
+assert.match(introSrc,/const progress=Math\.min\(1,frame\/76\)/,
   'ZIKA doit défiler en continu sans arrêt au milieu');
 assert.match(introSrc,/prepareGiantZika\(\)/,
   'Le mot ZIKA doit être fabriqué indépendamment du logo');
