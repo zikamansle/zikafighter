@@ -15,7 +15,7 @@
 #zf-intro .zf-copyright{position:absolute;bottom:5%;left:3%;right:3%;font:700 clamp(9px,1.5vw,15px) "ZikaSFII",monospace;letter-spacing:.08em;line-height:1.65;color:#e3e5ff}
 #zf-intro .zf-credits{position:absolute;bottom:2%;right:3%;font:700 12px "ZikaSFII",monospace}
 #zf-intro .zf-start{position:absolute;inset:0;width:100%;border:0;color:transparent;background:transparent;cursor:pointer}
-#zf-intro .zf-start:focus-visible{outline:5px solid #fff;outline-offset:-8px}
+#zf-intro .zf-start:focus-visible{outline:none!important;box-shadow:none!important}
 #zf-intro .zf-fade{animation:zf-out .38s ease-in both;pointer-events:none}
 @keyframes zf-publisher{from{transform:scale(3);opacity:0;filter:blur(15px)}to{transform:scale(1.05);opacity:1;filter:none}}
 @keyframes zf-flash{from{filter:brightness(4)}to{filter:brightness(1)}}
