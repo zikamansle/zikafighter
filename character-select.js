@@ -176,8 +176,8 @@ function drawArcadeSelectionText(){
   const y=Math.round((b.top-rect.top)*240/rect.height);
   // Repère SNES 1P / 2P lisible et centré sur le portrait actif :
   // deux caractères bitmap, au-dessus de sa bordure, sans toucher au visage.
-  if(blinkFrame)font.draw(ctx,text,x,Math.max(26,y-11),
-    {align:'center',tone,scale:.62,maxWidth:29,face:'game'});
+  if(blinkFrame)font.draw(ctx,text,x,Math.max(26,y-8),
+    {align:'center',tone,scale:.35,maxWidth:15,face:'game'});
  }
  marker(pointerCursor[0],'1P','cyan');
  if(count()===2)marker(pointerCursor[1],'2P','red');
