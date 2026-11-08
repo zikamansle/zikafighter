@@ -14,6 +14,12 @@
   });
   document.body.appendChild(curtain);
   let busy=false;
+  let revealCallbacks=[];
+  function afterReveal(callback){
+    if(typeof callback!=='function')return;
+    if(busy)revealCallbacks.push(callback);
+    else requestAnimationFrame(callback);
+  }
   function change(action,config={}){
     if(busy)return false;
     busy=true;
@@ -34,13 +40,18 @@
         setTimeout(()=>{
           curtain.style.pointerEvents='none';
           busy=false;
+          const callbacks=revealCallbacks;
+          revealCallbacks=[];
+          for(const callback of callbacks){
+            try{callback();}catch(err){console.error('Zika Fighter : écran révélé',err);}
+          }
         },fadeIn+35);
       },hold);
     },fadeOut+35);
     return true;
   }
   window.ZikaFighterScreens={
-    change,
+    change,afterReveal,
     get busy(){return busy;},
     get element(){return curtain;}
   };
