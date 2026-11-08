@@ -73,6 +73,8 @@ function draw(ctx,text,x,y,options={}){
  ctx.scale(zoom,zoom);
  const palette=tone==='blue'
   ?{shadow:'#010d42',rim:'#0762a7',light:'#a3ffff',face:'#41d4ff',dark:'#2087dd'}
+  :tone==='red'
+  ?{shadow:'#270518',rim:'#8e2434',light:'#fff3a5',face:'#ff7771',dark:'#cc283a'}
   :tone==='cream'
   ?{shadow:'#000821',rim:'#786c81',light:'#ffffff',face:'#dfdbe2',dark:'#a1a7bf'}
   :{shadow:'#170821',rim:'#a53c29',light:'#fff7ae',face:'#ffd064',dark:'#e97939'};
@@ -87,10 +89,11 @@ function draw(ctx,text,x,y,options={}){
    // Empattements rectangulaires communs aux capitales SFII SNES.
    const stemTop=[...Array(7).keys()].filter(xx=>bits[0][xx]==='1');
    const stemBase=[...Array(7).keys()].filter(xx=>bits[8][xx]==='1');
-   for(const xx of [...stemTop,...stemBase]){
-    const yy=stemTop.includes(xx)?0:8;
-    if(xx>0)data.push([xx-1,yy]);
-    if(xx<6)data.push([xx+1,yy]);
+   for(const [row,cols] of [[0,stemTop],[8,stemBase]]){
+    for(const xx of cols){
+     if(xx>0)data.push([xx-1,row]);
+     if(xx<6)data.push([xx+1,row]);
+    }
    }
   }
   for(const [xx,yy] of data){
