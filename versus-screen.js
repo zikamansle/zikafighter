@@ -59,6 +59,10 @@
   const wantLeft=side===2;
   const flip=originalFacesLeft!==wantLeft;
   ctx.save();ctx.beginPath();ctx.rect(dx,dy,dw,dh);ctx.clip();
+  // Doux redimensionnement des visages UNIQUEMENT sur le VS.
+  // Les images d'origine et l'interface pixel-art restent inchangées.
+  ctx.imageSmoothingEnabled=true;
+  ctx.imageSmoothingQuality='high';
   if(flip){ctx.translate(dx+dw,0);ctx.scale(-1,1);ctx.drawImage(image,sx,sy,sw,sh,0,dy,dw,dh);}
   else ctx.drawImage(image,sx,sy,sw,sh,dx,dy,dw,dh);
   ctx.restore();
