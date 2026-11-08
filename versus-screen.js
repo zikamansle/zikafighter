@@ -62,6 +62,10 @@
    if(token!==generation)return;
    screen.hidden=false;
    drawText();
+   // Aucun autre fond musical pendant le VS ; les bruitages de sélection
+   // ont fini et la piste VS est la seule musique active.
+   window.ZikaArcadeAudio?.stop?.();
+   window.ZikaFighterCharacterSelect?.stopMusic?.();
    // Original VS track starts immediately at normal level. No audio fade.
    track.volume=Math.min(1,Math.max(0,Number(window.ZikaFighterSettings?.musicVolume??7)/10))*.85;
    try{track.currentTime=0;}catch(_){}
