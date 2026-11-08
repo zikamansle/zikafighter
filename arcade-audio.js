@@ -144,6 +144,37 @@
       return true;
     }catch(err){console.warn('Zika Fighter : lecture normalisée impossible',err);return false;}
   }
+  let currentPlaneSample=null;
+  function stopPlaneSample(){
+    const current=currentPlaneSample;
+    if(!current)return;
+    currentPlaneSample=null;
+    try{current.source.stop();}catch(_){}
+    current.finish();
+  }
+  function playPlaneSample(buffer,{maxDuration=2500}={}){
+    stopPlaneSample();
+    if(!buffer||!unlock()||clamp(settings.fxVolume,0,10)===0)
+      return Promise.resolve(false);
+    return new Promise(resolve=>{
+      try{
+        const source=ctx.createBufferSource(),gain=ctx.createGain();
+        source.buffer=buffer;gain.gain.value=sampleGain(buffer);
+        source.connect(gain);gain.connect(sfxOut);
+        let finished=false,timeout=null;
+        const finish=()=>{
+          if(finished)return;
+          finished=true;clearTimeout(timeout);
+          if(currentPlaneSample?.source===source)currentPlaneSample=null;
+          resolve(true);
+        };
+        currentPlaneSample={source,finish};
+        source.onended=finish;
+        timeout=setTimeout(()=>{try{source.stop();}catch(_){}finish()},maxDuration);
+        source.start();
+      }catch(err){console.warn('Zika Fighter : bruit avion',err);resolve(false);}
+    });
+  }
   function preloadClip(url){
     if(decodedClips.has(url))return decodedClips.get(url);
     const request=Promise.resolve().then(()=>{
@@ -273,7 +304,7 @@
   window.addEventListener('zika:settings-changed',event=>setSettings(event.detail));
   window.ZikaArcadeAudio={
     unlock,logo,startTitle,stop,select,transition,isRunning,volume,
-    setLevels,setSettings,playEffect,playVoice,playSample,playClip,preloadClip,sampleGain,playStageVoice,stopStageVoice,
+    setLevels,setSettings,playEffect,playVoice,playSample,playClip,preloadClip,sampleGain,playStageVoice,stopStageVoice,playPlaneSample,stopPlaneSample,
     getSettings:()=>({...settings})
   };
 })();
