@@ -73,7 +73,7 @@ assert.match(introCss,/background-image:none!important/,
   'Interdire la vieille image bleue derrière le Canvas du titre');
 assert.match(introCss,/\.zf-title-flash\{/,
   'Neutraliser les anciens flashs de la page titre');
-assert.ok(html.includes('arcade-intro.js?v=20261108-slow-readable-zika-v25'),
+assert.ok(html.includes('arcade-intro.js?v=20261108-video-reference-v26'),
   'Forcer le rechargement de la nouvelle introduction');
 assert.ok(html.includes('snes-fonts.css?'),
   'Les polices doivent être intégrées au jeu entier');
@@ -135,7 +135,7 @@ assert.ok(html.includes('html:not(.zf-intro-booted) body>main'),
   'Protection contre le flash du HTML avant l’introduction absente');
 assert.ok(read('arcade-intro.js').includes("classList.add('zf-intro-booted')"),
   'Le montage de l’introduction doit activer la page après création du masque');
-assert.ok(html.includes('arcade-intro.js?v=20261108-slow-readable-zika-v25'),
+assert.ok(html.includes('arcade-intro.js?v=20261108-video-reference-v26'),
   'L’ancienne version de l’intro reste en cache');
 
 for(const path of [
