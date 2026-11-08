@@ -17,7 +17,7 @@ const oldStage=document.getElementById('stage'),oldStart=document.getElementById
 root.classList.add('zf-select-screen');
 root.innerHTML=[
 '<div class="zf-select-cabinet" role="group" aria-label="Sélection des vingt combattants">',
-'<canvas id="zf-select-reference" width="320" height="240" aria-hidden="true"></canvas>',
+'',
 '<canvas id="zf-select-type" width="320" height="240" aria-hidden="true"></canvas>',
 '<div class="zf-select-heading"><h1>PLAYER SELECT</h1><small>START</small></div>',
 '<button type="button" id="zf-select-start-control" aria-label="Confirmer le personnage sélectionné"></button>',
@@ -137,72 +137,7 @@ function showPortrait(side,index){
   }
  }else if(previous)previous.remove();
 }
-// Véritable alphabet bitmap arcade : 7×9 pixels par caractère. Aucune police
-// système, aucune interpolation et aucun changement aux portraits approuvés.
-// Les caractères accentués conservent leur accent sur la plaque du nom.
-const zfNameGlyphs={
- A:["0011100","0110110","1100011","1100011","1111111","1100011","1100011","1100011","1100011"],
- B:["1111100","1100110","1100011","1100110","1111100","1100110","1100011","1100110","1111100"],
- C:["0011111","0110000","1100000","1100000","1100000","1100000","1100000","0110000","0011111"],
- D:["1111100","1100110","1100011","1100011","1100011","1100011","1100011","1100110","1111100"],
- E:["1111111","1100000","1100000","1100000","1111100","1100000","1100000","1100000","1111111"],
- F:["1111111","1100000","1100000","1100000","1111100","1100000","1100000","1100000","1100000"],
- G:["0011111","0110000","1100000","1100000","1101111","1100011","1100011","0110011","0011110"],
- H:["1100011","1100011","1100011","1100011","1111111","1100011","1100011","1100011","1100011"],
- I:["1111111","0011100","0011100","0011100","0011100","0011100","0011100","0011100","1111111"],
- J:["0001111","0000110","0000110","0000110","0000110","1100110","1100110","0111100","0011000"],
- K:["1100011","1100110","1101100","1111000","1110000","1111000","1101100","1100110","1100011"],
- L:["1100000","1100000","1100000","1100000","1100000","1100000","1100000","1100000","1111111"],
- M:["1100011","1110111","1111111","1101011","1100011","1100011","1100011","1100011","1100011"],
- N:["1100011","1110011","1111011","1101111","1100111","1100011","1100011","1100011","1100011"],
- O:["0011100","0110110","1100011","1100011","1100011","1100011","1100011","0110110","0011100"],
- P:["1111100","1100110","1100011","1100011","1111110","1100000","1100000","1100000","1100000"],
- R:["1111100","1100110","1100011","1100110","1111100","1101100","1100110","1100011","1100011"],
- S:["0111111","1100000","1100000","0111000","0011110","0000011","0000011","1100110","1111100"],
- T:["1111111","0011100","0011100","0011100","0011100","0011100","0011100","0011100","0011100"],
- U:["1100011","1100011","1100011","1100011","1100011","1100011","1100011","0110110","0011100"],
- V:["1100011","1100011","1100011","1100011","1100011","0110110","0110110","0011100","0011100"],
- Y:["1100011","1100011","0110110","0011100","0011100","0011100","0011100","0011100","0011100"],
- Z:["1111111","0000011","0000110","0001100","0011000","0110000","1100000","1100000","1111111"],
- "1":["0001100","0011100","0111100","0001100","0001100","0001100","0001100","0001100","0111110"],
- "2":["0111110","1100011","0000011","0000110","0001100","0011000","0110000","1100000","1111111"],
- " ":["0000000","0000000","0000000","0000000","0000000","0000000","0000000","0000000","0000000"]
-};
-function arcadeName(ctx,text,x,y,maxWidth){
- const chars=Array.from(text.toUpperCase());
- const width=Math.max(1,chars.length*8-1);
- const sx=Math.min(1.55,maxWidth/width);
- const sy=1.35;
- ctx.save();
- ctx.translate(x,y);
- ctx.scale(sx,sy);
- for(let i=0;i<chars.length;i++){
-   const original=chars[i];
-   const letter=original.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-   const glyph=zfNameGlyphs[letter]||zfNameGlyphs[" "];
-   const gx=i*8;
-   for(let row=0;row<glyph.length;row++){
-     for(let col=0;col<7;col++){
-       if(glyph[row][col]!=="1")continue;
-       // Relief brun sombre, tranche cuivrée puis éclairage orangé SNES.
-       ctx.fillStyle="#130b2c";ctx.fillRect(gx+col+2,row+2,1,1);
-       ctx.fillStyle="#71364c";ctx.fillRect(gx+col+1,row+1,1,1);
-       ctx.fillStyle=row<3?"#ffe0a1":row<6?"#f6bc77":"#d98e60";
-       ctx.fillRect(gx+col,row,1,1);
-     }
-   }
-   if(original==="É"||original==="È"||original==="Ê"){
-     ctx.fillStyle="#f9d08e";
-     ctx.fillRect(gx+3,-2,2,1);
-     ctx.fillRect(gx+(original==="È"?2:4),-3,1,1);
-   }else if(original==="Ï"){
-     ctx.fillStyle="#f9d08e";
-     ctx.fillRect(gx+2,-2,1,1);ctx.fillRect(gx+5,-2,1,1);
-   }
- }
- ctx.restore();
-}
-
+// Police partagée exclusivement dans zf-pixel-lettering.js.
 let zfCursorBlink=true;
 function drawArcadeSelectionText(){
  const c=root.querySelector('#zf-select-type');
