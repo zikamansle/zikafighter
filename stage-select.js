@@ -34,6 +34,11 @@
   screen.querySelector('#zf-stage-flight-name').textContent=stage.name.toUpperCase();
   // Grand décor d'origine chargé au lancement du combat, pas à chaque déplacement.
   for(const node of grid.children)node.classList.toggle('current',Number(node.dataset.pos)===cursor);
+  const selectedTile=grid.children[cursor];
+  if(active&&selectedTile)selectedTile.scrollIntoView({behavior:'smooth',block:'nearest',inline:'nearest'});
+  screen.querySelector('#zf-stage-help').textContent=active
+    ?'◀ ▶ '+stage.name.toUpperCase()+' · START : VALIDER'
+    :'PERSONNAGES 7–7–6 · PUIS CHOIX DU STAGE';
   catalogue()?.preload(stage.id);
  }
  function fillGrid(){
@@ -42,8 +47,8 @@
    const button=document.createElement('button');button.type='button';
    button.className='zf-stage-slot';button.dataset.pos=String(index);
    const title=document.createElement('span');title.className='zf-stage-slot-title';title.textContent=s.name;
-   // 21 miniatures originales regroupées en une seule planche légère,
-   // rangées exactement dans le même ordre que les annonces de stage.
+   // 21 miniatures originales regroupées dans un SEUL bandeau horizontal.
+   // Royaume de Zika n'est affiché que lorsque son déblocage est validé.
    const art=document.createElement('div');
    art.className='zf-stage-thumb';
    art.setAttribute('aria-hidden','true');
@@ -71,11 +76,9 @@
   cursor=next;cursorSound();draw();
  }
  function move(dx,dy){
-  const n=list().length;if(!n)return;
-  const col=5,row=Math.floor(cursor/col),x=cursor%col;
-  let next=((row+dy+Math.ceil(n/col))%Math.ceil(n/col))*col+(x+dx+col)%col;
-  if(next>=n)next=n-1;
-  choose(next);
+  // Bandeau horizontal : droite/gauche ou haut/bas = vignette précédente/suivante.
+  const direction=dx||dy;
+  if(direction)choose(cursor+(direction>0?1:-1));
  }
  function previewHero(selector,nameSelector,sourceSelector,slug){
   const target=screen.querySelector(selector),name=screen.querySelector(nameSelector);
@@ -95,7 +98,6 @@
   screen.hidden=false;root.hidden=false;
   root.classList.add('zf-stage-phase');
   screen.classList.add('zf-stage-active');
-  screen.querySelector('#zf-stage-help').textContent='FLÈCHES : ARÈNE · START : VALIDER';
   fillGrid();draw();
   window.ZikaArcadeAudio?.preloadClip?.('./assets/audio/zika-plane-transition.ogg');
   grid.children[0]?.focus({preventScroll:true});
@@ -106,7 +108,7 @@
   screen.classList.remove('zf-stage-active');
   root.classList.remove('zf-stage-phase');
   screen.querySelector('#zf-stage-flight').hidden=true;
-  screen.querySelector('#zf-stage-help').textContent='CHOISIR LES COMBATTANTS POUR DÉBLOQUER LE CHOIX DU STAGE';
+  screen.querySelector('#zf-stage-help').textContent='PERSONNAGES 7–7–6 · PUIS CHOIX DU STAGE';
  }
  async function playAirplane(){
   // Extrait SFII_0~4.WAV fourni par l'utilisateur, converti en OGG rétro
