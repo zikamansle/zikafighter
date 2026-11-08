@@ -1082,10 +1082,15 @@
     }
     // Phase A : petit logo sur NOIR.
     if(t<1.20){paint(sprite,160,52,90,43);return;}
-    // Phase B : balayage du logo reconnaissable, sans mosaïque excessive.
+    // Phase B : arrivée du logo dans la fenêtre 320×180, à l'échelle lisible.
+    // Pas de zoom 740 px hors champ : le logo devient entier avant de tourner.
     if(t<2.13){
-      const p=Math.min(1,Math.floor((t-1.20)*30)/27);
-      paint(coarseSprites[7]||sprite,350-Math.round(680*p),87,740,349);
+      const frame=Math.max(0,Math.floor((t-1.20)*30));
+      const p=Math.min(1,frame/21);
+      const easeInOut=p*p*(3-2*p);
+      const x=370-Math.round(210*easeInOut);
+      const width=260+Math.round(48*easeInOut);
+      paint(sprite,x,68,width,Math.round(width*.47));
       return;
     }
     // Phase C : rotation avec un léger changement de définition (48 à 160 px).
