@@ -4,7 +4,7 @@
  if(!root||root.querySelector('#zf-stage-screen'))return;
  const catalogue=()=>window.ZikaFighterStages;
  const screen=document.createElement('section');
- screen.id='zf-stage-screen';screen.hidden=true;
+ screen.id='zf-stage-screen';screen.hidden=false;
  screen.setAttribute('aria-label',"Choix de l'arène");
  screen.innerHTML=[
   '<h2 class="zf-stage-heading">STAGE SELECT</h2>',
@@ -17,7 +17,7 @@
   '<div class="zf-stage-help" id="zf-stage-help">FLÈCHES : CHOISIR · START : VALIDER</div>',
   '<div class="zf-stage-flight" id="zf-stage-flight" hidden><span>STAGE APPROACH</span><strong id="zf-stage-flight-name"></strong><div class="zf-stage-airplane" aria-hidden="true">✈</div></div>'
  ].join('');
- root.appendChild(screen);
+ root.querySelector('.zf-select-cabinet').appendChild(screen);
  const grid=screen.querySelector('#zf-stage-grid');
  let active=false,confirming=false,cursor=0,selected=null,lastPadInputAt=0,padConfirmDown=false,stageToken=0;
  const list=()=>catalogue()?.available()||[];
@@ -45,7 +45,7 @@
    const art=document.createElement('img');
    art.alt='';art.loading='lazy';
    // Miniature légère, tirée de l'illustration originale et non recadrée.
-   art.src='./assets/stages/thumbs/'+encodeURIComponent(s.id)+'.webp';
+   art.src=catalogue().imageFor(s.id);
    art.onerror=()=>{art.remove();button.classList.add('no-art')};
    button.append(art,title);
    button.addEventListener('click',()=>{
@@ -84,22 +84,26 @@
  function open(choice={}){
   if(!catalogue())return false;
   stageToken++;active=true;confirming=false;cursor=0;selected=null;
-  const gridSource=root.querySelector('.zf-select-cabinet');if(gridSource)gridSource.hidden=true;
+  // Ne jamais masquer les portraits : personnages en haut, stages en bas.
   previewHero('#zf-stage-player1','#zf-stage-name1','#zf-select-preview-1 img',choice.player1||'pascal');
   previewHero('#zf-stage-player2','#zf-stage-name2','#zf-select-preview-2 img',choice.player2||'micka');
   screen.querySelector('#zf-stage-player2-label').textContent=choice.twoPlayers?'2P':'CPU';
   screen.querySelector('#zf-stage-flight').hidden=true;
   screen.hidden=false;root.hidden=false;
   root.classList.add('zf-stage-phase');
+  screen.classList.add('zf-stage-active');
+  screen.querySelector('#zf-stage-help').textContent='FLÈCHES : ARÈNE · START : VALIDER';
   fillGrid();draw();
   window.ZikaArcadeAudio?.preloadClip?.('./assets/audio/zika-plane-transition.ogg');
   grid.children[0]?.focus({preventScroll:true});
   return true;
  }
  function close(){
-  stageToken++;active=false;confirming=false;screen.hidden=true;
+  stageToken++;active=false;confirming=false;screen.hidden=false;
+  screen.classList.remove('zf-stage-active');
   root.classList.remove('zf-stage-phase');
-  const gridSource=root.querySelector('.zf-select-cabinet');if(gridSource)gridSource.hidden=false;
+  screen.querySelector('#zf-stage-flight').hidden=true;
+  screen.querySelector('#zf-stage-help').textContent='CHOISIR LES COMBATTANTS POUR DÉBLOQUER LE CHOIX DU STAGE';
  }
  async function playAirplane(){
   // Extrait SFII_0~4.WAV fourni par l'utilisateur, converti en OGG rétro
@@ -149,7 +153,7 @@
   if(!active||stageToken!==ownToken)return;
   await catalogue()?.announce(s.id);
   if(!active||stageToken!==ownToken)return;
-  active=false;screen.hidden=true;root.classList.remove('zf-stage-phase');
+  active=false;screen.classList.remove('zf-stage-active');root.classList.remove('zf-stage-phase');
   window.ZikaFighterBridge?.start?.();
  }
  document.addEventListener('keydown',event=>{
@@ -183,6 +187,9 @@
   requestAnimationFrame(pollPad);
  }
  requestAnimationFrame(pollPad);
+ // Les arènes sont visibles dès l'écran de sélection, mais pas sélectionnables
+ // tant que les joueurs n'ont pas confirmé leurs combattants.
+ fillGrid();draw();
  window.ZikaFighterStageSelect={open,close,move,choose,confirm,
    getState:()=>({active,confirming,cursor,selected,available:list().length})};
 })();
