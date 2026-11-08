@@ -250,7 +250,10 @@
   const player2=window.ZikaFighterBridge?.getMatchSelection?.()?.opponent||'micka';
   // Fondre uniquement la musique PLAYER SELECT pendant l'entrée sur VS.
   // La musique VS démarre à son volume normal, sans fondu audio.
-  void window.ZikaFighterCharacterSelect?.fadeOutMusic?.(450);
+  if(window.ZikaFighterCharacterSelect?.fadeOutMusic)
+    await window.ZikaFighterCharacterSelect.fadeOutMusic(450);
+  else window.ZikaFighterCharacterSelect?.stopMusic?.();
+  if(stageToken!==ownToken)return;
   const launch=()=>window.ZikaFighterBridge?.start?.();
   if(window.ZikaFighterVersus?.show){
     window.ZikaFighterVersus.show({player1,player2,onComplete:launch});
