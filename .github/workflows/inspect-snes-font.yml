@@ -22,6 +22,11 @@ jobs:
             "https://www.spriters-resource.com/media/assets/78/80834.png?updated=1755474472",
             "https://www.spriters-resource.com/media/assets/6/5573.png?updated=1755472423",
             "https://static.wixstatic.com/media/685632_531e2c5c545244bb82df966c634c1800~mv2.png",
+            "https://static.wixstatic.com/media/685632_0fee1909f2e04b08aa3ede8c582e66f9~mv2.png",
+            "https://www.nintendoworldreport.com/media/27386/4/1.jpg",
+            "https://thekingofgrabs.files.wordpress.com/2018/02/street-fighter-2-turbo-hyper-fighting-snes-08.png",
+            "https://shattered-blog.com/wp-content/uploads/2016/07/blog-9.png",
+            "https://images.weserv.nl/?url=www.spriters-resource.com/media/assets/78/80834.png",
           ]
           for i,url in enumerate(urls):
             print("SOURCE",i,url,flush=True)
@@ -33,9 +38,10 @@ jobs:
             except Exception as exc:
               print("ERROR",str(exc),flush=True)
               continue
-            if i!=0:continue
+            if i not in [3,4,5,6,7,8]:continue
             # 1000-pixel web preview displays a 1596px original.
             # Look around lines containing PLAYER SELECT and STAGE SELECT.
+            if i!=8:continue
             for x0,y0,w,h in [(465,470,155,36),(465,550,180,100)]:
               patch=im.crop((x0,y0,x0+w,y0+h))
               print("PATCH",x0,y0,w,h)
