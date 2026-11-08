@@ -1,0 +1,29 @@
+name: Build SNES letter source atlas
+on:
+  push:
+    paths:
+      - 'tools/build-snes-letters.py'
+      - '.github/workflows/build-snes-letters.yml'
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Extract actual SNES lettering pixels
+        run: |
+          python3 -m pip -q install pillow
+          python3 tools/build-snes-letters.py
+      - name: Publish atlas without modifying any portraits
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/snes-ui-letters.png
+          if ! git diff --cached --quiet; then
+            git commit -m "Install SNES title pixel glyph atlas from authentic game capture"
+            git push origin HEAD:main
+          fi
