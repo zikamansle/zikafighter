@@ -30,3 +30,14 @@ Pour l'ordre de travail exact et les 58 tâches ouvertes : consulter `docs/CHECK
 - `docs/CAHIER_DES_CHARGES.md` : règles du développement
 
 Le projet est indépendant de ZikaRun, ZikaQuest et du programme interactif.
+
+## Publication et nettoyage des anciennes versions
+
+Pour **chaque** modification visuelle ou audio publiée :
+
+1. Modifier le numéro `BUILD` dans le petit script de tête de `index.html`.
+2. Mettre ce même numéro dans les paramètres `?v=` des ressources JS/CSS/portraits qui ont changé. Les portraits intégrés dans les fichiers `data/approved-portrait-*.js` sont aussi concernés.
+3. Le script de démarrage élimine les anciens caches applicatifs identifiés Zika Fighter et tente de désactiver un ancien service worker dédié au chemin du jeu ; il ne supprime pas les options de l'utilisateur et n'efface pas les caches des autres applications.
+4. Ouvrir la version réellement publiée et vérifier en navigateur (y compris en fenêtre privée) que les noms, visages, arènes et curseurs affichés correspondent aux fichiers actuels. Une modification GitHub ne constitue pas une validation visuelle.
+
+Les URL des images originales et les identifiants techniques `fabienne-1` et `fabienne-2` restent distincts ; les **noms publics** des deux combattantes sont simplement « Fabienne ».
