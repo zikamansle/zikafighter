@@ -32,7 +32,7 @@
   const stage=items[cursor];if(!stage)return;
   const title=screen.querySelector('#zf-stage-title');title.textContent=stage.name.toUpperCase();
   screen.querySelector('#zf-stage-flight-name').textContent=stage.name.toUpperCase();
-  imgPreview(catalogue()?.imageFor(stage.id));
+  // Grand décor d'origine chargé au lancement du combat, pas à chaque déplacement.
   for(const node of grid.children)node.classList.toggle('current',Number(node.dataset.pos)===cursor);
   catalogue()?.preload(stage.id);
  }
@@ -42,11 +42,14 @@
    const button=document.createElement('button');button.type='button';
    button.className='zf-stage-slot';button.dataset.pos=String(index);
    const title=document.createElement('span');title.className='zf-stage-slot-title';title.textContent=s.name;
-   const art=document.createElement('img');
-   art.alt='';art.loading='lazy';
-   // Miniature légère, tirée de l'illustration originale et non recadrée.
-   art.src=catalogue().imageFor(s.id);
-   art.onerror=()=>{art.remove();button.classList.add('no-art')};
+   // 21 miniatures originales regroupées en une seule planche légère,
+   // rangées exactement dans le même ordre que les annonces de stage.
+   const art=document.createElement('div');
+   art.className='zf-stage-thumb';
+   art.setAttribute('aria-hidden','true');
+   art.style.backgroundImage='url("https://static.wixstatic.com/media/685632_f509bf019885487fb1e97f53e321e587~mv2.png")';
+   art.style.backgroundSize='700% 300%';
+   art.style.backgroundPosition=((index%7)/6*100)+'% '+(Math.floor(index/7)/2*100)+'%';
    button.append(art,title);
    button.addEventListener('click',()=>{
     if(!active||confirming)return;
