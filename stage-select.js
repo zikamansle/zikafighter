@@ -226,6 +226,8 @@
   const ownToken=stageToken;
   // La musique de PLAYER SELECT reste continue pendant l'annonce du stage.
   window.ZikaFighterBridge?.setStage?.(s.id);
+  const match=window.ZikaFighterBridge?.getMatchSelection?.();
+  window.ZikaFighterVersus?.preload?.(match?.player||'pascal',match?.opponent||'micka');
   // Aucun écran de confirmation : la sélection reste visible jusqu'au VS.
   // Laisser entendre le clic de validation avant le bruit d'avion.
   await waitOrSkip(90);
@@ -251,9 +253,9 @@
   if(stageToken!==ownToken)return;
   const launch=()=>window.ZikaFighterBridge?.start?.();
   if(window.ZikaFighterVersus?.show){
-    const started=window.ZikaFighterVersus.show({player1,player2,onComplete:launch});
-    // Le VS prend immédiatement le relais, sans flash de l'ancien roster.
-    if(started)root.hidden=true;
+    // Le VS masque l'ancien écran au moment exact du passage au noir,
+    // et non avant le début du fondu.
+    window.ZikaFighterVersus.show({player1,player2,onComplete:launch});
   }else{
     window.ZikaFighterCharacterSelect?.stopMusic?.();
     launch();
