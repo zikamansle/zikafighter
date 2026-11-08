@@ -239,3 +239,34 @@
 #zf-intro #zf-options-canvas:focus-visible{outline:0!important}
 #zf-intro .zf-options-back{display:none!important;pointer-events:none!important}
 #zf-intro #zf-legal-canvas{image-rendering:auto!important}
+
+/* Titres SNES : jamais de photo d'écran en fond ni de stroboscope.
+   Le Canvas affiche seul le logo et les couleurs conditionnelles du mode.
+   Avant son premier dessin, le fond doit déjà être noir. */
+#zf-intro .zf-title,
+#zf-intro.zf-title-ready .zf-title,
+#zf-intro .zf-cinematic,
+#zf-intro.zf-title-ready .zf-cinematic{
+  background:#000!important;
+  background-image:none!important;
+  animation:none!important;
+  filter:none!important;
+}
+#zf-intro .zf-title::before,
+#zf-intro .zf-title-flash{
+  display:none!important;
+  animation:none!important;
+  opacity:0!important;
+}
+#zf-intro #zf-cinematic-canvas,
+#zf-intro #zf-title-canvas{
+  display:block;
+  width:min(100vw,133.333333vh)!important;
+  height:min(75vw,100vh)!important;
+  max-width:100vw;
+  max-height:100vh;
+  aspect-ratio:4/3!important;
+  object-fit:contain!important;
+  background:#000!important;
+  image-rendering:pixelated!important;
+}
