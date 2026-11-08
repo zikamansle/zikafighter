@@ -147,6 +147,8 @@
  function open(choice={}){
   if(!catalogue())return false;
   stageToken++;active=true;confirming=false;cursor=0;selected=null;
+  // Même piste audio, même position de lecture : aucun redémarrage ni silence.
+  window.ZikaFighterCharacterSelect?.ensureMusic?.();
   // Ne jamais masquer les portraits : personnages en haut, stages en bas.
   previewHero('#zf-stage-player1','#zf-stage-name1','#zf-select-preview-1 img',choice.player1||'pascal');
   previewHero('#zf-stage-player2','#zf-stage-name2','#zf-select-preview-2 img',choice.player2||'micka');
