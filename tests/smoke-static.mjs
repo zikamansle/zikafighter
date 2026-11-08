@@ -61,8 +61,8 @@ assert.match(introSrc,/coarseSprites=\[\[96,48\],\[104,52\]/,
   'Mosaïque SNES progressive obligatoire');
 assert.match(introSrc,/paint\(giantLetters,x,82,width,Math\.round\(width\*\.27\)\)/,
   'Le mot ZIKA géant doit défiler, pas le logo entier');
-assert.match(introSrc,/frame<56/,
-  'Grand balayage latéral du lettrage comme TURBO SNES');
+assert.match(introSrc,/const progress=Math\\.min\\(1,frame\\/76\\)/,
+  'ZIKA doit défiler en continu sans arrêt au milieu');
 assert.match(introSrc,/prepareGiantZika\(\)/,
   'Le mot ZIKA doit être fabriqué indépendamment du logo');
 assert.match(introSrc,/const band=titleMenuOpen&&!battleSubmenuOpen/,
@@ -73,7 +73,7 @@ assert.match(introCss,/background-image:none!important/,
   'Interdire la vieille image bleue derrière le Canvas du titre');
 assert.match(introCss,/\.zf-title-flash\{/,
   'Neutraliser les anciens flashs de la page titre');
-assert.ok(html.includes('arcade-intro.js?v=20261108-video-reference-v26'),
+assert.ok(html.includes('arcade-intro.js?v=20261108-continuous-zika-v27'),
   'Forcer le rechargement de la nouvelle introduction');
 assert.ok(html.includes('snes-fonts.css?'),
   'Les polices doivent être intégrées au jeu entier');
@@ -135,7 +135,7 @@ assert.ok(html.includes('html:not(.zf-intro-booted) body>main'),
   'Protection contre le flash du HTML avant l’introduction absente');
 assert.ok(read('arcade-intro.js').includes("classList.add('zf-intro-booted')"),
   'Le montage de l’introduction doit activer la page après création du masque');
-assert.ok(html.includes('arcade-intro.js?v=20261108-video-reference-v26'),
+assert.ok(html.includes('arcade-intro.js?v=20261108-continuous-zika-v27'),
   'L’ancienne version de l’intro reste en cache');
 
 for(const path of [
