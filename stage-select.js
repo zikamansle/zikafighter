@@ -10,7 +10,7 @@
   '<h2 class="zf-stage-heading" aria-label="STAGE SELECT"><canvas id="zf-stage-title-pixels" width="320" height="22" aria-hidden="true"></canvas></h2>',
   '<div class="zf-stage-grid" id="zf-stage-grid" role="group" aria-label="Arènes disponibles"></div>',
   '<div class="zf-stage-help" id="zf-stage-help" aria-live="polite">FLÈCHES : CHOISIR · START : VALIDER</div>',
-  '<div class="zf-stage-flight" id="zf-stage-flight" hidden><strong id="zf-stage-flight-name"><canvas id="zf-flight-stage" width="320" height="36" aria-hidden="true"></canvas></strong><div id="zf-stage-confirm-card" class="zf-stage-confirm-card"><div class="zf-stage-confirm-art"></div><span class="zf-stage-confirm-random">?</span></div></div>'
+  '<div class="zf-stage-flight" id="zf-stage-flight" hidden><strong id="zf-stage-flight-name"><canvas id="zf-flight-stage" width="320" height="36" aria-hidden="true"></canvas></strong><div id="zf-stage-confirm-card" class="zf-stage-confirm-card"><div class="zf-stage-confirm-art"><img id="zf-stage-confirm-image" alt="" decoding="async"><span id="zf-stage-image-error" hidden>IMAGE INDISPONIBLE</span></div><span class="zf-stage-confirm-random">?</span></div></div>'
  ].join('');
  root.querySelector('.zf-select-cabinet').appendChild(screen);
  const grid=screen.querySelector('#zf-stage-grid');
@@ -138,7 +138,9 @@
  }
  function open(choice={}){
   if(!catalogue())return false;
-  stageToken++;active=true;confirming=false;cursor=0;selected=null;
+  stageToken++;active=true;confirming=false;skipRequested=false;cursor=0;selected=null;
+  if(planeAudio){planeAudio.pause();planeAudio=null;}
+  window.ZikaArcadeAudio?.stopStageVoice?.();
   screen.classList.remove('zf-stage-confirming');
   root.classList.remove('zf-stage-confirm-view');
   // Même piste audio, même position de lecture : aucun redémarrage ni silence.
@@ -154,39 +156,52 @@
   return true;
  }
  function close(){
-  stageToken++;active=false;confirming=false;screen.hidden=false;
+  stageToken++;active=false;confirming=false;skipRequested=false;screen.hidden=false;
+  if(planeAudio){planeAudio.pause();planeAudio=null;}
+  window.ZikaArcadeAudio?.stopStageVoice?.();
   screen.classList.remove('zf-stage-active','zf-stage-confirming');
   root.classList.remove('zf-stage-phase','zf-stage-confirm-view');
   screen.querySelector('#zf-stage-flight').hidden=true;
   screen.querySelector('#zf-stage-help').textContent='PERSONNAGES 7–7–6 · PUIS CHOIX DU STAGE';
  }
+ let stageSkipResolve=null,planeAudio=null,skipRequested=false;
+ function waitOrSkip(ms){
+  if(skipRequested)return Promise.resolve();
+  return new Promise(resolve=>{
+   let done=false;
+   const timer=setTimeout(doneWait,ms);
+   function doneWait(){
+    if(done)return;
+    done=true;clearTimeout(timer);
+    if(stageSkipResolve===doneWait)stageSkipResolve=null;
+    resolve();
+   }
+   stageSkipResolve=doneWait;
+  });
+ }
+ function skipAnnouncement(){
+  if(!active||!confirming||skipRequested)return false;
+  skipRequested=true;
+  if(planeAudio){planeAudio.pause();planeAudio.currentTime=0;}
+  window.ZikaArcadeAudio?.stopStageVoice?.();
+  stageSkipResolve?.();
+  return true;
+ }
  async function playAirplane(){
-  // Extrait SFII_0~4.WAV fourni par l'utilisateur, converti en OGG rétro
-  // et publié dans le dépôt. Lecture sur le même bus S.E. que les voix.
+  if(skipRequested)return;
   const path='./assets/audio/zika-plane-transition.ogg';
-  const audio=window.ZikaArcadeAudio;
-  let duration=2.18;
-  if(audio?.preloadClip&&audio?.playSample){
-    try{
-      const buffer=await audio.preloadClip(path);
-      if(buffer){
-        duration=buffer.duration||duration;
-        audio.playSample(buffer);
-        await new Promise(done=>setTimeout(done,Math.min(3000,Math.max(350,duration*1000))));
-        return;
-      }
-    }catch(err){console.warn('Zika Fighter : avion non décodable',err)}
-  }
-  // Repli lorsque WebAudio ne peut pas décoder la version OGG.
   await new Promise(resolve=>{
-    const sound=new Audio(path);sound.preload='auto';
-    const volume=Number(window.ZikaFighterSettings?.fxVolume??8);
-    sound.volume=Math.max(0,Math.min(1,volume/10));
-    let done=false;
-    const finish=()=>{if(!done){done=true;resolve()}};
-    sound.onended=finish;sound.onerror=finish;
-    try{const p=sound.play();if(p?.catch)p.catch(finish)}catch(_){finish()}
-    setTimeout(finish,3000);
+   const sound=new Audio(path);
+   planeAudio=sound;sound.preload='auto';
+   sound.volume=Math.max(0,Math.min(1,Number(window.ZikaFighterSettings?.fxVolume??8)/10));
+   let done=false;
+   const timeout=setTimeout(finish,3100);
+   function finish(){
+    if(done)return;done=true;clearTimeout(timeout);
+    sound.pause();if(planeAudio===sound)planeAudio=null;resolve();
+   }
+   sound.onended=finish;sound.onerror=finish;
+   try{const p=sound.play();if(p?.catch)p.catch(finish);}catch(_){finish();}
   });
  }
  async function confirm(){
@@ -197,7 +212,7 @@
   const available=actualStages();
   const s=chosen.random?available[Math.floor(Math.random()*available.length)]:chosen;
   if(!s)return;
-  confirming=true;selected=s.id;
+  confirming=true;skipRequested=false;selected=s.id;
   if(!chosen.random){
     if(window.ZikaFighterCharacterSelect?.playConfirmSound){
       window.ZikaFighterCharacterSelect.playConfirmSound();
@@ -210,21 +225,38 @@
   const preview=screen.querySelector('#zf-stage-flight');
   const art=preview.querySelector('.zf-stage-confirm-art');
   const randomMark=preview.querySelector('.zf-stage-confirm-random');
-  const img=chosen.random?'':(s.imageUrl||catalogue()?.imageFor?.(s.id)||'');
-  art.style.backgroundImage=img?'url("'+img.replace(/"/g,'%22')+'")':'none';
+  const picture=art.querySelector('#zf-stage-confirm-image');
+  const error=art.querySelector('#zf-stage-image-error');
   art.hidden=!!chosen.random;
   randomMark.hidden=!chosen.random;
+  picture.removeAttribute('src');
+  picture.hidden=!!chosen.random;
+  error.hidden=true;
+  if(!chosen.random){
+    // Source officielle en priorité, puis copie locale : ne jamais substituer
+    // par erreur le décor d'une autre arène.
+    const options=[s.imageUrl||catalogue()?.imageFor?.(s.id),s.image?'./assets/stages/'+encodeURIComponent(s.image):null].filter(Boolean);
+    let attempt=0;
+    picture.alt=s.name;
+    picture.onerror=()=>{
+      attempt++;
+      if(attempt<options.length)picture.src=options[attempt];
+      else{picture.hidden=true;error.hidden=false;console.warn('Décor indisponible :',s.id);}
+    };
+    if(options.length)picture.src=options[0];
+    else{picture.hidden=true;error.hidden=false;}
+  }
   preview.querySelector('#zf-stage-flight-name').dataset.stageName=chosen.random?'ALÉATOIRE':s.name.toUpperCase();
   drawStageTexts();
   preview.hidden=false;
   screen.classList.add('zf-stage-confirming');
   root.classList.add('zf-stage-confirm-view');
   // Laisser entendre le clic de validation avant le bruit d'avion.
-  await new Promise(done=>setTimeout(done,220));
+  await waitOrSkip(220);
   if(!active||stageToken!==ownToken)return;
   await playAirplane();
   if(!active||stageToken!==ownToken)return;
-  if(!chosen.random)await catalogue()?.announce(s.id);
+  if(!chosen.random&&!skipRequested)await catalogue()?.announce(s.id);
   if(!active||stageToken!==ownToken)return;
   active=false;screen.classList.remove('zf-stage-active','zf-stage-confirming');root.classList.remove('zf-stage-phase','zf-stage-confirm-view');
   const player1=window.ZikaFighterBridge?.getMatchSelection?.()?.player||'pascal';
@@ -244,7 +276,13 @@
   }
  }
  document.addEventListener('keydown',event=>{
-  if(!active||confirming||window.ZikaFighterScreens?.busy)return;
+  if(!active||window.ZikaFighterScreens?.busy)return;
+  if(confirming){
+   if(['Enter','Space','NumpadEnter','KeyZ','KeyX','Escape'].includes(event.code)&&!event.repeat){
+    event.preventDefault();event.stopImmediatePropagation();skipAnnouncement();
+   }
+   return;
+  }
   const code=event.code;
   if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','KeyA','KeyD','KeyW','KeyS','Enter','Space','NumpadEnter','Escape'].includes(code))return;
   event.preventDefault();event.stopImmediatePropagation();
@@ -257,7 +295,7 @@
   else confirm();
  },true);
  function pollPad(time){
-  if(active&&!confirming){
+  if(active){
     try{
       const pad=navigator.getGamepads?.()?.find(Boolean);
       if(pad){
@@ -265,9 +303,10 @@
         const ax=pad.axes?.[0]||0,ay=pad.axes?.[1]||0;
         const dx=pressed(14)||ax<-.6?-1:pressed(15)||ax>.6?1:0;
         const dy=pressed(12)||ay<-.6?-1:pressed(13)||ay>.6?1:0;
-        if((dx||dy)&&time-lastPadInputAt>170){lastPadInputAt=time;move(dx,dy)}
+        if(!confirming&&(dx||dy)&&time-lastPadInputAt>170){lastPadInputAt=time;move(dx,dy)}
         const down=pressed(9)||pressed(0);
-        if(down&&!padConfirmDown)confirm();padConfirmDown=down;
+        if(down&&!padConfirmDown){if(confirming)skipAnnouncement();else confirm();}
+        padConfirmDown=down;
       }
     }catch(_){}
   }else padConfirmDown=false;
@@ -278,5 +317,6 @@
  // tant que les joueurs n'ont pas confirmé leurs combattants.
  fillGrid();draw();
  window.ZikaFighterStageSelect={open,close,move,choose,confirm,
+   skipAnnouncement,
    getState:()=>({active,confirming,cursor,selected,available:list().length})};
 })();
