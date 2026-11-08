@@ -42,14 +42,34 @@ assert.ok(!html.includes('zf-pixel-lettering.js'),
   'Rejet de l’alphabet artificiel invalidé par l’utilisateur');
 assert.ok(!select.includes('ZikaFighterPixelText'),
   'La sélection ne doit pas dépendre du faux lettrage');
-assert.ok(existsSync(join(root,'assets/snes-ui-letters.png')),
-  'Véritable atlas de titres source SNES introuvable');
+for(const file of ['cps-1-fighter.woff2','sfii-large.woff2','sfii-large-colour.woff2']){
+  assert.ok(existsSync(join(root,'assets/fonts',file)),
+    'Police Street Fighter manquante : '+file);
+}
+assert.ok(!existsSync(join(root,'assets/snes-ui-letters.png')),
+  'Le faux atlas source hybride ne doit plus exister');
+const fontsCss=read('snes-fonts.css');
+assert.match(fontsCss,/font-family:'ZikaCPS1'/,
+  'CPS-1 Fighter doit exister dans les styles');
+assert.match(fontsCss,/font-family:'ZikaSFII'/,
+  'Street Fighter II Large doit exister dans les styles');
+assert.ok(html.includes('snes-fonts.css?'),
+  'Les polices doivent être intégrées au jeu entier');
+assert.match(read('snes-ui-text.js'),/document\.fonts\.load/,
+  'Le moteur doit attendre le chargement réel des polices');
+assert.doesNotMatch(read('snes-ui-text.js'),/snes-ui-letters\.png/,
+  'Le faux atlas mélangé ne doit plus être utilisé');
 assert.ok(html.includes('snes-ui-text.js?'),
   'Le moteur d’écriture SNES doit être chargé');
 assert.ok(html.indexOf('<script defer src="./snes-ui-text.js')<
           html.indexOf('<script defer src="./character-select.js'),
   'Charger la fonte bitmap avant la sélection');
 assert.match(select,/window\.ZikaSNESText/,'Titres et noms en pixels SNES');
+assert.ok(!read('arcade-intro.js').includes('Georgia,'),
+  'Ne pas remettre des polices système dans les menus');
+assert.ok(!read('arcade-intro.css').includes('"Courier New"'),
+  'Ne pas réintroduire Courier dans l’interface rétro');
+
 assert.doesNotMatch(select,/zfNameGlyphs/,'Supprimer le faux alphabet 7×9');
 assert.doesNotMatch(select,/reference\.src=/,'Supprimer l’ancienne capture montée dans la page');
 assert.match(stages,/zf-stage-title-pixels/,'Titre STAGE SELECT en pixels SNES');
