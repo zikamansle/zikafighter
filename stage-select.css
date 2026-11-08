@@ -96,11 +96,14 @@
   position:absolute;inset:0;z-index:10;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:6%;background:#030b3ef4;color:#f5c889;
-  font:900 clamp(20px,3.7vw,44px)/1 monospace;
-  text-shadow:2px 3px #472742;
+  text-shadow:none;
 }
+#select #zf-stage-screen .zf-stage-flight span,
 #select #zf-stage-screen .zf-stage-flight strong{
-  font-size:clamp(12px,1.6vw,23px);
+  display:block;width:72%;max-width:72%;height:auto;
+}
+#select #zf-stage-screen .zf-stage-flight canvas{
+  display:block;width:100%;height:auto;image-rendering:pixelated;
 }
 #select #zf-stage-screen .zf-stage-airplane{
   font-size:clamp(28px,5vw,72px);
