@@ -1034,9 +1034,28 @@
       titleMenuOpen=true;battleSubmenuOpen=false;titleSelection=0;
     });
   }
-  // Tout START pendant le générique amène directement à PRESS START.
+  // La première pression passe ZIKAPCOM (ou les crédits) et démarre
+  // l'animation du logo ZIKA FIGHTER, jamais directement PRESS START.
+  function skipZikapcomToLogo(){
+    if(closed||!['legal','splash'].includes(phase)||window.ZikaFighterScreens?.busy)return false;
+    phase='transition';
+    if(legalFrame)cancelAnimationFrame(legalFrame);
+    if(raf)cancelAnimationFrame(raf);
+    audio.pause();try{audio.currentTime=0;}catch(_){}
+    status='skipped';
+    return transitionTo(()=>{
+      legal.hidden=true;splash.hidden=true;title.hidden=true;optionsScreen.hidden=true;
+      cinematic.hidden=false;unblock.hidden=true;errorText.hidden=true;
+      phase='cinematic';
+      try{titleMusic.currentTime=TITLE_MUSIC_OFFSET;}catch(_){}
+      playTitleMusic();
+      renderCinematic(0);
+      animateCinematic(performance.now());
+    });
+  }
+  // La deuxième pression, pendant ZIKA FIGHTER, arrive sur PRESS START.
   function skipIntroToPressStart(){
-    if(closed||!['legal','splash','cinematic'].includes(phase)||window.ZikaFighterScreens?.busy)return false;
+    if(closed||phase!=='cinematic'||window.ZikaFighterScreens?.busy)return false;
     if(legalFrame)cancelAnimationFrame(legalFrame);
     if(raf)cancelAnimationFrame(raf);
     if(cinematicFrame!==null){cancelAnimationFrame(cinematicFrame);cinematicFrame=null;}
@@ -1306,7 +1325,15 @@
       window.ZikaFighterCharacterSelect?.open?.();
     },{out:210,hold:60,in:210});
   }
-    // Navigation arcade, utilisable au clavier, à la manette mappée en touches,
+    // Clic/toucher : un appui ne passe qu'une seule séquence.
+  // Ne pas bloquer le bouton de déblocage audio lorsqu'il est nécessaire.
+  legal.addEventListener('click',()=>skipZikapcomToLogo());
+  splash.addEventListener('click',event=>{
+    if(event.target===unblock||unblock.contains(event.target))return;
+    skipZikapcomToLogo();
+  });
+  cinematic.addEventListener('click',()=>skipIntroToPressStart());
+  // Navigation arcade, utilisable au clavier, à la manette mappée en touches,
   // et au clic sur l'écran. Aucun passage automatique au combat.
   startButton.addEventListener('click',event=>{
     if(phase!=='title')return;
@@ -1379,7 +1406,9 @@
     event.stopImmediatePropagation();
     if(event.repeat||heldTitleStarts.has(event.code))return;
     heldTitleStarts.add(event.code);
-    if(['legal','splash','cinematic'].includes(phase)){
+    if(['legal','splash'].includes(phase)){
+      skipZikapcomToLogo();
+    }else if(phase==='cinematic'){
       skipIntroToPressStart();
     }else if(phase==='title'&&!titleMenuOpen){
       openTitleMenu();
@@ -1467,7 +1496,8 @@
       const startEdge=startDown&&!padStartHeld;
       padStartHeld=startDown;
       if(startEdge){
-        if(['legal','splash','cinematic'].includes(phase))skipIntroToPressStart();
+        if(['legal','splash'].includes(phase))skipZikapcomToLogo();
+        else if(phase==='cinematic')skipIntroToPressStart();
         else if(phase==='title'&&!titleMenuOpen)openTitleMenu();
         else if(phase==='title')activateTitleSelection();
         else if(phase==='options'){
@@ -1486,7 +1516,9 @@
       // START se déclenche sur un NOUVEL appui, jamais par maintien.
       if(action&&(action!==padHeld||(repeatDirection&&now-padLastActionAt>230))){
         padLastActionAt=now;
-        if(['legal','splash','cinematic'].includes(phase)){
+        if(['legal','splash'].includes(phase)){
+          if(action==='select')skipZikapcomToLogo();
+        }else if(phase==='cinematic'){
           if(action==='select')skipIntroToPressStart();
         }else if(phase==='title'&&!titleMenuOpen){
           if(action==='select')openTitleMenu();
