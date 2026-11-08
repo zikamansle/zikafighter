@@ -13,6 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Download only licensed FontStruct font assets
         run: |
+          python3 -m pip -q install fonttools brotli
           python3 - <<'PY'
           import zipfile,io,urllib.request,os,shutil
           fonts=[
@@ -34,7 +35,13 @@ jobs:
             items=[p for p in z.namelist() if p.lower().endswith('.woff2')]
             assert len(items)>=1,f'Missing WOFF2 in {slug}: {z.namelist()}'
             # A font archive may contain a specimen; only embed genuine WOFF2 fonts.
-            font_bytes=z.read(items[0]);print('CHECK FONT',slug,'first4',repr(font_bytes[:4]),'entries',[(x,z.getinfo(x).file_size) for x in items],flush=True);assert font_bytes[:4]==b'wOF2',f'Invalid font header {slug}'
+            font_bytes=z.read(items[0]);print('CHECK FONT',slug,'first4',repr(font_bytes[:4]),flush=True)
+            if font_bytes[:4]!=b'wOF2':
+              from fontTools.ttLib import TTFont
+              font=TTFont(io.BytesIO(font_bytes))
+              font.flavor='woff2'
+              out=io.BytesIO();font.save(out);font_bytes=out.getvalue()
+            assert font_bytes[:4]==b'wOF2',f'Invalid font header {slug}'
             output=f'assets/fonts/{slug}.woff2'
             with open(output,'wb') as f:f.write(font_bytes)
             print('INSTALLED',slug,output,len(font_bytes),'entry',items[0],flush=True)
