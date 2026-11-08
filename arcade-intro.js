@@ -555,7 +555,11 @@
     const cv=document.createElement('canvas');
     cv.width=w;cv.height=h;
     const c=cv.getContext('2d',{willReadFrequently:true});
-    c.drawImage(battleChoicesReference,x,y,w,h,0,0,w,h);
+    const sx=x*battleChoicesReference.naturalWidth/1230;
+    const sy=y*battleChoicesReference.naturalHeight/870;
+    const sw=w*battleChoicesReference.naturalWidth/1230;
+    const sh=h*battleChoicesReference.naturalHeight/870;
+    c.drawImage(battleChoicesReference,sx,sy,sw,sh,0,0,w,h);
     const pixels=c.getImageData(0,0,w,h),d=pixels.data;
     // Pixels chauds et reliefs clairs conservés ; fond sombre transparent.
     for(let i=0;i<d.length;i+=4){
