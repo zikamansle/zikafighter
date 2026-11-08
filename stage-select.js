@@ -51,7 +51,7 @@
  let active=false,confirming=false,cursor=0,selected=null,lastPadInputAt=0,padConfirmDown=false,stageToken=0;
  const randomOption={id:'random-stage',name:'ALÉATOIRE',random:true};
  const actualStages=()=>catalogue()?.available()||[];
- const list=()=>[...actualStages(),randomOption];
+ const list=()=>[randomOption,...actualStages()];
  const get=id=>catalogue()?.get(id)||null;
  const imgPreview=src=>{
    const image=screen.querySelector('#zf-stage-image');
@@ -65,7 +65,11 @@
   screen.querySelector('#zf-stage-flight-name').dataset.stageName=stage.name.toUpperCase();
   drawStageTexts();
   // Grand décor d'origine chargé au lancement du combat, pas à chaque déplacement.
-  for(const node of grid.children)node.classList.toggle('current',Number(node.dataset.pos)===cursor);
+  for(const node of grid.children){
+    const selected=active&&Number(node.dataset.pos)===cursor;
+    node.classList.toggle('current',selected);
+    node.setAttribute('aria-pressed',String(selected));
+  }
   // Le curseur d'arène affiche son repère 1P avec le même alphabet SNES.
   const font=window.ZikaSNESText;
   for(const tile of grid.children){
