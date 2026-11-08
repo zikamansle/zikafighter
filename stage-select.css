@@ -292,3 +292,11 @@
  image-rendering:auto;transform:none!important;
 }
 #select #zf-stage-screen .zf-stage-flight #zf-stage-confirm-image[hidden]{display:none!important}
+
+/* v52 : hidden doit TOUJOURS l'emporter sur les règles de mise en page.
+   Empêche le ? aléatoire de persister sous les décors ordinaires. */
+#select #zf-stage-screen .zf-stage-flight .zf-stage-confirm-random[hidden],
+#select #zf-stage-screen .zf-stage-flight .zf-stage-confirm-art[hidden],
+#select #zf-stage-screen .zf-stage-flight .zf-stage-confirm-card [hidden]{
+  display:none!important;
+}
