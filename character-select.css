@@ -36,3 +36,8 @@
 #select .zf-select-controls button{border:2px solid #fff3a1;background:#e9a132;color:#141e40;padding:9px 18px;border-radius:0;font:900 15px Impact,"Arial Black",sans-serif;box-shadow:3px 4px #54243a}
 #select .zf-select-controls button:focus-visible{outline:3px solid white;outline-offset:3px}
 @media(max-width:650px){#select .zf-select-roster{gap:1px}#select .zf-fighter-slot{border-width:1px}#select .zf-select-roster-wrap{padding-inline:1%}#select .zf-select-upper{padding-inline:1%}#select .zf-select-preview{border-width:2px}#select .zf-select-heading{border-bottom-width:2px}#select .zf-fighter-slot .name{font-size:5.5px}}
+
+/* L'interface HTML du prototype ne doit pas apparaître autour de l'écran SNES. */
+body.zf-in-selection>header,body.zf-in-selection>footer{display:none}
+body.zf-in-selection main{max-width:1020px;padding:12px 8px 24px}
+@media(max-width:650px){body.zf-in-selection main{padding:4px 0 10px}}
