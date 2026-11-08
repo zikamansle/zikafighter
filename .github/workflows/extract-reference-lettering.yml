@@ -35,6 +35,22 @@ jobs:
                 if i-start>=2:runs.append((start+x0,i-1+x0))
                 start=None
             print('RANGE',rng,'RUNS',runs,flush=True)
+          for ylo,yhi in [(19,44),(20,43),(20,42),(258,290)]:
+            cols=[]
+            for x in range(w):
+              n=0
+              for y in range(ylo,min(yhi,h)):
+                r,g,b=im.getpixel((x,y))
+                if r>125 and g>75 and b<145 and r>g*1.10:n+=1
+              cols.append(n)
+            for threshold in [1,3]:
+              runs=[];a=None
+              for x,v in enumerate(cols+[0]):
+                if v>=threshold and a is None:a=x
+                if v<threshold and a is not None:
+                  if x-a>=2:runs.append((a,x-1))
+                  a=None
+              print('GLYPHS',ylo,yhi,threshold,runs,flush=True)
           for y in range(10,75,2):
             line=''
             for x in range(0,w,2):
