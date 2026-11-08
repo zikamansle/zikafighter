@@ -390,7 +390,7 @@
       const gr=gc.createLinearGradient(0,0,0,150);
       gr.addColorStop(0,'#ee1b22');gr.addColorStop(.28,'#fa3e26');
       gr.addColorStop(.55,'#ff9b35');gr.addColorStop(.82,'#ffe75c');gr.addColorStop(1,'#fffbd5');
-      gc.font='900 148px Impact,"Arial Black",sans-serif';gc.textBaseline='top';
+      gc.font='148px "ZikaCPS1"';gc.textBaseline='top';
       gc.fillStyle=gr;gc.fillText('ZIKA',5,-7);
     }catch(_){titleSpriteCanvas=null;mosaic=null;}
   }
@@ -430,12 +430,12 @@
       ctx.drawImage(titleSpriteCanvas,42,6,236,110);
     }else{
       ctx.textAlign='center';ctx.fillStyle='#ffe62a';
-      ctx.font='italic bold 34px Impact,sans-serif';ctx.fillText('ZIKA FIGHTER',160,85);
+      ctx.font='34px "ZikaCPS1"';ctx.fillText('ZIKA FIGHTER',160,85);
     }
     // Sur PRESS START, conserver le sous-titre historique de l'accueil.
     // Dans les menus TURBO/NORMAL et GAME START/V.S., il est absent.
     if(!titleMenuOpen)pixelSerif(ctx,'HYPER FIGHTING',160,122,132,13,17);
-    ctx.font='bold 6px "Courier New",monospace';
+    ctx.font='6px "ZikaSFII"';
     ctx.fillStyle='#d99a70';ctx.fillText('© ZIKAPCOM 2027',160,178);
     if(titleMenuOpen){
       // Deuxième écran du jeu original : GAME START / V.S. BATTLE.
@@ -470,14 +470,14 @@
       ctx.drawImage(titleSpriteCanvas,0,0,204,153,x,y-13,18,16);
       ctx.restore();
     }else{
-      ctx.font='italic bold 15px Georgia,serif';
+      ctx.font='15px "ZikaCPS1"';
       ctx.fillStyle='#ffbc21';ctx.fillText('Z',x,y);
     }
   }
   function menuText(ctx,text,x,y,size=10,color='#b9b9b9',align='left'){
     ctx.save();
     ctx.textAlign=align;
-    ctx.font='bold '+size+'px Georgia,"Times New Roman",serif';
+    ctx.font=size+'px "ZikaCPS1"';
     ctx.textBaseline='alphabetic';
     ctx.fillStyle='#17161a';ctx.fillText(text,x+1,y+1);
     ctx.fillStyle=color;ctx.fillText(text,x,y);
@@ -1106,7 +1106,7 @@
     if(t>=3.30){
       ctx.textAlign='center';ctx.fillStyle='#f0a45b';
       pixelSerif(ctx,'HYPER FIGHTING',160,122,132,13,17);
-      ctx.font='bold 6px "Courier New",monospace';ctx.fillStyle='#ca8655';
+      ctx.font='6px "ZikaSFII"';ctx.fillStyle='#ca8655';
       ctx.fillText('© ZIKAPCOM 2027',160,178);
     }
   }
@@ -1149,16 +1149,17 @@
   // Crédits reproduits en 371x189 pixels natifs, agrandis x2 comme sur SNES.
   // Les noms de l'éditeur et du festival remplacent les fausses licences.
   const creditGlyphs=new Map();
+  document.fonts?.load?.('18px "ZikaCPS1"')?.then?.(()=>creditGlyphs.clear());
   function pixelSerif(ctx,text,x,y,w,h,size){
     const key=text+':'+size;
     let glyph=creditGlyphs.get(key);
     if(!glyph){
       const mask=document.createElement('canvas');
       const m=mask.getContext('2d');
-      m.font='bold '+size+'px Georgia,serif';
+      m.font=size+'px "ZikaCPS1"';
       mask.width=Math.ceil(m.measureText(text).width)+12;
       mask.height=size+10;
-      m.font='bold '+size+'px Georgia,serif';
+      m.font=size+'px "ZikaCPS1"';
       m.fillStyle='#fff';
       m.textBaseline='alphabetic';
       m.fillText(text,6,size+1);
