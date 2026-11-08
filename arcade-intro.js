@@ -1317,6 +1317,10 @@
     if(cinematicFrame!==null)cancelAnimationFrame(cinematicFrame);
     if(titleFrame)cancelAnimationFrame(titleFrame);
     titleMusic.pause();titleMusic.currentTime=0;
+    // Un seul fond musical : arrêter aussi toute écoute MUSIC TEST
+    // et tout reste sonore de l'introduction avant PLAYER SELECT.
+    audio.pause();
+    if(musicTestAudio){musicTestAudio.pause();musicTestAudio.currentTime=0;musicTestAudio=null;}
     // Préparer le MP3 de sélection sur le geste START, avant le fondu.
     window.ZikaFighterCharacterSelect?.prewarm?.();
     transitionTo(()=>{
