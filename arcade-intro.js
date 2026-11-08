@@ -347,15 +347,17 @@
     gc.font=fontSize+'px "'+face+'"';
     gc.textBaseline='middle';
     const gradient=gc.createLinearGradient(0,11,0,155);
-    gradient.addColorStop(0,'#ffefc4');
-    gradient.addColorStop(.22,'#ffdc55');
-    gradient.addColorStop(.52,'#ff9028');
-    gradient.addColorStop(.77,'#f53d31');
-    gradient.addColorStop(1,'#cf173e');
-    gc.fillStyle='#270a25';
-    gc.fillText(word,11,85,Math.max(160,width-22));
+    // Référence vidéo : dégradé VERTICAL du TURBO, rouge en haut,
+    // orange au milieu, jaune clair en bas. Pas de rendu métallique inversé.
+    gradient.addColorStop(0,'#ed1438');
+    gradient.addColorStop(.25,'#f33232');
+    gradient.addColorStop(.52,'#fa8131');
+    gradient.addColorStop(.77,'#ffd04b');
+    gradient.addColorStop(1,'#fff6a8');
+    gc.fillStyle='#2c0920';
+    gc.fillText(word,10,84,Math.max(160,width-20));
     gc.fillStyle=gradient;
-    gc.fillText(word,8,82,Math.max(160,width-22));
+    gc.fillText(word,8,82,Math.max(160,width-20));
     giantLetters=img;
   }
   function prepareTitleSprite(){
@@ -1127,7 +1129,10 @@
       if(giantLetters)paint(giantLetters,x,82,width,Math.round(width*.27));
       return;
     }
-    // Phase C : rotation quantifiée, avec logo lisible.
+    // Phase C : dans la vidéo SNES, la rotation pixelisée se déroule
+    // devant un BANDEAU BLEU HORIZONTAL local, pas un fond bleu plein écran.
+    ctx.fillStyle='#2159a5';
+    ctx.fillRect(24,43,272,92);
     const frame=Math.max(0,Math.floor((t-3.75)*30));
     const progress=Math.min(1,frame/42);
     const p=1-Math.pow(1-progress,3);
