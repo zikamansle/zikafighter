@@ -1,337 +1,136 @@
-/* Zika Fighter - PLAYER SELECT, présentation inspirée de la capture SNES fournie.
-   Un portrait à gauche, carte du monde en haut, 20 portraits en deux rangées. */
+/* ZIKA FIGHTER — écran SNES en 4:3. Référence utilisateur du 08/11.
+   20 portraits approuvés sans leurs anciens titres : 7 / 7 / 6,
+   alignement à GAUCHE, grande vue 1P à gauche, place 2P à droite.
+   Les arènes sont dans le BANDEAU inférieur du même cadre. */
 #select.zf-select-screen{
-  max-width:1000px;margin:0 auto;padding:0;overflow:hidden;
-  border:0;border-radius:0;background:#040062;color:#fff;text-align:center;
-  box-shadow:0 12px 42px #000a;
+  display:block;width:min(100%,960px);max-width:960px;
+  margin:0 auto;padding:0;border:0;border-radius:0;
+  text-align:center;overflow:hidden;background:#05045d;color:#fff;
+  box-shadow:0 14px 38px #0009;
 }
 #select.zf-select-screen[hidden]{display:none!important}
 #select .zf-select-cabinet{
-  position:relative;aspect-ratio:4/3;width:100%;overflow:hidden;
-  background:#040062;isolation:isolate;border:4px solid #060527;
-  box-shadow:inset 0 0 12px #030218;
+  position:relative;isolation:isolate;width:100%;height:auto;
+  aspect-ratio:4 / 3;overflow:hidden;border:3px solid #030322;
+  background:#05045d;
+  box-shadow:inset 0 0 0 2px #192673;
 }
-#select #zf-select-reference{
-  display:block;position:absolute;inset:0;width:100%;height:100%;z-index:0;
-  image-rendering:pixelated;pointer-events:none;
-}
-#select .zf-select-heading{
-  position:absolute;top:0;left:0;width:100%;height:20%;
-  border:0;pointer-events:none;z-index:1;
+#select #zf-select-reference{display:none!important}
+#select .zf-select-heading,
+#select .zf-select-cabinet.reference-ready .zf-select-heading{
+  position:absolute;z-index:4;top:1%;left:0;width:100%;height:13%;
+  display:block;visibility:visible!important;pointer-events:none;
 }
 #select .zf-select-heading h1{
-  position:absolute;left:30%;top:11%;width:46%;margin:0;
-  font:900 clamp(17px,3.9vw,46px)/1 Georgia,serif;
-  color:#f3bb68;letter-spacing:.04em;text-shadow:2px 3px #553045,3px 4px #05031a;
-  text-transform:uppercase;
+  position:absolute;top:4%;left:22%;width:56%;margin:0;
+  color:#f6bd78;letter-spacing:.03em;
+  font:900 clamp(17px,3vw,41px)/1.05 Georgia,"Times New Roman",serif;
+  -webkit-text-stroke:.5px #7d4551;
+  text-shadow:1px 1px #ffdfa5,2px 3px #653548,4px 4px #0b0825;
 }
 #select .zf-select-heading small{
-  position:absolute;right:7%;top:8%;
-  font:900 clamp(12px,2.5vw,28px)/1 Georgia,serif;
-  color:#f3bb68;text-shadow:2px 3px #563244;
+  position:absolute;right:3%;top:14%;
+  color:#f7c47f;
+  font:900 clamp(12px,2.3vw,31px)/1 Georgia,"Times New Roman",serif;
+  text-shadow:1px 2px #64364e,3px 3px #100721;
 }
-#select .zf-select-cabinet.reference-ready .zf-select-heading{visibility:hidden}
-#select .zf-select-preview{
-  position:absolute;left:2.1%;bottom:0;width:25%;height:45%;
-  overflow:hidden;z-index:3;background:transparent;border:0;
-  display:flex;align-items:flex-end;justify-content:center;
+/* Au centre : trois rangées fixes, 7 cases à chaque colonne.
+   La dernière n'utilise que les colonnes 1 à 6. */
+#select .zf-select-roster-wrap{
+  position:absolute;top:15%;left:22%;right:22%;height:41%;
+  z-index:4;border:2px solid #b9c5dd;padding:2px;
+  background:#070744;box-shadow:0 0 0 2px #080526;
+  overflow:hidden;
 }
+#select .zf-select-roster{
+  display:grid;width:100%;height:100%;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  grid-template-rows:repeat(3,minmax(0,1fr));
+  gap:2px;justify-content:start;align-content:start;
+}
+#select .zf-fighter-slot{
+  position:relative;min-width:0;min-height:0;display:block;
+  margin:0;padding:0;border-radius:0;
+  border:2px solid #91a3c0;box-shadow:none;
+  background:#0e2b73;color:#fff;cursor:pointer;overflow:hidden;
+}
+#select .zf-fighter-slot[hidden]{display:none!important}
+#select .zf-fighter-slot .photo{
+  position:absolute;inset:0;background:#101b55;
+  display:grid;place-items:center;overflow:hidden;
+}
+#select .zf-fighter-slot img{
+  display:block;width:100%;height:100%;object-fit:fill;
+  object-position:center;image-rendering:pixelated;
+}
+#select .zf-fighter-slot .initial{
+  color:#ffe3b2;font:900 clamp(10px,2vw,23px)/1 Impact,sans-serif;
+  text-shadow:2px 2px #070c25;
+}
+#select .zf-fighter-slot.has-photo .initial{display:none}
+#select .zf-fighter-slot .name{display:none!important}
+#select .zf-fighter-slot.p1{
+  z-index:2;border:3px solid #4ac9ff;
+  box-shadow:inset 0 0 0 1px #ebffff,0 0 0 1px #125dd3;
+}
+#select .zf-fighter-slot.p2{
+  z-index:2;border:3px solid #ffdc63;
+  box-shadow:inset 0 0 0 1px #fff6c7,0 0 0 1px #ad6b19;
+}
+#select .zf-fighter-slot.focused{animation:zf-portrait-focus .6s steps(2,end) infinite}
+@keyframes zf-portrait-focus{50%{filter:brightness(1.32)}}
+#select .zf-fighter-slot:focus-visible{outline:2px solid white;outline-offset:-2px}
+/* Les grandes vues ne passent JAMAIS sur les cases 7/7/6. */
+#select .zf-select-preview,
+#select #zf-select-preview-2{
+  position:absolute;z-index:3;top:16%;height:39%;width:20%;
+  overflow:hidden;display:flex;align-items:flex-end;justify-content:center;
+  border:0;background:transparent;
+}
+#select #zf-select-preview-1{left:1%;right:auto;bottom:auto}
+#select #zf-select-preview-2{left:auto;right:1%;bottom:auto}
+#select .zf-select-preview[hidden]{display:none!important}
 #select .zf-select-preview img{
-  height:100%;max-width:100%;object-fit:contain;object-position:center bottom;
-  image-rendering:pixelated;filter:drop-shadow(4px 2px 0 #0a042f);
+  display:block;width:100%;max-width:100%;height:100%;
+  object-fit:contain;object-position:center bottom;
+  image-rendering:pixelated;filter:none;
 }
 #select .zf-select-preview .zf-select-initials{
-  position:absolute;inset:14% 5% 10%;
-  display:grid;place-items:center;
-  font:900 clamp(39px,7vw,84px)/1 Impact,"Arial Black",sans-serif;
-  color:#e9d9b2;text-shadow:4px 5px #251645,0 0 4px #e3bb7c;
+  position:absolute;inset:10%;display:grid;place-items:center;
+  font:900 clamp(22px,6vw,65px)/1 Impact,sans-serif;
+  color:#f4cb8b;text-shadow:2px 3px #1b133f;
 }
 #select .zf-select-preview.has-photo .zf-select-initials{display:none}
 #select .zf-select-preview strong{display:none}
-#select #zf-select-preview-2{display:none}
-#select .zf-select-player-label{
-  position:absolute;left:2.5%;top:36%;width:25%;z-index:4;
-  display:flex;align-items:flex-start;justify-content:center;flex-direction:column;gap:0;
-  pointer-events:none;text-align:left;
+/* Zika est la seule fiche dont le titre original doit encore être masqué. */
+#select .zf-bonus-portrait img{
+  position:absolute;width:100%;height:116%;
+  bottom:0;left:0;object-fit:cover;object-position:center bottom;
 }
-#select .zf-select-player-label b{
-  display:block;padding-left:2%;color:#40b8ff;
-  font:900 clamp(23px,4vw,48px)/1 Impact,"Arial Black",sans-serif;
-  letter-spacing:.02em;text-shadow:2px 2px #153c9c;
+/* Les noms 1P et 2P sont tracés dans le canevas pixel 320x240,
+   pas avec des polices système ni des titres incrustés. */
+#select .zf-select-player-label{display:none!important}
+#select #zf-select-type{
+  position:absolute;inset:0;width:100%;height:100%;display:block;z-index:5;
+  pointer-events:none;image-rendering:pixelated;
 }
-#select .zf-select-player-label strong{
-  display:block;color:#efb068;
-  font:900 clamp(17px,3.3vw,39px)/1 Georgia,serif;
-  letter-spacing:-.03em;text-shadow:2px 3px #563149;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;
-}
-#select .zf-select-player-label.right-player{
-  left:auto;right:3%;top:43%;align-items:flex-end;
-}
-#select .zf-select-player-label.right-player b{color:#a9edff}
-#select .zf-select-player-label.right-player strong{font-size:clamp(11px,1.7vw,20px)}
-#select .zf-select-player-label[hidden]{display:none!important}
-#select .zf-select-roster-wrap{
-  position:absolute;left:29%;right:3.5%;top:63%;height:32%;
-  z-index:4;border:2px solid #dee4e6;background:#080a2e;overflow:hidden;
-  box-shadow:0 0 0 2px #111332,2px 2px #04051c;
-}
-#select .zf-select-roster{
-  height:100%;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));
-  grid-template-rows:repeat(2,minmax(0,1fr));gap:1px;
-}
-#select .zf-fighter-slot{
-  position:relative;display:block;min-width:0;min-height:0;
-  border:1px solid #8da6ca;border-radius:0;
-  padding:0;overflow:hidden;cursor:pointer;background:#173b75;box-shadow:none;color:#fff;
-}
-#select .zf-fighter-slot .photo{
-  position:absolute;inset:0;display:grid;place-items:center;overflow:hidden;
-  background:linear-gradient(140deg,var(--fighter-color,#597caf),#102458 70%);
-}
-#select .zf-fighter-slot img{
-  display:block;width:100%;height:100%;object-fit:cover;
-  object-position:top center;image-rendering:pixelated;
-}
-#select .zf-fighter-slot .initial{
-  font:900 clamp(10px,1.8vw,23px)/1 Impact,"Arial Black",sans-serif;
-  color:#fff0cc;text-shadow:2px 2px #081030;
-}
-#select .zf-fighter-slot.has-photo .initial{display:none}
-#select .zf-fighter-slot .name{
-  position:absolute;bottom:0;left:0;right:0;height:19%;
-  display:grid;place-items:center;
-  padding:0 1px;background:#071432e8;
-  font:900 clamp(5px,.72vw,9px)/1 Arial,sans-serif;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff4d0;
-}
-#select .zf-fighter-slot.p1{
-  border:3px solid #58c5ff;z-index:2;
-  box-shadow:inset 0 0 0 1px #e4f9ff,0 0 2px 1px #45a7ff;
-}
-#select .zf-fighter-slot.p2{
-  border:3px solid #ffde53;z-index:2;
-  box-shadow:inset 0 0 0 1px #fff3b5,0 0 2px 1px #fedb52;
-}
-#select .zf-fighter-slot.focused{animation:zf-select-cursor .7s steps(2,end) infinite}
-@keyframes zf-select-cursor{50%{filter:brightness(1.45)}}
-#select .zf-fighter-slot:focus-visible{outline:2px solid #fff;outline-offset:-2px}
-#select .zf-select-help{
-  position:absolute;bottom:0;left:29%;right:3.5%;z-index:5;
-  height:3%;background:#081038d9;color:#d7c5a1;
-  display:flex;align-items:center;justify-content:center;
-  font:900 clamp(7px,.95vw,12px)/1 monospace;letter-spacing:.03em;
-  pointer-events:none;
-}
-#select .zf-select-controls{
-  display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;
-  padding:11px 8px;border-top:3px solid #8eaad6;background:#08132f;
-}
-#select .zf-select-controls label{
-  display:flex;align-items:center;gap:7px;font:900 13px monospace;color:#e6d18b;
-}
-#select .zf-select-controls select{
-  padding:7px;background:#142b5c;border:2px solid #91b6d8;
-  border-radius:0;color:#fff;font:700 13px monospace;
-}
-#select .zf-select-controls button{
-  padding:9px 17px;border:2px solid #ffeba5;border-radius:0;
-  background:#f0aa49;color:#18204a;font:900 15px Impact,"Arial Black",sans-serif;
-  box-shadow:3px 4px #662a3b;
-}
-#select .zf-select-controls button:focus-visible{outline:3px solid #fff;outline-offset:3px}
-body.zf-in-selection>header,body.zf-in-selection>footer{display:none}
-body.zf-in-selection main{max-width:1020px;padding:12px 8px 24px}
-@media(max-width:650px){
- body.zf-in-selection main{padding:4px 0 10px}
- #select .zf-select-cabinet{border-width:2px}
- #select .zf-fighter-slot{border-width:1px}
- #select .zf-fighter-slot .name{font-size:5px}
- #select .zf-select-roster-wrap{border-width:1px}
- #select .zf-select-help{font-size:7px}
- #select .zf-select-player-label strong{font-size:clamp(12px,3vw,20px)}
-}
-
-/* Aucun panneau ajouté sous l'écran : la sélection se fait comme sur la SNES.
-   START et les portraits sont les zones tactiles actives. */
-#select .zf-select-controls{display:none!important}
-#select .zf-select-help{display:none!important}
+/* START = véritable commande invisible de la zone validée. */
 #select #zf-select-start-control{
-  position:absolute;z-index:6;right:5%;top:0;width:24%;height:13%;
-  background:transparent;border:0;padding:0;opacity:0;
-  cursor:pointer;border-radius:0;
+  position:absolute;right:3%;top:0;width:22%;height:12%;
+  z-index:8;background:transparent;border:0;opacity:0;cursor:pointer;
 }
 #select #zf-select-start-control:focus-visible{
   opacity:1;outline:2px solid #fff;outline-offset:-2px;
 }
-#select .zf-select-player-label strong[data-long="true"]{
-  font-size:clamp(12px,2.25vw,27px);
-}
-#select .zf-select-player-label.right-player strong[data-long="true"]{
-  font-size:clamp(10px,1.5vw,18px);
-}
-
-/* Typographies SNES : uniquement les textes, sans retoucher ni déplacer
-   les 20 portraits déjà validés et sans modifier leurs sources. */
-
-/* Le titre et START de la capture originale restent prioritaires :
-   ne pas les recouvrir avec un doublon HTML. */
-#select .zf-select-cabinet.reference-ready .zf-select-heading{
-  visibility:hidden;
-}
-
-/* Texte du titre de secours (si la référence est indisponible). */
-#select .zf-select-heading h1,
-#select .zf-select-heading small{
-  font-family:Georgia,"Times New Roman",serif;
-  font-style:normal;
-  font-weight:900;
-  letter-spacing:.01em;
-  color:#f4be74;
-  -webkit-text-stroke:.6px #64334b;
-  text-shadow:1px 1px 0 #6e3d4c,2px 2px 0 #20142e,3px 3px 0 #05051b;
-}
-
-/* Numéro du joueur : chiffres carrés, contours nets comme les repères SNES. */
-#select .zf-select-player-label b{
-  font-family:"Lucida Console",Consolas,"Courier New",monospace;
-  font-weight:900;
-  font-style:normal;
-  font-size:clamp(20px,3.55vw,42px);
-  line-height:1;
-  letter-spacing:-.09em;
-  color:#51c8ff;
-  -webkit-text-stroke:.5px #16418b;
-  text-shadow:2px 2px 0 #0b2c87,3px 3px 0 #050532;
-}
-
-/* Nom sélectionné : lettres empattées dorées, relief sombre et aucun rognage.
-   Le nom reste dynamique (PASCAL, FABIENNE 1, etc.). */
-#select .zf-select-player-label strong,
-#select .zf-select-player-label.right-player strong{
-  font-family:Georgia,"Times New Roman",serif;
-  font-weight:900;
-  font-style:normal;
-  font-size:clamp(14px,2.45vw,29px);
-  line-height:1.13;
-  letter-spacing:-.045em;
-  color:#f2b96f;
-  -webkit-text-stroke:.45px #663447;
-  text-shadow:1px 1px 0 #a26462,2px 2px 0 #321438,3px 3px 0 #090624;
-  max-width:100%;
-  white-space:nowrap;
-  text-overflow:clip;
-  overflow:visible;
-}
-#select .zf-select-player-label strong[data-long="true"]{
-  font-size:clamp(10px,1.75vw,21px);
-}
-#select .zf-select-player-label.right-player strong{
-  font-size:clamp(12px,1.75vw,21px);
-}
-#select .zf-select-player-label.right-player strong[data-long="true"]{
-  font-size:clamp(9px,1.4vw,16px);
-}
-
-/* Dans le Street Fighter II Turbo de référence, les cases contiennent
-   les portraits seuls. Le nom se lit à côté du grand portrait sélectionné.
-   On conserve toutefois le nom accessible via aria-label sur chaque bouton. */
-#select .zf-fighter-slot .name{display:none!important}
-
-@media(max-width:650px){
-  #select .zf-select-player-label b{font-size:clamp(16px,3.4vw,24px)}
-  #select .zf-select-player-label strong{font-size:clamp(10px,2.4vw,17px)}
-  #select .zf-select-player-label strong[data-long="true"]{font-size:clamp(8px,1.85vw,13px)}
-}
-
-/* Correctif réel : les noms sont désormais dessinés sur un canevas SNES
-   320×240 à la place des anciennes lettres Georgia/Impact du HTML.
-   Aucune règle sur les portraits, leur cadrage ou leurs images. */
-#select #zf-select-type{
-  position:absolute;
-  inset:0;
-  display:block;
-  width:100%;
-  height:100%;
-  z-index:5;
-  image-rendering:pixelated;
-  image-rendering:crisp-edges;
-  pointer-events:none;
-}
-#select .zf-select-player-label{
-  visibility:hidden!important;
-}
-
-/* ZIKA FIGHTER — écran unique VALIDÉ : personnages EN HAUT, stages EN BAS.
-   Rangées des personnages 7 / 7 / 6 alignées à gauche. Zika 21e bonus.
-   Les crops d'origine de la maquette validée ne contiennent aucun nom incrusté. */
-#select .zf-select-cabinet{
-  background:#04035c!important;
-  aspect-ratio:4/3;
-}
-#select #zf-select-reference{display:none!important} /* suppression de la carte */
-#select .zf-select-cabinet.reference-ready .zf-select-heading{
-  visibility:visible!important;
-}
-#select .zf-select-heading{top:0;left:0;height:12%;z-index:6}
-#select .zf-select-heading h1{
-  left:24%;top:7%;width:52%;
-  font:900 clamp(18px,3.8vw,45px)/1.03 Georgia,"Times New Roman",serif;
-  color:#f6c47b;text-shadow:1px 1px #f9e2a1,2px 3px #75394a,4px 5px #1a0826;
-}
-#select .zf-select-heading small{
-  right:3%;top:12%;font:900 clamp(11px,2.3vw,27px)/1 Georgia,"Times New Roman",serif;
-}
-#select .zf-select-roster-wrap{
-  left:20%;right:20%;top:14%;height:42%;z-index:4;
-  border:2px solid #cbcade;background:#050635;
-  box-shadow:0 0 0 2px #070722;overflow:hidden;
-}
-#select .zf-select-roster{
-  display:grid;grid-template-columns:repeat(7,minmax(0,1fr));
-  grid-template-rows:repeat(3,minmax(0,1fr));
-  gap:2px;width:100%;height:100%;align-content:stretch;justify-content:start;
-}
-#select .zf-fighter-slot{
-  min-height:0;min-width:0;aspect-ratio:auto;border:2px solid #89a3bc;
-  background:#10235b;overflow:hidden;
-}
-#select .zf-fighter-slot[hidden]{display:none!important}
-#select .zf-fighter-slot .photo{background:#10235b}
-#select .zf-fighter-slot img{
-  width:100%;height:100%;
-  object-fit:fill;object-position:center;
-  image-rendering:pixelated;
-}
-/* Zika, lorsqu'il est débloqué, utilise l'original en masquant uniquement
-   la bande du titre en haut. Les 20 autres crops ont déjà cette bande supprimée. */
-#select .zf-fighter-slot.zf-bonus-portrait img{
-  position:absolute;width:100%;height:118%;bottom:0;left:0;
-  object-fit:cover;object-position:center bottom;
-}
-#select .zf-select-preview{
-  display:flex;left:1%;right:auto;top:14%;bottom:auto;
-  width:18%;height:42%;z-index:3;overflow:hidden;align-items:flex-end;
-}
-#select #zf-select-preview-2{
-  display:flex;left:auto;right:1%;top:14%;bottom:auto;
-  width:18%;height:42%;
-}
-#select #zf-select-preview-2[hidden]{display:none!important}
-#select .zf-select-preview img{
-  width:100%;height:100%;max-width:100%;
-  object-fit:contain;object-position:center bottom;image-rendering:pixelated;
-}
-#select .zf-select-preview.zf-bonus-portrait img{
-  position:absolute;height:118%;bottom:0;left:0;object-fit:cover;
-}
-#select .zf-select-player-label{visibility:hidden!important}
-#select #zf-select-type{z-index:5;display:block}
 #select .zf-select-help,#select .zf-select-controls{display:none!important}
+body.zf-in-selection > header,body.zf-in-selection > footer{display:none}
+body.zf-in-selection main{max-width:990px;padding:6px 6px 20px;margin:0 auto}
 @media(max-width:650px){
-  #select .zf-select-roster-wrap{left:19.5%;right:19.5%;border-width:1px}
+  #select .zf-select-cabinet{border-width:1px}
+  #select .zf-select-roster-wrap{border-width:1px;padding:1px}
   #select .zf-select-roster{gap:1px}
   #select .zf-fighter-slot{border-width:1px}
-  #select .zf-select-heading h1{font-size:clamp(13px,3.9vw,24px)}
-  #select .zf-select-heading small{font-size:clamp(9px,2.1vw,14px)}
+  #select .zf-fighter-slot.p1,#select .zf-fighter-slot.p2{border-width:2px}
+  #select .zf-select-heading h1{font-size:clamp(13px,3.5vw,23px)}
+  #select .zf-select-heading small{font-size:clamp(9px,2vw,14px)}
 }
