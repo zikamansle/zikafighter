@@ -15,7 +15,7 @@
   '</div>',
   '<div class="zf-stage-grid" id="zf-stage-grid" role="group" aria-label="Arènes disponibles"></div>',
   '<div class="zf-stage-help" id="zf-stage-help" aria-live="polite">FLÈCHES : CHOISIR · START : VALIDER</div>',
-  '<div class="zf-stage-flight" id="zf-stage-flight" hidden><span aria-label="STAGE APPROACH"><canvas id="zf-flight-text" width="320" height="30" aria-hidden="true"></canvas></span><strong id="zf-stage-flight-name"><canvas id="zf-flight-stage" width="320" height="54" aria-hidden="true"></canvas></strong><div class="zf-stage-airplane" aria-hidden="true">✈</div></div>'
+  '<div class="zf-stage-flight" id="zf-stage-flight" hidden><span aria-label="STAGE APPROACH"><canvas id="zf-flight-text" width="320" height="30" aria-hidden="true"></canvas></span><strong id="zf-stage-flight-name"><canvas id="zf-flight-stage" width="320" height="54" aria-hidden="true"></canvas></strong></div>'
  ].join('');
  root.querySelector('.zf-select-cabinet').appendChild(screen);
  const grid=screen.querySelector('#zf-stage-grid');
@@ -227,8 +227,8 @@
   const ownToken=stageToken;
   // La musique de PLAYER SELECT reste continue pendant l'annonce du stage.
   window.ZikaFighterBridge?.setStage?.(s.id);
-  const flight=screen.querySelector('#zf-stage-flight');
-  flight.hidden=false;
+  // Aucun visuel de transition : la sélection ne déclenche que les sons.
+  screen.querySelector('#zf-stage-flight').hidden=true;
   // Laisser entendre le clic de validation avant le bruit d'avion.
   await new Promise(done=>setTimeout(done,220));
   if(!active||stageToken!==ownToken)return;
