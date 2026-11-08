@@ -264,8 +264,9 @@ function finish(){
   document.body.classList.remove('zf-in-selection');
   bridge()?.start?.();
  };
- if(window.ZikaFighterScreens)window.ZikaFighterScreens.change(transition,{out:320,hold:100,in:320});
- else transition();
+ // Comme sur SFII Turbo SNES : affichage immédiat du choix des arènes.
+ // Aucun rideau noir ni fondu à cette étape ; la musique continue.
+ transition();
 }
 function confirm(){
  if(!opened||window.ZikaFighterScreens?.busy)return;
