@@ -165,24 +165,81 @@ function showPortrait(side,index){
  panel.classList.toggle('has-photo',!!src);
  panel.querySelector('strong').textContent=f.name.toUpperCase();
  panel.querySelector('.zf-select-initials').textContent=initials(f.name);
- const previous=panel.querySelector('img');if(previous)previous.remove();
- if(src){const im=new Image();im.src=largePortraitSources[f.slug]||src;im.alt=f.name;panel.prepend(im);}
+ const previous=panel.querySelector('img');
+ if(src){
+  const desired=largePortraitSources[f.slug]||src;
+  // Conserver le nœud déjà chargé : pas de clignotement à chaque touche.
+  if(!previous||previous.src!==desired){
+   const im=new Image();im.src=desired;im.alt=f.name;
+   if(previous)previous.replaceWith(im);else panel.prepend(im);
+  }
+ }else if(previous)previous.remove();
 }
-// Nom dynamique en caractères pixelisés sur un vrai canevas 320×240.
-// Les textes du fond (PLAYER SELECT / START / 1P) viennent de la vraie
-// capture SNES et ne sont donc plus masqués par des polices CSS.
+// Véritable alphabet bitmap arcade : 7×9 pixels par caractère. Aucune police
+// système, aucune interpolation et aucun changement aux portraits approuvés.
+// Les caractères accentués conservent leur accent sur la plaque du nom.
+const zfNameGlyphs={
+ A:["0011100","0110110","1100011","1100011","1111111","1100011","1100011","1100011","1100011"],
+ B:["1111100","1100110","1100011","1100110","1111100","1100110","1100011","1100110","1111100"],
+ C:["0011111","0110000","1100000","1100000","1100000","1100000","1100000","0110000","0011111"],
+ D:["1111100","1100110","1100011","1100011","1100011","1100011","1100011","1100110","1111100"],
+ E:["1111111","1100000","1100000","1100000","1111100","1100000","1100000","1100000","1111111"],
+ F:["1111111","1100000","1100000","1100000","1111100","1100000","1100000","1100000","1100000"],
+ G:["0011111","0110000","1100000","1100000","1101111","1100011","1100011","0110011","0011110"],
+ H:["1100011","1100011","1100011","1100011","1111111","1100011","1100011","1100011","1100011"],
+ I:["1111111","0011100","0011100","0011100","0011100","0011100","0011100","0011100","1111111"],
+ J:["0001111","0000110","0000110","0000110","0000110","1100110","1100110","0111100","0011000"],
+ K:["1100011","1100110","1101100","1111000","1110000","1111000","1101100","1100110","1100011"],
+ L:["1100000","1100000","1100000","1100000","1100000","1100000","1100000","1100000","1111111"],
+ M:["1100011","1110111","1111111","1101011","1100011","1100011","1100011","1100011","1100011"],
+ N:["1100011","1110011","1111011","1101111","1100111","1100011","1100011","1100011","1100011"],
+ O:["0011100","0110110","1100011","1100011","1100011","1100011","1100011","0110110","0011100"],
+ P:["1111100","1100110","1100011","1100011","1111110","1100000","1100000","1100000","1100000"],
+ R:["1111100","1100110","1100011","1100110","1111100","1101100","1100110","1100011","1100011"],
+ S:["0111111","1100000","1100000","0111000","0011110","0000011","0000011","1100110","1111100"],
+ T:["1111111","0011100","0011100","0011100","0011100","0011100","0011100","0011100","0011100"],
+ U:["1100011","1100011","1100011","1100011","1100011","1100011","1100011","0110110","0011100"],
+ V:["1100011","1100011","1100011","1100011","1100011","0110110","0110110","0011100","0011100"],
+ Y:["1100011","1100011","0110110","0011100","0011100","0011100","0011100","0011100","0011100"],
+ "1":["0001100","0011100","0111100","0001100","0001100","0001100","0001100","0001100","0111110"],
+ "2":["0111110","1100011","0000011","0000110","0001100","0011000","0110000","1100000","1111111"],
+ " ":["0000000","0000000","0000000","0000000","0000000","0000000","0000000","0000000","0000000"]
+};
 function arcadeName(ctx,text,x,y,maxWidth){
- ctx.save();ctx.textBaseline='top';
- ctx.font='bold 15px Georgia,"Times New Roman",serif';
- const width=Math.max(1,ctx.measureText(text).width);
- const scale=Math.min(1,maxWidth/width);
- ctx.translate(x,y);ctx.scale(scale,1);
- ctx.fillStyle='#21102d';ctx.fillText(text,2,2);
- ctx.fillStyle='#8a3f4c';ctx.fillText(text,1,1);
- ctx.fillStyle='#b77258';ctx.fillText(text,0,1);
- ctx.fillStyle='#ffcf83';ctx.fillText(text,0,0);
+ const chars=Array.from(text.toUpperCase());
+ const width=Math.max(1,chars.length*8-1);
+ const sx=Math.min(1.55,maxWidth/width);
+ const sy=1.35;
+ ctx.save();
+ ctx.translate(x,y);
+ ctx.scale(sx,sy);
+ for(let i=0;i<chars.length;i++){
+   const original=chars[i];
+   const letter=original.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+   const glyph=zfNameGlyphs[letter]||zfNameGlyphs[" "];
+   const gx=i*8;
+   for(let row=0;row<glyph.length;row++){
+     for(let col=0;col<7;col++){
+       if(glyph[row][col]!=="1")continue;
+       // Relief brun sombre, tranche cuivrée puis éclairage orangé SNES.
+       ctx.fillStyle="#130b2c";ctx.fillRect(gx+col+2,row+2,1,1);
+       ctx.fillStyle="#71364c";ctx.fillRect(gx+col+1,row+1,1,1);
+       ctx.fillStyle=row<3?"#ffe0a1":row<6?"#f6bc77":"#d98e60";
+       ctx.fillRect(gx+col,row,1,1);
+     }
+   }
+   if(original==="É"||original==="È"||original==="Ê"){
+     ctx.fillStyle="#f9d08e";
+     ctx.fillRect(gx+3,-2,2,1);
+     ctx.fillRect(gx+(original==="È"?2:4),-3,1,1);
+   }else if(original==="Ï"){
+     ctx.fillStyle="#f9d08e";
+     ctx.fillRect(gx+2,-2,1,1);ctx.fillRect(gx+5,-2,1,1);
+   }
+ }
  ctx.restore();
 }
+
 function drawArcadeSelectionText(){
  const c=root.querySelector('#zf-select-type');
  if(!c)return;
