@@ -165,7 +165,7 @@
   const cinematic=document.getElementById('zf-cinematic');
   let cinematicFrame=null;
   let titleVisualStartedAt=0;
-  const CINEMATIC_LENGTH=3.60;
+  const CINEMATIC_LENGTH=5.40;
   const startButton=document.getElementById('zf-start');
   const unblock=document.getElementById('zf-unlock-sound');
   const errorText=document.getElementById('zf-sound-error');
@@ -1103,21 +1103,32 @@
     }
     // Phase A : petit logo sur NOIR.
     if(t<1.20){paint(sprite,160,52,90,43);return;}
-    // Phase B — le mot géant ZIKA défile comme TURBO sur SNES.
-    // Il traverse tout le cadre de droite à gauche. Le logo complet
-    // ne revient qu'en phase C pour la rotation et sa stabilisation.
-    if(t<2.13){
+    // Phase B — grand ZIKA façon TURBO SNES, avec le temps de LIRE.
+    // Entrée 0,85 s, maintien intégral 1,00 s, sortie 0,70 s.
+    // La taille diminue pendant l'entrée puis grossit à la sortie :
+    // le texte reste entier et lisible au centre du 4:3.
+    if(t<3.75){
       const frame=Math.max(0,Math.floor((t-1.20)*30));
-      const progress=Math.min(1,frame/27);
-      const width=555;
-      const height=148;
-      const x=320+width/2-Math.round((320+width)*progress);
-      if(giantLetters)paint(giantLetters,x,82,width,height);
+      let x=160,width=306;
+      if(frame<26){
+        const u=frame/26;
+        const easeIn=u*u*(3-2*u);
+        width=475-Math.round(169*easeIn);
+        x=Math.round(320+width/2-(320+width/2-160)*easeIn);
+      }else if(frame<56){
+        // 30 images, soit une seconde entière pour lire ZIKA.
+        x=160;width=306;
+      }else{
+        const u=Math.min(1,(frame-56)/21);
+        const easeOut=u*u*(3-2*u);
+        width=306+Math.round(169*easeOut);
+        x=Math.round(160-(160+width/2)*easeOut);
+      }
+      if(giantLetters)paint(giantLetters,x,82,width,Math.round(width*.27));
       return;
     }
-    // Phase C : rotation avec un léger changement de définition (48 à 160 px).
-    // Interpolation interdite à l'affichage, mais lettres toujours lisibles.
-    const frame=Math.max(0,Math.floor((t-2.13)*30));
+    // Phase C : rotation quantifiée, avec logo lisible.
+    const frame=Math.max(0,Math.floor((t-3.75)*30));
     const progress=Math.min(1,frame/42);
     const p=1-Math.pow(1-progress,3);
     const tier=progress<.15?0:progress<.29?1:progress<.43?2:
@@ -1140,9 +1151,9 @@
   function animateCinematic(startedAt){
     const tick=now=>{
       if(phase!=='cinematic'||closed)return;
-      const t=(!titleMusic.paused && titleMusic.currentTime>=TITLE_MUSIC_OFFSET)
-        ? titleMusic.currentTime-TITLE_MUSIC_OFFSET
-        : Math.max(0,(now-startedAt)/1000);
+      // Le temps de lecture ne doit PAS être compressé par la position du MP3.
+      // Le titre et la musique continuent indépendamment sans redémarrer le thème.
+      const t=Math.max(0,(now-startedAt)/1000);
       renderCinematic(t);
       if(t>=CINEMATIC_LENGTH){finishCinematic();return;}
       cinematicFrame=requestAnimationFrame(tick);
