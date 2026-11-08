@@ -7,7 +7,7 @@
  screen.id='zf-stage-screen';screen.hidden=false;
  screen.setAttribute('aria-label',"Choix de l'arène");
  screen.innerHTML=[
-  '<h2 class="zf-stage-heading" aria-label="STAGE SELECT"><canvas id="zf-stage-heading-canvas" width="320" height="28" aria-hidden="true"></canvas></h2>',
+  '<h2 class="zf-stage-heading" aria-label="STAGE SELECT"><canvas id="zf-stage-heading-canvas" width="320" height="14" aria-hidden="true"></canvas></h2>',
   '<div class="zf-stage-heroes">',
     '<div class="zf-stage-hero"><b>1P</b><img id="zf-stage-player1" alt=""><span id="zf-stage-name1"></span></div>',
     '<div class="zf-stage-feature"><div class="zf-stage-image" id="zf-stage-image"></div><strong id="zf-stage-title"></strong></div>',
@@ -24,8 +24,8 @@
  function drawStageHeading(){
   const canvas=screen.querySelector('#zf-stage-heading-canvas'),p=window.ZikaFighterPixelText;
   if(!canvas||!p)return;
-  const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,28);
-  p.draw(ctx,'STAGE SELECT',160,4,{align:'center',maxWidth:145,scale:1.36,variant:'title'});
+  const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,14);
+  p.draw(ctx,'STAGE SELECT',160,1,{align:'center',maxWidth:145,scale:1.30,variant:'title'});
  }
  function drawStageLabel(canvas,name){
   const p=window.ZikaFighterPixelText;if(!p||!canvas)return;
