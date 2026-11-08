@@ -49,7 +49,9 @@
  window.ZikaSNESText?.whenReady(drawStageTexts);
 
  let active=false,confirming=false,cursor=0,selected=null,lastPadInputAt=0,padConfirmDown=false,stageToken=0;
- const list=()=>catalogue()?.available()||[];
+ const randomOption={id:'random-stage',name:'ALÉATOIRE',random:true};
+ const actualStages=()=>catalogue()?.available()||[];
+ const list=()=>[...actualStages(),randomOption];
  const get=id=>catalogue()?.get(id)||null;
  const imgPreview=src=>{
    const image=screen.querySelector('#zf-stage-image');
@@ -79,7 +81,7 @@
   screen.querySelector('#zf-stage-help').textContent=active
     ?'◀ ▶ '+stage.name.toUpperCase()+' · START : VALIDER'
     :'PERSONNAGES 7–7–6 · PUIS CHOIX DU STAGE';
-  catalogue()?.preload(stage.id);
+  if(!stage.random)catalogue()?.preload(stage.id);
  }
  function fillGrid(){
   grid.replaceChildren();
@@ -102,8 +104,14 @@
    // Chaque vignette réutilise le décor ORIGINAL de cette arène,
    // jamais une case d'un montage compressé ou une illustration inventée.
    // L'image reste entière dans une zone 16:9, sans étirement.
-   const imageUrl=s.imageUrl||catalogue()?.imageFor?.(s.id);
+   const imageUrl=s.random?null:(s.imageUrl||catalogue()?.imageFor?.(s.id));
    art.style.backgroundImage=imageUrl?'url("'+imageUrl.replace(/"/g,'%22')+'")':'none';
+   if(s.random){
+     button.classList.add('zf-stage-random');
+     const mark=document.createElement('span');
+     mark.className='zf-stage-random-symbol';mark.textContent='?';
+     art.appendChild(mark);
+   }
    art.style.backgroundSize='contain';
    art.style.backgroundRepeat='no-repeat';
    art.style.backgroundPosition='center center';
@@ -200,7 +208,12 @@
  }
  async function confirm(){
   if(!active||confirming)return;
-  const s=list()[cursor];if(!s)return;
+  const chosen=list()[cursor];if(!chosen)return;
+  // L'encart ALÉATOIRE tire un véritable stage accessible, puis utilise
+  // son décor et SON annonce audio (pas d'arène fictive).
+  const available=actualStages();
+  const s=chosen.random?available[Math.floor(Math.random()*available.length)]:chosen;
+  if(!s)return;
   confirming=true;selected=s.id;
   if(window.ZikaFighterCharacterSelect?.playConfirmSound){
     window.ZikaFighterCharacterSelect.playConfirmSound();
