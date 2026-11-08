@@ -1,0 +1,22 @@
+/* 21 arènes Zika Fighter. Les voix source restent intactes. */
+(()=>{'use strict';
+ const stages=[{"id":"partenaires","name":"Arène des Partenaires","audio":"Partenaires Aréa.mp3","image":"Arène des Partenaires.png","bonus":false},{"id":"ats","name":"ATS","audio":"ATS.mp3","image":"ATS.png","bonus":false},{"id":"boulevard-tilleuls","name":"Boulevard des Tilleuls","audio":"Boulevard des Tilleuls.mp3","image":"Boulevard des Tilleuls.png","bonus":false},{"id":"cars-thorin-vriet","name":"Cars Thorin Vriet","audio":"Cars Thorin Vriet.mp3","image":"Cars Thorin Vriet.png","bonus":false},{"id":"credit-agricole","name":"Crédit Agricole Charente Périgord","audio":"Crédit Agricole Charente Périgord.mp3","image":"Crédit Agricole Charente Périgord.png","bonus":false},{"id":"departement-charente","name":"Département de la Charente","audio":"Département Charente.mp3","image":"Département de la Charente.png","bonus":false},{"id":"font-gardoire","name":"Font Gardoire","audio":"Lavoir du Gardoire.mp3","image":"Font Gardoire.png","bonus":false},{"id":"font-poisson","name":"Font Poisson","audio":"Font Poisson.mp3","image":"Font Poisson.png","bonus":false},{"id":"hotel-de-ville","name":"Hôtel de Ville","audio":"Hôtel de Ville.mp3","image":"Hôtel de Ville.png","bonus":false},{"id":"indalo","name":"L'Indalo","audio":"L'Indalo.mp3","image":"L'Indalo.png","bonus":false},{"id":"maif","name":"MAIF","audio":"MAIF.mp3","image":"MAIF.png","bonus":false},{"id":"mediatheque","name":"Médiathèque","audio":"Médiathèque.mp3","image":"Médiathèque.png","bonus":false},{"id":"office-tourisme","name":"Office de Tourisme Destination Nord Charente","audio":"Office de Tourisme.mp3","image":"Office de Tourisme Destination Nord Charente.png","bonus":false},{"id":"parc-floral","name":"Parc Floral Jean-Pierre Lanson","audio":"Parc Floral.mp3","image":"Parc Floral Jean-Pierre Lanson.png","bonus":false},{"id":"pont-mansle","name":"Pont de Mansle-les-Fontaines","audio":"Pont de Mansle.mp3","image":"Pont de Mansle-les-Fontaines.png","bonus":false},{"id":"rue-grande","name":"Rue Grande","audio":"Rue Grande.mp3","image":"Rue Grande.png","bonus":false},{"id":"salle-gautier","name":"Salle Gautier Capuçon","audio":"Salle Gautier Capuçon.mp3","image":"Salle Gautier Capuçon.png","bonus":false},{"id":"square-verdun","name":"Square de Verdun","audio":"Square de Verdun.mp3","image":"Square de Verdun.png","bonus":false},{"id":"super-u","name":"Super U","audio":"Super U.mp3","image":"Super U.png","bonus":false},{"id":"ti-tout-ncf","name":"Ti Tout NCF","audio":"Titout NCF.mp3","image":"Ti Tout NCF.png","bonus":false},{"id":"royaume-zika","name":"Le Royaume de Zika","audio":"Royaume de Zika.mp3","image":"Le Royaume de Zika.png","bonus":true}];
+ const src=name=>'./assets/audio/'+encodeURIComponent(name);
+ const zikaUnlocked=()=>{try{return localStorage.getItem('zikafighter-zika-unlocked')==='1'}catch(_){return false}};
+ const find=id=>stages.find(s=>s.id===id)||null;
+ const available=()=>stages.filter(s=>!s.bonus||zikaUnlocked()).map(s=>({...s}));
+ function get(id){const s=find(id);return s&&(!s.bonus||zikaUnlocked())?{...s}:null}
+ function preload(id){const s=get(id);return s?(window.ZikaArcadeAudio?.preloadClip?.(src(s.audio))??Promise.resolve(null)):Promise.resolve(null)}
+ async function announce(id){
+  const s=get(id);
+  if(!s||!window.ZikaArcadeAudio?.playStageVoice)return false;
+  try{return await window.ZikaArcadeAudio.playStageVoice(src(s.audio))}
+  catch(e){console.warn('Zika Fighter : annonce',s.name,e);return false}
+ }
+ window.ZikaFighterStages=Object.freeze({
+  all:()=>stages.map(s=>({...s})),available,get,preload,announce,
+  isZikaUnlocked:zikaUnlocked,
+  audioFor:id=>{const s=get(id);return s?src(s.audio):null},
+  imageFor:id=>{const s=get(id);return s?'./assets/stages/'+encodeURIComponent(s.image):null}
+ });
+})();
