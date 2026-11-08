@@ -409,8 +409,9 @@
       ctx.textAlign='center';ctx.fillStyle='#ffe62a';
       ctx.font='italic bold 34px Impact,sans-serif';ctx.fillText('ZIKA FIGHTER',160,85);
     }
-    // Le sous-titre reste au même endroit que sur les captures.
-    pixelSerif(ctx,'HYPER FIGHTING',160,122,132,13,17);
+    // Sur PRESS START, conserver le sous-titre historique de l'accueil.
+    // Dans les menus TURBO/NORMAL et GAME START/V.S., il est absent.
+    if(!titleMenuOpen)pixelSerif(ctx,'HYPER FIGHTING',160,122,132,13,17);
     ctx.font='bold 6px "Courier New",monospace';
     ctx.fillStyle='#d99a70';ctx.fillText('© ZIKAPCOM 2027',160,178);
     if(titleMenuOpen){
@@ -545,9 +546,12 @@
   const battleChoicesReference=new Image();
   battleChoicesReference.crossOrigin='anonymous';
   battleChoicesReference.decoding='async';
+  // Rectangles serrés sur les glyphes réels de la capture 1230×870.
+  // Les anciens rectangles incluaient 30 px de vide vertical et
+  // écrasaient les lettres au redimensionnement.
   const battleChoiceRects={
-    game:[507,653,306,59],
-    versus:[510,715,321,59]
+    game:[503,661,286,38],
+    versus:[505,723,316,38]
   };
   let battleChoiceSprites=null;
   function cropBattleChoice(rect){
@@ -588,28 +592,34 @@
   battleChoicesReference.addEventListener('load',prepareBattleChoices);
   battleChoicesReference.src='https://static.wixstatic.com/media/685632_48fffa2998304f8b9ac0c600bbf792ef~mv2.png';
   if(battleChoicesReference.complete&&battleChoicesReference.naturalWidth)prepareBattleChoices();
-  const battleRows=[139,157];
+  // Rangs mesurés sur la référence : 62 px d'écart sur 870 px de haut,
+  // soit environ 13 unités sur le canevas 320×180.
+  const battleRows=[141,154];
+  const battleTextCenterX=169;
   function drawBattleSubmenu(ctx){
     ctx.save();
     ctx.imageSmoothingEnabled=false;
-    if(battleChoiceSprites){
-      const names=['game','versus'];
-      names.forEach((name,index)=>{
-        const sprite=battleChoiceSprites[name];
-        const x=115,y=battleRows[index]-11,w=name==='game'?104:111,h=17;
-        ctx.globalAlpha=index===battleSelection?1:.73;
-        ctx.drawImage(sprite,x,y,w,h);
-      });
-      ctx.globalAlpha=1;
-    }else{
-      // Le menu reste utilisable même sans accès au serveur d'images.
-      menuText(ctx,'GAME START',115,battleRows[0]+2,12,battleSelection===0?'#edaf70':'#b8a9a1');
-      menuText(ctx,'V.S. BATTLE',115,battleRows[1]+2,12,battleSelection===1?'#edaf70':'#b8a9a1');
-    }
-    // Un seul curseur, déplacé entre deux lignes.
+    const texts=['GAME START','V.S. BATTLE'];
+    texts.forEach((text,index)=>{
+      const width=index===0?97:107;
+      const height=13;
+      const x=Math.round(battleTextCenterX-width/2);
+      const y=Math.round(battleRows[index]-height/2);
+      if(battleChoiceSprites){
+        const sprite=battleChoiceSprites[index===0?'game':'versus'];
+        // Ne pas déformer les caractères ni changer leurs couleurs.
+        ctx.globalAlpha=1;
+        ctx.drawImage(sprite,x,y,width,height);
+      }else{
+        // Texte de secours si le sprite n'est pas encore chargé.
+        menuText(ctx,text,x,battleRows[index]+4,12,'#f0ac70');
+      }
+    });
+    // Cur­seur verticalement centré, sans chevaucher les textes.
+    const cursorX=105,cursorSize=13,cursorY=Math.round(battleRows[battleSelection]-cursorSize/2);
     if(titleChoiceSprites&&titleChoiceSprites.cursor)
-      ctx.drawImage(titleChoiceSprites.cursor,92,battleRows[battleSelection]-12,14,14);
-    else drawZCursor(ctx,92,battleRows[battleSelection]);
+      ctx.drawImage(titleChoiceSprites.cursor,cursorX,cursorY,cursorSize,cursorSize);
+    else drawZCursor(ctx,cursorX,battleRows[battleSelection]+5);
     ctx.restore();
   }
 
