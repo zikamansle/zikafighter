@@ -139,6 +139,7 @@
  function open(choice={}){
   if(!catalogue())return false;
   stageToken++;active=true;confirming=false;skipRequested=false;cursor=0;selected=null;
+  planeFinish?.();
   if(planeAudio){planeAudio.pause();planeAudio=null;}
   window.ZikaArcadeAudio?.stopStageVoice?.();
   screen.classList.remove('zf-stage-confirming');
@@ -157,6 +158,7 @@
  }
  function close(){
   stageToken++;active=false;confirming=false;skipRequested=false;screen.hidden=false;
+  planeFinish?.();
   if(planeAudio){planeAudio.pause();planeAudio=null;}
   window.ZikaArcadeAudio?.stopStageVoice?.();
   screen.classList.remove('zf-stage-active','zf-stage-confirming');
@@ -164,7 +166,7 @@
   screen.querySelector('#zf-stage-flight').hidden=true;
   screen.querySelector('#zf-stage-help').textContent='PERSONNAGES 7–7–6 · PUIS CHOIX DU STAGE';
  }
- let stageSkipResolve=null,planeAudio=null,skipRequested=false;
+ let stageSkipResolve=null,planeAudio=null,planeFinish=null,skipRequested=false;
  function waitOrSkip(ms){
   if(skipRequested)return Promise.resolve();
   return new Promise(resolve=>{
@@ -183,6 +185,7 @@
   if(!active||!confirming||skipRequested)return false;
   skipRequested=true;
   if(planeAudio){planeAudio.pause();planeAudio.currentTime=0;}
+  planeFinish?.();
   window.ZikaArcadeAudio?.stopStageVoice?.();
   stageSkipResolve?.();
   return true;
@@ -196,9 +199,12 @@
    sound.volume=Math.max(0,Math.min(1,Number(window.ZikaFighterSettings?.fxVolume??8)/10));
    let done=false;
    const timeout=setTimeout(finish,3100);
+   planeFinish=finish;
    function finish(){
     if(done)return;done=true;clearTimeout(timeout);
-    sound.pause();if(planeAudio===sound)planeAudio=null;resolve();
+    sound.pause();if(planeAudio===sound)planeAudio=null;
+    if(planeFinish===finish)planeFinish=null;
+    resolve();
    }
    sound.onended=finish;sound.onerror=finish;
    try{const p=sound.play();if(p?.catch)p.catch(finish);}catch(_){finish();}
