@@ -53,6 +53,22 @@ assert.match(fontsCss,/font-family:'ZikaCPS1'/,
   'CPS-1 Fighter doit exister dans les styles');
 assert.match(fontsCss,/font-family:'ZikaSFII'/,
   'Street Fighter II Large doit exister dans les styles');
+const introSrc=read('arcade-intro.js');
+const introCss=read('arcade-intro.css');
+assert.match(introSrc,/const CINEMATIC_LENGTH=3\.60;/,
+  'Conserver les images de stabilisation de la rotation 30 FPS');
+assert.match(introSrc,/coarseSprites=\[\[10,5\],\[16,8\]/,
+  'Mosaïque SNES progressive obligatoire');
+assert.match(introSrc,/const band=titleMenuOpen&&!battleSubmenuOpen/,
+  'Bandeaux de mode uniquement dans les choix TURBO ou NORMAL');
+assert.match(introSrc,/if\(previewScreen==='cinematic'\)/,
+  'Permettre les captures de chaque phase de l’introduction');
+assert.match(introCss,/background-image:none!important/,
+  'Interdire la vieille image bleue derrière le Canvas du titre');
+assert.match(introCss,/\.zf-title-flash\{/,
+  'Neutraliser les anciens flashs de la page titre');
+assert.ok(html.includes('arcade-intro.js?v=20261108-mode7-rotation-v19'),
+  'Forcer le rechargement de la nouvelle introduction');
 assert.ok(html.includes('snes-fonts.css?'),
   'Les polices doivent être intégrées au jeu entier');
 assert.match(read('snes-ui-text.js'),/document\.fonts\.load/,
