@@ -18,6 +18,7 @@ root.innerHTML=[
 '<div class="zf-select-cabinet" role="group" aria-label="Sélection des vingt combattants">',
 '<canvas id="zf-select-reference" width="320" height="240" aria-hidden="true"></canvas>',
 '<div class="zf-select-heading"><h1>PLAYER SELECT</h1><small>START</small></div>',
+'<button type="button" id="zf-select-start-control" aria-label="Confirmer le personnage sélectionné"></button>',
 '<div class="zf-select-preview left" id="zf-select-preview-1"><span class="zf-select-initials"></span><strong></strong></div>',
 '<div class="zf-select-player-label"><b>1P</b><strong id="zf-player-1-name">PASCAL</strong></div>',
 '<div class="zf-select-player-label right-player" id="zf-select-player-2-label" hidden><b>2P</b><strong id="zf-player-2-name">MICKA</strong></div>',
@@ -94,7 +95,7 @@ fighters.forEach((f,i)=>{
  cell.innerHTML='<span class="photo"><span class="initial"></span></span><span class="name"></span>';
  cell.querySelector('.initial').textContent=initials(f.name);
  cell.querySelector('.name').textContent=f.name.toUpperCase();
- cell.addEventListener('click',()=>{if(opened&&!window.ZikaFighterScreens?.busy)choose(i);});
+ cell.addEventListener('click',()=>{if(!opened||window.ZikaFighterScreens?.busy)return;if(pointerCursor[activePlayer]===i)confirm();else choose(i);});
  roster.appendChild(cell);
 });
 function showPortrait(side,index){
@@ -119,10 +120,12 @@ function render(){
  }
  showPortrait(1,chosen[0]);
  showPortrait(2,count()===2?chosen[1]:(chosen[0]+1)%fighters.length);
- root.querySelector('#zf-player-1-name').textContent=fighters[chosen[0]].name.toUpperCase();
+ const p1Name=root.querySelector('#zf-player-1-name');
+ p1Name.textContent=fighters[chosen[0]].name.toUpperCase();
+ p1Name.dataset.long=String(fighters[chosen[0]].name.length>7);
  const p2Label=root.querySelector('#zf-select-player-2-label');
  p2Label.hidden=count()!==2;
- if(count()===2)root.querySelector('#zf-player-2-name').textContent=fighters[chosen[1]].name.toUpperCase();
+ if(count()===2){const p2Name=root.querySelector('#zf-player-2-name');p2Name.textContent=fighters[chosen[1]].name.toUpperCase();p2Name.dataset.long=String(fighters[chosen[1]].name.length>7);}
  root.querySelector('#zf-select-help').textContent=count()===2
   ?(activePlayer===0?'1P : CHOISIR · START CONFIRMER':'2P : CHOISIR · START CONFIRMER')
   :'FLÈCHES : CHOISIR · START : CONFIRMER';
@@ -161,6 +164,7 @@ function confirm(){
  if(count()===2&&activePlayer===0){activePlayer=1;render();}
  else finish();
 }
+root.querySelector('#zf-select-start-control').addEventListener('click',()=>{if(opened)confirm();});
 if(oldStart){oldStart.textContent='GAME START';toolbar.appendChild(oldStart);
  oldStart.addEventListener('click',event=>{if(!opened)return;event.preventDefault();event.stopImmediatePropagation();confirm();},true);
 }
