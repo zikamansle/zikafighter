@@ -1,11 +1,43 @@
-/* VS: pixel-era split layout, 4:3, no portrait deformation. */
+/* SNES VS reference: 320×240 proportions, flat indigo backdrop. */
 #zf-versus[hidden]{display:none!important}
-#zf-versus{position:fixed;inset:0;z-index:2147483600;background:#000;display:grid;place-items:center}
-#zf-versus .zf-vs-picture{position:relative;aspect-ratio:4/3;width:min(100vw,calc(100vh * 4 / 3));overflow:hidden;background:linear-gradient(155deg,#102a68 0%,#07133d 52%,#070724 52%,#142f70 100%);image-rendering:pixelated}
-#zf-versus .zf-vs-player{position:absolute;top:16%;height:69%;width:43%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
-#zf-versus .zf-vs-left{left:3%}
-#zf-versus .zf-vs-right{right:3%}
-#zf-versus .zf-vs-portrait{height:81%;width:100%;display:flex;align-items:end;justify-content:center;overflow:hidden}
-#zf-versus .zf-vs-portrait img{width:100%;height:100%;object-fit:contain;object-position:center bottom;image-rendering:pixelated}
-#zf-versus .zf-vs-name{display:grid;place-items:center;width:100%;height:19%;font:900 clamp(14px,3.4vw,38px)/1 'ZikaSFII',monospace;color:#f7d38d;text-align:center;text-shadow:2px 3px #6a173a;white-space:nowrap;letter-spacing:-.03em}
-#zf-versus .zf-vs-emblem{position:absolute;top:39%;left:50%;transform:translate(-50%,-50%) rotate(-8deg);z-index:3;font:italic 1000 clamp(58px,11vw,124px)/1 'ZikaCPS1','ZikaSFII',monospace;color:#f8d34d;text-shadow:4px 4px #a61c34,7px 8px #09092a}
+#zf-versus{position:fixed;inset:0;z-index:2147483600;display:grid;place-items:center;background:#000}
+#zf-versus .zf-vs-picture{
+ position:relative;width:min(100vw,calc(100vh * 4 / 3));aspect-ratio:4/3;
+ overflow:hidden;background:#070668;image-rendering:pixelated;
+ box-shadow:inset 0 -2px #2a397d
+}
+#zf-versus .zf-vs-start{
+ position:absolute;right:8.2%;top:.2%;width:16%;height:auto;
+ image-rendering:pixelated;z-index:2
+}
+#zf-versus .zf-vs-player{
+ position:absolute;top:17.1%;width:30.8%;height:66%;
+ display:flex;flex-direction:column;align-items:center
+}
+#zf-versus .zf-vs-left{left:8.9%}
+#zf-versus .zf-vs-right{right:8.9%}
+#zf-versus .zf-vs-portrait{
+ position:relative;width:100%;height:77%;overflow:hidden;
+ background:transparent;image-rendering:pixelated;
+}
+#zf-versus .zf-vs-portrait img{
+ width:100%;height:100%;display:block;object-fit:cover;
+ object-position:center 28%;image-rendering:pixelated
+}
+#zf-versus .zf-vs-portrait img[hidden]{display:none!important}
+#zf-versus .zf-vs-name{
+ width:88%;height:auto;max-height:21%;margin-top:3.5%;
+ image-rendering:pixelated
+}
+#zf-versus .zf-vs-burst{
+ position:absolute;z-index:1;left:38.1%;top:73%;
+ width:23.8%;height:19%;background:#b51826;
+ clip-path:polygon(48% 0,54% 23%,65% 5%,67% 27%,86% 11%,80% 36%,100% 39%,82% 53%,98% 69%,74% 69%,78% 96%,59% 76%,46% 100%,42% 76%,17% 92%,23% 69%,0 66%,21% 51%,3% 36%,28% 35%,22% 12%,42% 28%);
+}
+#zf-versus .zf-vs-emblem{
+ position:absolute;z-index:2;left:50%;top:78.2%;
+ transform:translate(-50%,-50%);font-family:'ZikaCPS1','ZikaSFII',monospace;
+ font-size:clamp(26px,8.1vw,95px);font-style:italic;font-weight:900;line-height:1;
+ color:#f9e58d;text-shadow:2px 3px #bb6535,4px 5px #6d1531;
+ white-space:nowrap;image-rendering:pixelated;
+}
