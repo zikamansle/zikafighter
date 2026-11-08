@@ -159,7 +159,7 @@
     return new Promise(resolve=>{
       try{
         const source=ctx.createBufferSource(),gain=ctx.createGain();
-        source.buffer=buffer;gain.gain.value=sampleGain(buffer);
+        source.buffer=buffer;gain.gain.value=sampleGain(buffer)*.83;
         source.connect(gain);gain.connect(sfxOut);
         let finished=false,timeout=null;
         const finish=()=>{
