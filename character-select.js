@@ -36,13 +36,22 @@ root.innerHTML=[
     const canvas=root.querySelector('#zf-select-reference');
     const ctx=canvas.getContext('2d',{alpha:false});
     ctx.imageSmoothingEnabled=false;
-    ctx.fillStyle='#070779';ctx.fillRect(0,0,320,240);
-    // Capture 1582 × 893, scène SNES centrée x140..1370.
-    // Cette partie contient uniquement le titre, START et la carte du monde.
-    ctx.drawImage(reference,140,0,1230,490,0,0,320,136);
-    // Masquer les anciens textes 1P/KEN de la capture :
-    // le nom est maintenant rendu selon le combattant sélectionné.
-    ctx.fillStyle='#070779';ctx.fillRect(3,94,74,42);
+    ctx.fillStyle='#040062';ctx.fillRect(0,0,320,240);
+    // Le CDN peut redimensionner la référence : recadrer en coordonnées relatives.
+    const scaleX=reference.naturalWidth/1582;
+    const scaleY=reference.naturalHeight/893;
+    ctx.drawImage(reference,140*scaleX,0,1230*scaleX,490*scaleY,0,0,320,136);
+    // Effacer uniquement les anciens libellés "1P KEN", ligne par ligne,
+    // en gardant le bleu d'origine (y compris ses variations de pixels).
+    try{
+      for(let y=94;y<136;y++){
+        const color=ctx.getImageData(318,y,1,1).data;
+        ctx.fillStyle='rgb('+color[0]+','+color[1]+','+color[2]+')';
+        ctx.fillRect(3,y,74,1);
+      }
+    }catch(_){
+      ctx.fillStyle='#040062';ctx.fillRect(3,94,74,42);
+    }
     root.querySelector('.zf-select-cabinet').classList.add('reference-ready');
   });
   reference.src='https://static.wixstatic.com/media/685632_0fee1909f2e04b08aa3ede8c582e66f9~mv2.png';
