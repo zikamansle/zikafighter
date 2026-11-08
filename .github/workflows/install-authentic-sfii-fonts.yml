@@ -1,0 +1,50 @@
+name: Install authorized SFII font faces
+on:
+  push:
+    paths:
+      - '.github/workflows/install-authentic-sfii-fonts.yml'
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download only licensed FontStruct font assets
+        run: |
+          python3 - <<'PY'
+          import zipfile,io,urllib.request,os,shutil
+          fonts=[
+            ('cps-1-fighter',1525503),
+            ('sfii-large',2467222),
+            ('sfii-large-colour',2469233),
+          ]
+          os.makedirs('assets/fonts',exist_ok=True)
+          for slug,number in fonts:
+            url=f'https://fontstruct.com/font_archives/download/{number}/woff2'
+            req=urllib.request.Request(url,headers={
+              'User-Agent':'Mozilla/5.0 (compatible; ZikaFighter/1.0)',
+              'Referer':f'https://fontstruct.com/fontstructions/download/{number}',
+              'Accept':'*/*',
+            })
+            with urllib.request.urlopen(req,timeout=30) as r:data=r.read()
+            assert data[:4]==b'PK\x03\x04',f'Not font ZIP: {slug}: {data[:80]!r}'
+            z=zipfile.ZipFile(io.BytesIO(data))
+            items=[p for p in z.namelist() if p.lower().endswith('.woff2')]
+            assert len(items)>=1,f'Missing WOFF2 in {slug}: {z.namelist()}'
+            # A font archive may contain a specimen; only embed genuine WOFF2 fonts.
+            font_bytes=z.read(items[0]);assert font_bytes[:4]==b'wOF2',f'Invalid font header {slug}'
+            output=f'assets/fonts/{slug}.woff2'
+            with open(output,'wb') as f:f.write(font_bytes)
+            print('INSTALLED',slug,output,len(font_bytes),'entry',items[0],flush=True)
+          PY
+      - name: Commit licensed font faces (not to the chat)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/fonts
+          if ! git diff --cached --quiet; then
+            git commit -m "Embed attributed SFII font recreations for all game UI screens"
+            git push origin HEAD:main
+          fi
