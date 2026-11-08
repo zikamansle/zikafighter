@@ -79,52 +79,51 @@ function startMusic(){
 }
 function stopMusic(){if(music){music.pause();music.currentTime=0;}}
 function count(){return Number(window.ZikaFighterSettings?.players??bridge()?.getPlayers?.()??1)===2?2:1;}
-// 21 portraits définitifs issus des fichiers nommés reçus (20 humains + Zika bonus).
+// 20 portraits SNES visibles : Zika sera ajouté ultérieurement comme bonus.
+// Portraits 20 humains recréés en style pixel SNES ; Zika n'est pas sélectionnable.
 const portraitSources={
-  "pascal": "https://static.wixstatic.com/media/685632_27b48e1f5aca4cf1a2f6a326f7f7c2f9~mv2.png",
-  "micka": "https://static.wixstatic.com/media/685632_3fae05bc42924dbb90b816288d77ba4d~mv2.png",
-  "emma": "https://static.wixstatic.com/media/685632_a96827ca84094dcb836c973048a56219~mv2.png",
-  "julie": "https://static.wixstatic.com/media/685632_eeaa15a02d4d46c7a94d748bc445ed70~mv2.png",
-  "antho": "https://static.wixstatic.com/media/685632_9699ed97eec94928a6f47e503afa0059~mv2.png",
-  "fabrice": "https://static.wixstatic.com/media/685632_7209f600d76d472d9bdf60ee86106ccf~mv2.png",
-  "sandy": "https://static.wixstatic.com/media/685632_168f534e1274455c92dfbb5f76bc9917~mv2.png",
-  "fabienne-1": "https://static.wixstatic.com/media/685632_66f635291c39420c8028dee96389f9cb~mv2.png",
-  "fabienne-2": "https://static.wixstatic.com/media/685632_d2f2da3a0dac468e8333388335ffc6e8~mv2.png",
-  "billy": "https://static.wixstatic.com/media/685632_6fdbaa74a062468a94556f0d24f78ad6~mv2.png",
-  "ludo": "https://static.wixstatic.com/media/685632_9305f11d194845fbbd5978262f4b56de~mv2.png",
-  "ju": "https://static.wixstatic.com/media/685632_6446fe74a9b2484db5857678ce541eef~mv2.png",
-  "bene": "https://static.wixstatic.com/media/685632_7f661c2865284a23b95638de7df0d682~mv2.png",
-  "kev": "https://static.wixstatic.com/media/685632_478e8242ddd948089d8a253adec306a1~mv2.png",
-  "loic": "https://static.wixstatic.com/media/685632_6e37b180f5ec4be4b2be90891a3d6d02~mv2.png",
-  "laura": "https://static.wixstatic.com/media/685632_3bae37b00c654eab8235c4f610babb58~mv2.png",
-  "val": "https://static.wixstatic.com/media/685632_5f093e7ba30246fc9cfecec84edb37da~mv2.png",
-  "victor": "https://static.wixstatic.com/media/685632_491f046aa6be43f98ccab04ea5d71f1a~mv2.png",
-  "elo": "https://static.wixstatic.com/media/685632_3de50e9a3e9a4bf681421b8d7dd32fda~mv2.png",
-  "djo": "https://static.wixstatic.com/media/685632_f6c2386a16414c8c9e9a162018fcba18~mv2.png",
-  "zika": "https://static.wixstatic.com/media/685632_472063cde71b4616abc6a06b9742fb50~mv2.png"
+  "pascal": "https://static.wixstatic.com/media/685632_d598cbb3f12e4136b60adb4c6e933f49~mv2.png",
+  "micka": "https://static.wixstatic.com/media/685632_9207c8a69fe44d56ba25a9ffa3221c31~mv2.png",
+  "emma": "https://static.wixstatic.com/media/685632_74f0dd1b43ba4619868c5a6959da2418~mv2.png",
+  "julie": "https://static.wixstatic.com/media/685632_072e5c593cdb4be3ac986f5fff8e6939~mv2.png",
+  "antho": "https://static.wixstatic.com/media/685632_d58c0035325d460aafb854d1105bc658~mv2.png",
+  "fabrice": "https://static.wixstatic.com/media/685632_98d38fd767c74ddf91af5c4a23ed6ff4~mv2.png",
+  "sandy": "https://static.wixstatic.com/media/685632_f264499022bb41d89b290219151bc405~mv2.png",
+  "fabienne-1": "https://static.wixstatic.com/media/685632_83fd9ccc457e4b729467397c85da4859~mv2.png",
+  "fabienne-2": "https://static.wixstatic.com/media/685632_cb0896fb9bf448e2ac7c87c8c61be0a3~mv2.png",
+  "billy": "https://static.wixstatic.com/media/685632_b8d6162540454fa791c31854ca2b44cc~mv2.png",
+  "ludo": "https://static.wixstatic.com/media/685632_29fcf8d47d364c4aa0e704adfdcba09f~mv2.png",
+  "ju": "https://static.wixstatic.com/media/685632_6522179f2bec4be0baede41ba4cefc63~mv2.png",
+  "bene": "https://static.wixstatic.com/media/685632_9cf66912f20f4cc0a599231f6c44585f~mv2.png",
+  "kev": "https://static.wixstatic.com/media/685632_784a0221e5cd43ba843ceda3b2f541e2~mv2.png",
+  "loic": "https://static.wixstatic.com/media/685632_1617cbc1dc6147c9901f1ab919cee99b~mv2.png",
+  "laura": "https://static.wixstatic.com/media/685632_74103576ac454f738ae1f81a1343ab35~mv2.png",
+  "val": "https://static.wixstatic.com/media/685632_8d658c573e9a416a807ab98ed01b1955~mv2.png",
+  "victor": "https://static.wixstatic.com/media/685632_9ef1a41fbfc2428aac47f7cacf27acea~mv2.png",
+  "elo": "https://static.wixstatic.com/media/685632_03ef2ad9352c4545b7108ee1e9dd3f51~mv2.png",
+  "djo": "https://static.wixstatic.com/media/685632_ed0915e3825146969ddd7299a327ff36~mv2.png"
 };
 const largePortraitSources={
-  "pascal": "https://static.wixstatic.com/media/685632_5ab88476280945c1a523b1d644e25741~mv2.png",
-  "micka": "https://static.wixstatic.com/media/685632_ac7af6b2ed37447a93705f8a0cdfd40b~mv2.png",
-  "emma": "https://static.wixstatic.com/media/685632_455716b641e94ac8944f249d8fcb0981~mv2.png",
-  "julie": "https://static.wixstatic.com/media/685632_c7628c77c9db41ab9b5b1e207e8b783d~mv2.png",
-  "antho": "https://static.wixstatic.com/media/685632_67f68b9ea1a04dbe80c099e59f47c1c4~mv2.png",
-  "fabrice": "https://static.wixstatic.com/media/685632_088a8aeb820f40be914d7941430a4a11~mv2.png",
-  "sandy": "https://static.wixstatic.com/media/685632_afeb5055edde4085a1aff0059129d0fc~mv2.png",
-  "fabienne-1": "https://static.wixstatic.com/media/685632_4ccaaf4a29a347b0a32bcf5fa42d422d~mv2.png",
-  "fabienne-2": "https://static.wixstatic.com/media/685632_19b89ee31e584d4a8fbb2e111e379240~mv2.png",
-  "billy": "https://static.wixstatic.com/media/685632_fd2c14244dd44fa0b8d9a35721696f1e~mv2.png",
-  "ludo": "https://static.wixstatic.com/media/685632_e5fe8498ccfb4132a748cb5699dce9b2~mv2.png",
-  "ju": "https://static.wixstatic.com/media/685632_eb7949f751c84749956449b68eeca750~mv2.png",
-  "bene": "https://static.wixstatic.com/media/685632_a2d744590872434f9e4ff609a835c132~mv2.png",
-  "kev": "https://static.wixstatic.com/media/685632_ff59272dd04b40b9b36fab21487ede7b~mv2.png",
-  "loic": "https://static.wixstatic.com/media/685632_fde2259c63864bac91d1f554e039f81f~mv2.png",
-  "laura": "https://static.wixstatic.com/media/685632_6a17521140d84ccd8e46df395aa43e82~mv2.png",
-  "val": "https://static.wixstatic.com/media/685632_9d9393c44e334c29bcb3efdf731a24a4~mv2.png",
-  "victor": "https://static.wixstatic.com/media/685632_7baed92eb6764c1ba098e4baae31c7e8~mv2.png",
-  "elo": "https://static.wixstatic.com/media/685632_aea68b1e2f444135875223d4d9edbc63~mv2.png",
-  "djo": "https://static.wixstatic.com/media/685632_24109ba352ec48ebb153c244cb08283b~mv2.png",
-  "zika": "https://static.wixstatic.com/media/685632_45452eed6d9b48fd8fa2d65545c8aea4~mv2.png"
+  "pascal": "https://static.wixstatic.com/media/685632_0c92b6896b8e48219cc8fad70bd5cc75~mv2.png",
+  "micka": "https://static.wixstatic.com/media/685632_a5ca716890004151adeb72733c2172f1~mv2.png",
+  "emma": "https://static.wixstatic.com/media/685632_156d09bf42134bf9ad1e996a8f1a7536~mv2.png",
+  "julie": "https://static.wixstatic.com/media/685632_aae193d4dac245f2983db43b91fc7b4d~mv2.png",
+  "antho": "https://static.wixstatic.com/media/685632_9c05ed088cd7486dbbdac0ca0aa16d00~mv2.png",
+  "fabrice": "https://static.wixstatic.com/media/685632_16b7d11df66e4c919986cca8cb7335f0~mv2.png",
+  "sandy": "https://static.wixstatic.com/media/685632_10617b4dc4944d499ed9dd0b877a26af~mv2.png",
+  "fabienne-1": "https://static.wixstatic.com/media/685632_587f3f48742e4b1c90b2e74cefc2d30e~mv2.png",
+  "fabienne-2": "https://static.wixstatic.com/media/685632_7ded6376fd7144b6a0a058bbaff2a06f~mv2.png",
+  "billy": "https://static.wixstatic.com/media/685632_e8d7656348004748a43f676689e35da0~mv2.png",
+  "ludo": "https://static.wixstatic.com/media/685632_d1873449c7d14315ae4cabcc972d6a6e~mv2.png",
+  "ju": "https://static.wixstatic.com/media/685632_2f310e5a997644f98ab914e4b038df7b~mv2.png",
+  "bene": "https://static.wixstatic.com/media/685632_06e4e9f5b32b4325b241c2858627f144~mv2.png",
+  "kev": "https://static.wixstatic.com/media/685632_3b501a90d154412f893dcc5fbd96a7d9~mv2.png",
+  "loic": "https://static.wixstatic.com/media/685632_3bc015a7632b4c5f84b74d0e9cb71c8e~mv2.png",
+  "laura": "https://static.wixstatic.com/media/685632_489f3d4720264eda84c37c3fcb6a05c0~mv2.png",
+  "val": "https://static.wixstatic.com/media/685632_c15e40f35bb44fdba9bb05d5050684c5~mv2.png",
+  "victor": "https://static.wixstatic.com/media/685632_36b4d5f544b34b9ab4b86f02bcfab74c~mv2.png",
+  "elo": "https://static.wixstatic.com/media/685632_2b8d9b8454b848f98b246e390b22c396~mv2.png",
+  "djo": "https://static.wixstatic.com/media/685632_61385bd4e6454d01893dd393c7ff94bd~mv2.png"
 };
 const photos=fighters.map(f=>{
  const im=new Image();
@@ -140,7 +139,7 @@ const photos=fighters.map(f=>{
  im.src=known||'./assets/fighters/'+f.slug+'.png';
  return im;
 });
-// Zika conserve son portrait dans les ressources, mais n'apparaît pas dans les 20 cases.
+// 20 portraits SNES visibles : Zika sera ajouté ultérieurement comme bonus.
 window.ZikaFighterPortraits=Object.freeze({...portraitSources});
 window.ZikaFighterLargePortraits=Object.freeze({...largePortraitSources});
 function portrait(i){return photos[i]?.complete&&photos[i]?.naturalWidth>0?photos[i].src:null;}
