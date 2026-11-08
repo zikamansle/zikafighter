@@ -177,5 +177,5 @@
  document.addEventListener('keyup',event=>{heldKeys.delete(event.code);},true);
  window.addEventListener('blur',()=>heldKeys.clear());
  window.ZikaSNESText?.whenReady(()=>{if(!screen.hidden)draw();});
- window.ZikaFighterVersus=Object.freeze({show,close:stop,getState:()=>({visible:!screen.hidden,audioTime:soundtrack.currentTime,audioDuration:soundtrack.duration})});
+ window.ZikaFighterVersus=Object.freeze({show,close:stop,stopAudio:()=>{soundtrack.pause();try{soundtrack.currentTime=0;}catch(_){}},getState:()=>({visible:!screen.hidden,audioTime:soundtrack.currentTime,audioDuration:soundtrack.duration})});
 })();
