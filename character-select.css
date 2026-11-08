@@ -18,8 +18,15 @@
 #select #zf-select-reference{display:none!important}
 #select .zf-select-heading,
 #select .zf-select-cabinet.reference-ready .zf-select-heading{
-  position:absolute;z-index:4;top:1%;left:0;width:100%;height:13%;
+  position:absolute;z-index:4;top:0;left:0;width:100%;height:14%;
   display:block;visibility:visible!important;pointer-events:none;
+  /* Le vrai titre et START proviennent de la référence approuvée,
+     sans réinterprétation de leurs caractères ni de leur relief. */
+  background-image:url("https://static.wixstatic.com/media/685632_531e2c5c545244bb82df966c634c1800~mv2.png");
+  background-repeat:no-repeat;background-position:left top;background-size:100% auto;
+}
+#select .zf-select-heading h1,#select .zf-select-heading small{
+  visibility:hidden!important; /* texte accessible préservé dans le DOM */
 }
 #select .zf-select-heading h1{
   position:absolute;top:4%;left:22%;width:56%;margin:0;
