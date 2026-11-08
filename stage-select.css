@@ -151,5 +151,22 @@
 }
 
 /* Validation de stage : aucune animation ou icône d'avion à l'écran. */
-#select #zf-stage-screen .zf-stage-flight{display:none!important}
+#select #zf-stage-screen .zf-stage-flight[hidden]{display:none!important}
 #select #zf-stage-screen .zf-stage-airplane{display:none!important;animation:none!important}
+
+/* Confirmation : carte d'arène sous le titre, sans icône d'avion. */
+#select #zf-stage-screen .zf-stage-flight:not([hidden]){
+ display:flex!important;flex-direction:column;align-items:center;justify-content:center;
+ gap:4%;background:#030b3ef4;
+}
+#select #zf-stage-screen .zf-stage-confirm-card{
+ width:48%;height:52%;display:grid;place-items:center;
+ border:2px solid #a4b4d2;background:#081142;overflow:hidden;
+}
+#select #zf-stage-screen .zf-stage-confirm-art{
+ width:100%;height:100%;background-size:contain;background-repeat:no-repeat;background-position:center;
+}
+#select #zf-stage-screen .zf-stage-confirm-random{
+ font:900 clamp(26px,5vw,62px)/1 'ZikaSFII',monospace;color:#f4d37c;
+}
+#select #zf-stage-screen .zf-stage-confirm-art[hidden],#select #zf-stage-screen .zf-stage-confirm-random[hidden]{display:none!important}
