@@ -1248,7 +1248,8 @@
   function drawLegalFrame(t){
     if(!legalCtx)return;
     const c=legalCtx;c.setTransform(1,0,0,1,0,0);
-    c.fillStyle=t<.19?'#120b98':'#000';c.fillRect(0,0,1448,1086);
+    // Aucun flash bleu avant la toute première image des crédits.
+    c.fillStyle='#000';c.fillRect(0,0,1448,1086);
     if(t<.33||!approvedLegal.complete||!approvedLegal.naturalWidth)return;
     c.save();
     c.globalAlpha=Math.min(1,Math.max(0,(t-.33)/.22),Math.max(0,(5.2-t)/.18));
