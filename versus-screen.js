@@ -18,6 +18,10 @@
  let canSkip=false,skipHandler=null,lastPadPressed=false;
  let padRequest=0;
  const labels=['',''];
+ // VS pixel sprite from the user-provided SNES screenshot (exact shape and colours).
+ const vsSprite=new Image();
+ vsSprite.onload=()=>{if(!screen.hidden)draw();};
+ vsSprite.src='data:image/png;base64,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';
  const selectedSlugs=['',''];
  // Orientation des illustrations sources : visage tourné vers la gauche
  // de l'image. Toutes les autres sont frontales ou orientées à droite.
@@ -30,21 +34,6 @@
   screen.hidden=true;onFinish=null;portraitImages=[];
   canSkip=false;skipHandler=null;lastPadPressed=false;
   if(padRequest){cancelAnimationFrame(padRequest);padRequest=0;}
- }
- function drawBurst(){
-  // Silhouette à pointes rouges comme la capture de référence, sans icône moderne.
-  const points=[
-   [129,162],[118,155],[130,153],[123,144],[139,152],[140,141],
-   [148,151],[154,141],[160,151],[168,142],[170,152],[181,146],
-   [181,154],[197,151],[188,160],[201,165],[190,170],[204,177],
-   [187,179],[193,192],[177,184],[172,197],[163,187],[154,199],
-   [150,188],[132,195],[136,182],[119,186],[128,173],[116,167]
-  ];
-  ctx.fillStyle='#b11227';ctx.beginPath();
-  points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));
-  ctx.closePath();ctx.fill();
-  ctx.fillStyle='#d72228';
-  ctx.fillRect(140,159,43,24);
  }
  function drawPortrait(image,x,side,slug){
   if(!image?.complete||!image.naturalWidth)return;
@@ -77,15 +66,16 @@
   const font=window.ZikaSNESText;
   if(font?.ready){
    font.draw(ctx,'START',288,0,{face:'game',tone:'cream',align:'right',scale:.50,maxWidth:53});
-   // Noms dorés et ombre bordeaux, comme sur le VS SNES de référence.
-   const nameFont='"ZikaCPS1",Georgia,serif';
+   // Serif condensed gold lettering matching the supplied SFII SNES reference.
+   // Strictly limited to each fighter column: no overlap with the central VS.
    ctx.save();ctx.textAlign='center';ctx.textBaseline='top';
-   for(const [name,x] of [[labels[0],73],[labels[1],245]]){
-    let size=19;ctx.font='bold '+size+'px '+nameFont;
-    while(size>9&&ctx.measureText(name).width>91){size--;ctx.font='bold '+size+'px '+nameFont;}
-    ctx.fillStyle='#5c1b30';ctx.fillText(name,x+1,156);
-    ctx.fillStyle='#bb6231';ctx.fillText(name,x,154);
-    ctx.fillStyle='#f3cc76';ctx.fillText(name,x,153);
+   for(const [name,x] of [[labels[0],74],[labels[1],246]]){
+    let size=17;
+    ctx.font='bold '+size+'px Georgia,serif';
+    while(size>10&&ctx.measureText(name).width>89){size--;ctx.font='bold '+size+'px Georgia,serif';}
+    ctx.fillStyle='#441028';ctx.fillText(name,x+1,157);
+    ctx.fillStyle='#b54b29';ctx.fillText(name,x,154);
+    ctx.fillStyle='#fbd57c';ctx.fillText(name,x,153);
    }
    ctx.restore();
   }else{
@@ -93,19 +83,13 @@
    ctx.fillText(labels[0],73,165);ctx.fillText(labels[1],245,165);
    ctx.textAlign='right';ctx.fillText('START',289,12);
   }
-  drawBurst();
-  // Lettrage "VS" or, ombre brune, position identique à la référence.
-  ctx.save();ctx.textAlign='center';ctx.textBaseline='top';
-  ctx.font='italic 900 48px "ZikaCPS1",Georgia,serif';
-  ctx.lineJoin='round';
-  ctx.strokeStyle='#741b27';ctx.lineWidth=3;
-  ctx.strokeText('VS',162,144);
-  ctx.fillStyle='#50102a';ctx.fillText('VS',164,148);
-  const gold=ctx.createLinearGradient(0,146,0,187);
-  gold.addColorStop(0,'#ffffc7');gold.addColorStop(.52,'#f6ed8e');
-  gold.addColorStop(1,'#f4b62e');
-  ctx.fillStyle=gold;ctx.fillText('VS',160,144);
-  ctx.restore();
+  // The REAL gold VS + red explosion artwork cropped from the screenshot.
+  // Fixed-size SNES pixel art, never enlarged into the fighters' names.
+  if(vsSprite.complete&&vsSprite.naturalWidth){
+   ctx.save();ctx.imageSmoothingEnabled=false;
+   ctx.drawImage(vsSprite,118,145,84,60);
+   ctx.restore();
+  }
   ctx.fillStyle='#243a82';ctx.fillRect(0,204,320,1);
  }
  function loadPortraits(player1,player2,token){
