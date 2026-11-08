@@ -165,7 +165,7 @@
   const cinematic=document.getElementById('zf-cinematic');
   let cinematicFrame=null;
   let titleVisualStartedAt=0;
-  const CINEMATIC_LENGTH=3.49;
+  const CINEMATIC_LENGTH=3.60;
   const startButton=document.getElementById('zf-start');
   const unblock=document.getElementById('zf-unlock-sound');
   const errorText=document.getElementById('zf-sound-error');
@@ -363,7 +363,7 @@
       // Le navigateur ne doit PAS lisser ce sprite pendant la rotation.
       titleSpritePixels=makeCanvas(160,80);
       const pixelCtx=titleSpritePixels.getContext('2d');
-      pixelCtx.imageSmoothingEnabled=true;
+      pixelCtx.imageSmoothingEnabled=false;
       pixelCtx.drawImage(src,0,0,160,80);
       // Toute mise à l'échelle ultérieure est faite en nearest-neighbor.
 
@@ -384,11 +384,11 @@
       mosaic=sc.getImageData(0,0,144,72);
       // Résolutions successives observées : quelques gros blocs,
       // puis un logo de plus en plus détaillé durant la rotation.
-      coarseSprites=[[10,5],[16,8],[24,12],[40,20],[64,32],[96,48],[160,80]].map(([ww,hh])=>{
+      coarseSprites=[[10,5],[16,8],[24,12],[32,16],[48,24],[72,36],[112,56],[160,80]].map(([ww,hh])=>{
         const layer=makeCanvas(ww,hh),layerCtx=layer.getContext('2d');
         // Réduction uniquement pour fabriquer une tuile — jamais de lissage
         // à l'affichage sur les frames SNES.
-        layerCtx.imageSmoothingEnabled=true;
+        layerCtx.imageSmoothingEnabled=false;
         layerCtx.drawImage(titleSpritePixels||src,0,0,ww,hh);
         return layer;
       });
@@ -421,11 +421,7 @@
     });
   }
     // L'écran-titre continue au même temps musical ; le thème n'est pas relancé.
-  // On reconstruit le fond noir/bande bleue de la capture, et non le PNG entier
-  // qui contenait encore ZIKACOM et une inscription PUSH START permanente.
-  // Scène titre aux mêmes coordonnées que la fin de la cinématique.
-  // Fond : bleu jusqu'à 6.56, éclair vert 6.56–6.92, puis noir.
-  // Les mentions du menu n'apparaissent qu'après le logo (vers 6.30).
+  // PRESS START: fond noir. Bleu/vert uniquement si TURBO/NORMAL sélectionné.
   function renderTitleFrame(t){
     if(!titleCtx)return;
     const ctx=titleCtx,w=320,h=180;
@@ -1062,59 +1058,52 @@
     if(titleSelection===2){cursorConfirm();openOptions();return;}
     enterBattleSubmenu();
   }
-  // Cinématique Zika Fighter — titre SNES : 30 images/seconde,
-  // palette limitée et zoom/rotation du sprite sans interpolation.
-  // Uniquement le logo fourni et validé ; aucun lettrage inventé.
+  // Séquence de titre quantifiée à 30 FPS : sprite Zika validé,
+  // zoom par blocs puis rotation en mosaïque, fond noir constant.
   function renderCinematic(seconds){
     if(!mctx)return;
     const ctx=mctx,w=320,h=180;
     const t=Math.floor(Math.max(0,seconds)*30)/30;
     ctx.setTransform(1,0,0,1,0,0);
     ctx.fillStyle='#000';ctx.fillRect(0,0,640,480);
-    // Format d'affichage 4:3 : contenu 320×180 centré dans 320×240.
     ctx.setTransform(2,0,0,2,0,60);
     ctx.imageSmoothingEnabled=false;
-    ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
     const sprite=titleSpritePixels||titleSpriteCanvas;
     if(!sprite)return;
-    const paint=(img,x,y,ww,hh,angle=0,sx=1)=>{
+    function paint(img,x,y,ww,hh,rot=0,sx=1){
       ctx.save();ctx.imageSmoothingEnabled=false;
       ctx.translate(Math.round(x),Math.round(y));
-      ctx.rotate(angle);ctx.scale(sx,1);
-      ctx.drawImage(img,-ww/2,-hh/2,ww,hh);
+      ctx.rotate(rot);ctx.scale(sx,1);
+      ctx.drawImage(img,-Math.round(ww/2),-Math.round(hh/2),Math.round(ww),Math.round(hh));
       ctx.restore();
-    };
-    // Départ : petit logo immobile sur noir.
-    if(t<1.20){paint(sprite,160,50,88,44);return;}
-    // Balayage spectaculaire du véritable logo, agrandi par blocs visibles.
-    // Plus de titre écrit en police CSS à la place du visuel Zika Fighter.
+    }
+    // Phase A : petit logo sur NOIR.
+    if(t<1.20){paint(sprite,160,52,90,43);return;}
+    // Phase B : balayage avec texture pixel grossie.
     if(t<2.13){
-      const p=Math.min(1,(t-1.20)/.93);
-      const x=350-680*p;
-      const image=coarseSprites[5]||sprite;
-      paint(image,x,88,740,370);
+      const p=Math.min(1,Math.floor((t-1.20)*30)/27);
+      paint(coarseSprites[5]||sprite,350-Math.round(680*p),87,740,349);
       return;
     }
-    // Rotation « Mode 7 » en pixel art : écrasement horizontal, retournement,
-    // agrandissement progressif ; réduction des blocs à mesure qu'il se fixe.
-    const progress=Math.max(0,Math.min(1,(t-2.13)/1.36));
-    const p=ease(progress);
-    const levels=coarseSprites;
-    const level=Math.min(levels.length-1,Math.floor(progress*levels.length));
-    const image=levels[level]||sprite;
-    const turn=(1-p)*Math.PI*2.65;
-    const width=82+154*p;
-    const tilt=(1-p)*-.55;
-    const horizontal=Math.cos(turn);
-    const face=Math.sign(horizontal||1)*Math.max(.055,Math.abs(horizontal));
-    const bob=6*(1-p)*Math.sin(turn);
-    paint(image,160,66+bob,width,width*.47,tilt,face);
-    if(t>=3.30){
-      // Fin sur image stabilisée, sans bande bleue et sans fondu adouci.
-      paint(sprite,160,66,236,111);
-      pixelSerif(ctx,'HYPER FIGHTING',160,128,132,13,17);
-      ctx.font='6px "ZikaSFII"';
-      ctx.fillStyle='#ca8655';ctx.textAlign='center';
+    // Phase C : rotation des tuiles du logo. Huit résolutions successives,
+    // changement de taille d'image sans antialiasing ni interpolation.
+    const frame=Math.max(0,Math.floor((t-2.13)*30));
+    const progress=Math.min(1,frame/42);
+    const p=1-Math.pow(1-progress,3);
+    const tier=progress<.15?0:progress<.29?1:progress<.43?2:
+      progress<.57?3:progress<.70?4:progress<.81?5:progress<.93?6:7;
+    const tile=coarseSprites[tier]||sprite;
+    const angle=(1-p)*Math.PI*5;
+    const squeeze=Math.cos(angle);
+    const flip=Math.sign(squeeze||1)*Math.max(.06,Math.abs(squeeze));
+    const ww=88+Math.round(148*p);
+    paint(tile,160,64+Math.round(5*Math.sin(angle)*(1-p)),ww,
+      Math.round(ww*.47),-.64*(1-p),flip);
+    if(progress>=.97){
+      ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
+      paint(sprite,160,64,236,111);
+      pixelSerif(ctx,'HYPER FIGHTING',160,127,132,13,17);
+      ctx.font='6px "ZikaSFII"';ctx.fillStyle='#ca8655';ctx.textAlign='center';
       ctx.fillText('© ZIKAPCOM 2027',160,176);
     }
   }
@@ -1501,7 +1490,13 @@
   // Paramètres de prévisualisation destinés aux tests graphiques uniquement.
   // Sans paramètre, l'introduction complète démarre normalement.
   const previewScreen=new URLSearchParams(location.search).get('screen');
-  if(previewScreen==='legal'){
+  if(previewScreen==='cinematic'){
+    const t=Math.max(0,Math.min(CINEMATIC_LENGTH,Number(new URLSearchParams(location.search).get('t'))||0));
+    legal.hidden=true;splash.hidden=true;title.hidden=true;cinematic.hidden=false;
+    phase='cinematic-preview';
+    if(titleSpriteCanvas)renderCinematic(t);
+    else titleSprite.addEventListener('load',()=>renderCinematic(t),{once:true});
+  }else if(previewScreen==='legal'){
     // Static inspection of the first 4:3 credits screen without timed transition.
     phase='legal-preview';
     drawLegalFrame(1.5);
