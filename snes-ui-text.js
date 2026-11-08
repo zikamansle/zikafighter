@@ -1,66 +1,67 @@
-/* Zika Fighter: alphabet 16 bits source-derived for all PLAYER SELECT text.
- * Tiles A,C,E,L,P,R,S,T,Y were lifted pixel by pixel from an actual
- * Street Fighter II Turbo SNES gameplay capture. Missing characters were
- * extended in the same bitmap palette. No installed system fonts are used.
+/* Zika Fighter — renderer commun aux écrans 16 bits.
+ * Police des titres : CPS-1 Fighter / Omegaville (CC BY-SA).
+ * Police des textes en jeu : Street Fighter II (Large) / Patrick H. Lauke (CC BY).
+ * Références et crédits : docs/FONT_CREDITS.md.
+ * Aucun alphabet inventé en mosaïque ou re-échantillonné ici.
  */
 (()=>{'use strict';
-  if(window.ZikaSNESText)return;
-  const GLYPHS="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .:-!'&/";
-  const CW=24,CH=30,advance=21;
-  let loaded=false,failed=false;
-  const atlas=new Image();atlas.decoding='async';
-  const handlers=[];
-  function flush(){while(handlers.length){const fn=handlers.shift();try{fn()}catch(e){console.error(e)}}}
-  atlas.onload=()=>{
-    loaded=atlas.naturalWidth===GLYPHS.length*CW && atlas.naturalHeight===CH*3;
-    failed=!loaded;
-    flush();
-    document.dispatchEvent(new Event('zika:snes-text-ready'));
-  };
-  atlas.onerror=()=>{failed=true;console.error('Zika Fighter: SNES font atlas missing');flush();};
-  atlas.src='./assets/snes-ui-letters.png?v=20261108-authentic-title-v1';
-  function normalized(value){
-    return String(value??'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  }
-  function measure(value,scale=1){
-    return Math.max(0,normalized(value).length*advance-3)*scale;
-  }
-  function draw(ctx,value,x,y,opts={}){
-    if(!loaded||!ctx)return 0;
-    const text=normalized(value);
-    const desiredScale=Number(opts.scale)||1;
-    const maximum=Number(opts.maxWidth)||Infinity;
-    const scale=Math.min(desiredScale,maximum/Math.max(1,measure(text,1)));
-    const width=measure(text,scale);
-    const position=opts.align||'left';
-    const begin=x-(position==='center'?width/2:position==='right'?width:0);
-    const tone=opts.tone==='blue'||opts.tone==='cyan'?1:opts.tone==='cream'?2:0;
-    const oldSmooth=ctx.imageSmoothingEnabled;
-    ctx.imageSmoothingEnabled=false;
-    for(let i=0;i<text.length;i++){
-      const glyph=GLYPHS.indexOf(text[i]);
-      if(glyph<0)continue;
-      const left=Math.round(begin+i*advance*scale);
-      const top=Math.round(y);
-      ctx.drawImage(atlas,glyph*CW,tone*CH,CW,CH,
-        left,top,Math.max(1,Math.round(CW*scale)),Math.max(1,Math.round(CH*scale)));
-    }
-    ctx.imageSmoothingEnabled=oldSmooth;
-    return width;
-  }
-  function wrap(text,maxLetters=19){
-    const words=normalized(text).split(/\s+/).filter(Boolean);
-    const lines=[];let line='';
-    for(const word of words){
-      if(line && line.length+word.length+1>maxLetters){lines.push(line);line=word;}
-      else line+=(line?' ':'')+word;
-    }
-    if(line)lines.push(line);
-    return lines;
-  }
-  window.ZikaSNESText=Object.freeze({
-    draw,measure,wrap,whenReady(fn){if(loaded||failed)fn();else handlers.push(fn)},
-    get ready(){return loaded;},
-    get failed(){return failed;}
-  });
+ if(window.ZikaSNESText)return;
+ const callbacks=[];
+ const FACES={title:'ZikaCPS1',game:'ZikaSFII'};
+ let ready=false,failed=false;
+ function norm(s){return String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();}
+ function measure(s,scale=1){return norm(s).length*20*scale;}
+ function finish(ok){
+   ready=ok;failed=!ok;
+   while(callbacks.length){try{callbacks.shift()()}catch(e){console.error(e)}}
+   document.dispatchEvent(new Event('zika:snes-text-ready'));
+ }
+ if(document.fonts?.load){
+   Promise.all([
+    document.fonts.load('18px "ZikaCPS1"','PLAYER SELECT STAGE'),
+    document.fonts.load('18px "ZikaSFII"','PASCAL STAGE SELECT')
+   ]).then(()=>finish(true),err=>{console.warn('SFII font loading',err);finish(false)});
+ }else finish(false);
+ function draw(ctx,content,x,y,opts={}){
+   if(!ctx||!ready)return 0;
+   const text=norm(content);if(!text)return 0;
+   const title=opts.face==='game'?false:(opts.face==='title'||opts.variant==='title'||opts.tone==='gold');
+   const family=FACES[title?'title':'game'];
+   const base=Math.max(5,Math.round(30*(Number(opts.scale)||1)));
+   const max=Number(opts.maxWidth)||Infinity;
+   ctx.save();
+   ctx.imageSmoothingEnabled=false;
+   let size=base;
+   ctx.font=size+'px "'+family+'"';
+   while(size>5 && ctx.measureText(text).width>max){
+     size--;ctx.font=size+'px "'+family+'"';
+   }
+   const width=ctx.measureText(text).width;
+   const anchor=opts.align==='center'?'center':opts.align==='right'?'right':'left';
+   const color=opts.tone==='cyan'||opts.tone==='blue'?'#58ccff':
+       opts.tone==='cream'?'#f5f4e8':'#ffc17b';
+   ctx.textAlign=anchor;ctx.textBaseline='top';
+   ctx.lineJoin='miter';ctx.miterLimit=2;
+   ctx.strokeStyle=opts.tone==='cyan'?'#071c6b':'#31152f';
+   ctx.lineWidth=Math.max(.6,size/15);
+   ctx.strokeText(text,Math.round(x),Math.round(y));
+   ctx.fillStyle=color;
+   ctx.fillText(text,Math.round(x),Math.round(y));
+   ctx.restore();
+   return width;
+ }
+ function wrap(text,maxChars=18){
+   const words=norm(text).split(/\s+/).filter(Boolean);
+   const out=[];let line='';
+   for(const word of words){
+     if(line && line.length+word.length+1>maxChars){out.push(line);line=word;}
+     else line+=(line?' ':'')+word;
+   }
+   if(line)out.push(line);
+   return out;
+ }
+ window.ZikaSNESText=Object.freeze({
+   draw,wrap,measure,whenReady(fn){if(ready||failed)fn();else callbacks.push(fn)},
+   get ready(){return ready},get failed(){return failed}
+ });
 })();
