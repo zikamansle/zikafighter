@@ -40,7 +40,7 @@ assert.match(selectCss,/grid-template-rows:repeat\(3,/,
   'Trois rangées de combattants');
 assert.match(pixelFont,/window\.ZikaFighterPixelText=/,
   'Atlas pixel partagé obligatoire');
-assert.ok(html.indexOf('zf-pixel-lettering.js')<html.indexOf('character-select.js'),
+assert.ok(html.indexOf('<script defer src="./zf-pixel-lettering.js')<html.indexOf('<script defer src="./character-select.js'),
   'Le lettrage pixel doit être chargé AVANT la sélection des personnages');
 assert.match(select,/bitmap\.draw\(ctx,'PLAYER SELECT'/,
   'Titre PLAYER SELECT dessiné en pixels, pas une image ou une fonte CSS');
