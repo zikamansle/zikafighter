@@ -243,3 +243,21 @@ body.zf-in-selection main{max-width:1020px;padding:12px 8px 24px}
   #select .zf-select-player-label strong{font-size:clamp(10px,2.4vw,17px)}
   #select .zf-select-player-label strong[data-long="true"]{font-size:clamp(8px,1.85vw,13px)}
 }
+
+/* Correctif réel : les noms sont désormais dessinés sur un canevas SNES
+   320×240 à la place des anciennes lettres Georgia/Impact du HTML.
+   Aucune règle sur les portraits, leur cadrage ou leurs images. */
+#select #zf-select-type{
+  position:absolute;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+  z-index:5;
+  image-rendering:pixelated;
+  image-rendering:crisp-edges;
+  pointer-events:none;
+}
+#select .zf-select-player-label{
+  visibility:hidden!important;
+}
