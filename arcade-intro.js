@@ -222,39 +222,42 @@
     }
   }
   function playMenuSfx(kind){
+    // Débloquer le bus commun immédiatement pendant l'action utilisateur :
+    // même référence de volume pour les menus et les combats.
+    window.ZikaArcadeAudio?.unlock?.();
     prepareMenuSfx();
     window.ZikaMenuAudioState[kind+'Plays']++;
     const context=menuContext;
     const playBuffer=(buffer)=>{
-      if(!context||!buffer)return;
+      if(!buffer)return;
+      // Lecture normalisée par le même bus que les autres bruitages/voix.
+      if(window.ZikaArcadeAudio?.playSample?.(buffer))return;
+      if(!context)return;
       try{
-        const source=context.createBufferSource();
-        const gain=context.createGain();
+        const source=context.createBufferSource(),gain=context.createGain();
         source.buffer=buffer;
-        gain.gain.value=(kind==='move'?9:6.5)*(Math.max(0,Math.min(10,settings.fxVolume))/10);
+        const normal=window.ZikaArcadeAudio?.sampleGain?.(buffer)??1;
+        gain.gain.value=normal*(Math.max(0,Math.min(10,settings.fxVolume))/10);
         source.connect(gain);gain.connect(context.destination);
         source.start(context.currentTime);
-      }catch(err){
-        window.ZikaMenuAudioState.lastError=String(err);
-        console.warn('Zika Fighter : lecture audio du menu',kind,err);
-      }
+      }catch(err){window.ZikaMenuAudioState.lastError=String(err);}
     };
     if(context){
-      const decoded=menuBuffers[kind] ? Promise.resolve(menuBuffers[kind]) : menuPending[kind];
+      const decoded=menuBuffers[kind]?Promise.resolve(menuBuffers[kind]):menuPending[kind];
       const resumed=context.state==='running'?Promise.resolve():context.resume();
       Promise.all([decoded,resumed]).then(([buffer])=>{
         if(buffer&&context.state==='running')playBuffer(buffer);
         else window.ZikaMenuAudioState.lastError='Contexte audio non activé';
       }).catch(err=>{
         window.ZikaMenuAudioState.lastError=String(err);
-        console.warn('Zika Fighter : impossible d’activer le son',err);
+        console.warn('Zika Fighter : impossible d’activer le bruitage',err);
       });
     }else{
-      // Fallback direct if WebAudio is unavailable.
       const el=menuMedia[kind];
-      try{el.currentTime=0;const p=el.play();
-        if(p&&p.catch)p.catch(e=>{window.ZikaMenuAudioState.lastError=String(e);});
-      }catch(e){window.ZikaMenuAudioState.lastError=String(e);}
+      try{
+        el.currentTime=0;el.volume=Math.max(0,Math.min(10,settings.fxVolume))/10;
+        const p=el.play();if(p&&p.catch)p.catch(err=>window.ZikaMenuAudioState.lastError=String(err));
+      }catch(err){window.ZikaMenuAudioState.lastError=String(err);}
     }
   }
   let cursorSoundAt=0;
@@ -926,27 +929,25 @@
     if(p&&p.catch)p.catch(failed);
   }
   function playSfxTest(){
-    if(seTestAudio){seTestAudio.pause();seTestAudio.currentTime=0;seTestAudio=null;}
     const file=userEffectFiles[settings.seTest];
     if(!file)return;
-    const effect=new Audio(testAsset(file));
-    effect.preload='auto';
-    effect.volume=Math.max(0,Math.min(10,settings.fxVolume))/10;
-    seTestAudio=effect;
-    let failedOnce=false;
-    const failed=()=>{
-      if(failedOnce||seTestAudio!==effect)return;
-      failedOnce=true;seTestAudio=null;
-      console.warn('Zika Fighter : effet absent. Installez assets/audio :',file);
-      // Vérification audible même sans le pack, sans se faire passer pour l'original.
+    const fallback=()=>{
+      console.warn('Zika Fighter : effet de test inaccessible :',file);
       const legacy=['move','confirm','punch','kick','hit','special','ko'][settings.seTest%7];
       if(legacy==='move'||legacy==='confirm')playMenuSfx(legacy);
       else window.ZikaArcadeAudio?.playEffect(legacy);
     };
-    effect.addEventListener('error',failed,{once:true});
-    effect.addEventListener('ended',()=>{if(seTestAudio===effect)seTestAudio=null;},{once:true});
-    const p=effect.play();
-    if(p&&p.catch)p.catch(failed);
+    // Même normalisation et même volume S.E. que le reste du jeu.
+    if(window.ZikaArcadeAudio?.playClip){
+      window.ZikaArcadeAudio.playClip(testAsset(file),fallback);
+      return;
+    }
+    // Compatibilité avec les navigateurs sans Web Audio.
+    const effect=new Audio(testAsset(file));
+    effect.volume=Math.max(0,Math.min(10,settings.fxVolume))/10;
+    effect.addEventListener('error',fallback,{once:true});
+    const result=effect.play();
+    if(result?.catch)result.catch(fallback);
   }
   function adjustOption(direction){
     const previous=JSON.stringify(settings),d=direction<0?-1:1;
