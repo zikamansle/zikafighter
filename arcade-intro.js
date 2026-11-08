@@ -384,11 +384,14 @@
       mosaic=sc.getImageData(0,0,144,72);
       // Résolutions successives observées : quelques gros blocs,
       // puis un logo de plus en plus détaillé durant la rotation.
-      coarseSprites=[[10,5],[16,8],[24,12],[32,16],[48,24],[72,36],[112,56],[160,80]].map(([ww,hh])=>{
+      coarseSprites=[[48,24],[56,28],[64,32],[80,40],[96,48],[112,56],[144,72],[160,80]].map(([ww,hh])=>{
         const layer=makeCanvas(ww,hh),layerCtx=layer.getContext('2d');
         // Réduction uniquement pour fabriquer une tuile — jamais de lissage
         // à l'affichage sur les frames SNES.
-        layerCtx.imageSmoothingEnabled=false;
+        // Filtrer uniquement à la création des niveaux de détail :
+        // les diagonales et les lettres ne deviennent pas des carrés illisibles.
+        layerCtx.imageSmoothingEnabled=true;
+        layerCtx.imageSmoothingQuality='high';
         layerCtx.drawImage(titleSpritePixels||src,0,0,ww,hh);
         return layer;
       });
@@ -1079,14 +1082,14 @@
     }
     // Phase A : petit logo sur NOIR.
     if(t<1.20){paint(sprite,160,52,90,43);return;}
-    // Phase B : balayage avec texture pixel grossie.
+    // Phase B : balayage du logo reconnaissable, sans mosaïque excessive.
     if(t<2.13){
       const p=Math.min(1,Math.floor((t-1.20)*30)/27);
-      paint(coarseSprites[5]||sprite,350-Math.round(680*p),87,740,349);
+      paint(coarseSprites[7]||sprite,350-Math.round(680*p),87,740,349);
       return;
     }
-    // Phase C : rotation des tuiles du logo. Huit résolutions successives,
-    // changement de taille d'image sans antialiasing ni interpolation.
+    // Phase C : rotation avec un léger changement de définition (48 à 160 px).
+    // Interpolation interdite à l'affichage, mais lettres toujours lisibles.
     const frame=Math.max(0,Math.floor((t-2.13)*30));
     const progress=Math.min(1,frame/42);
     const p=1-Math.pow(1-progress,3);
