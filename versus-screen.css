@@ -1,0 +1,11 @@
+/* VS: pixel-era split layout, 4:3, no portrait deformation. */
+#zf-versus[hidden]{display:none!important}
+#zf-versus{position:fixed;inset:0;z-index:2147483600;background:#000;display:grid;place-items:center}
+#zf-versus .zf-vs-picture{position:relative;aspect-ratio:4/3;width:min(100vw,calc(100vh * 4 / 3));overflow:hidden;background:linear-gradient(155deg,#102a68 0%,#07133d 52%,#070724 52%,#142f70 100%);image-rendering:pixelated}
+#zf-versus .zf-vs-player{position:absolute;top:16%;height:69%;width:43%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+#zf-versus .zf-vs-left{left:3%}
+#zf-versus .zf-vs-right{right:3%}
+#zf-versus .zf-vs-portrait{height:81%;width:100%;display:flex;align-items:end;justify-content:center;overflow:hidden}
+#zf-versus .zf-vs-portrait img{width:100%;height:100%;object-fit:contain;object-position:center bottom;image-rendering:pixelated}
+#zf-versus .zf-vs-name{display:grid;place-items:center;width:100%;height:19%;font:900 clamp(14px,3.4vw,38px)/1 'ZikaSFII',monospace;color:#f7d38d;text-align:center;text-shadow:2px 3px #6a173a;white-space:nowrap;letter-spacing:-.03em}
+#zf-versus .zf-vs-emblem{position:absolute;top:39%;left:50%;transform:translate(-50%,-50%) rotate(-8deg);z-index:3;font:italic 1000 clamp(58px,11vw,124px)/1 'ZikaCPS1','ZikaSFII',monospace;color:#f8d34d;text-shadow:4px 4px #a61c34,7px 8px #09092a}
