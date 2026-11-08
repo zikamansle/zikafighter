@@ -344,9 +344,17 @@ function enter(){
 function finish(){
  if(!opened||window.ZikaFighterScreens?.busy)return;
  const transition=()=>{
-  opened=false;stopMusic();document.body.classList.remove('zf-in-selection');
-  bridge()?.setFighter?.(fighters[chosen[0]].slug);
-  bridge()?.setOpponent?.(fighters[count()===2?chosen[1]:(chosen[0]+1)%fighters.length].slug);
+  opened=false;stopMusic();
+  const player1=fighters[chosen[0]].slug;
+  const player2=fighters[count()===2?chosen[1]:(chosen[0]+1)%fighters.length].slug;
+  bridge()?.setFighter?.(player1);
+  bridge()?.setOpponent?.(player2);
+  // Après la sélection des combattants, ouvrir obligatoirement les arènes.
+  // Ne lancer le combat qu'après confirmation du décor ET annonce vocale.
+  if(window.ZikaFighterStageSelect?.open){
+   if(window.ZikaFighterStageSelect.open({player1,player2,twoPlayers:count()===2}))return;
+  }
+  document.body.classList.remove('zf-in-selection');
   bridge()?.start?.();
  };
  if(window.ZikaFighterScreens)window.ZikaFighterScreens.change(transition,{out:185,hold:45,in:185});
@@ -404,7 +412,7 @@ function pollPad(now){
 requestAnimationFrame(pollPad);
 window.addEventListener('zika:settings-changed',changeVolume);
 window.ZikaFighterCharacterSelect={
- open:enter,playMusic:startMusic,stopMusic,
+ open:enter,playMusic:startMusic,stopMusic,playConfirmSound:playCharacterConfirmSound,
  prewarm:()=>{
    window.ZikaArcadeAudio?.preloadClip?.(confirmSoundFile);
    confirmationFallback.load();
