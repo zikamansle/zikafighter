@@ -286,6 +286,12 @@
     try{const p=titleMusic.play();if(p&&typeof p.catch==='function')p.catch(()=>{});}catch(_){}
   }
   let phase='legal',status='pending',closed=false,raf=0;
+  // Fondu écran complet : se fermer au noir, changer d'écran, réapparaître.
+  function transitionTo(action,opts){
+    const t=window.ZikaFighterScreens;
+    if(t)return t.change(action,opts);
+    action();return true;
+  }
   let visualStartedAt=0;
   const legalStartedAt=performance.now();
   let legalFrame=0;
@@ -379,16 +385,18 @@
   function finishCinematic(){
     if(phase!=='cinematic'||closed)return;
     if(cinematicFrame!==null)cancelAnimationFrame(cinematicFrame);
-    cinematic.hidden=true;
-    title.hidden=false;
-    phase='title';
-    titleMenuOpen=false;
-    battleSubmenuOpen=false;
-    titleSelection=0;
-    titleFrame=requestAnimationFrame(drawTitleFrame);
-    startButton.focus({preventScroll:true});
+    cinematicFrame=null;
+    phase='transition';
+    transitionTo(()=>{
+      cinematic.hidden=true;title.hidden=false;
+      phase='title';titleMenuOpen=false;battleSubmenuOpen=false;titleSelection=0;
+      // Apparition fixe du logo et de PRESS START, sans revoir le défilement.
+      titleVisualStartedAt=performance.now()-7000;
+      titleFrame=requestAnimationFrame(drawTitleFrame);
+      startButton.focus({preventScroll:true});
+    });
   }
-  // L'écran-titre continue au même temps musical ; le thème n'est pas relancé.
+    // L'écran-titre continue au même temps musical ; le thème n'est pas relancé.
   // On reconstruit le fond noir/bande bleue de la capture, et non le PNG entier
   // qui contenait encore ZIKACOM et une inscription PUSH START permanente.
   // Scène titre aux mêmes coordonnées que la fin de la cinématique.
@@ -948,86 +956,79 @@
     persistSettings();renderOptions();
   }
   function openOptions(){
-    if(phase!=='title')return;
-    if(titleFrame)cancelAnimationFrame(titleFrame);
-    phase='options';
-    title.hidden=true;optionsScreen.hidden=false;
-    optionSelection=0;optionsCanvas.focus({preventScroll:true});
-    renderOptions();
+    if(phase!=='title'||window.ZikaFighterScreens?.busy)return;
+    transitionTo(()=>{
+      if(titleFrame)cancelAnimationFrame(titleFrame);
+      phase='options';title.hidden=true;optionsScreen.hidden=false;
+      optionSelection=0;optionsCanvas.focus({preventScroll:true});
+      renderOptions();
+    });
   }
   function closeOptions(){
-    if(phase!=='options')return;
+    if(phase!=='options'||window.ZikaFighterScreens?.busy)return;
     if(musicTestAudio){musicTestAudio.pause();musicTestAudio=null;}
     if(seTestAudio){seTestAudio.pause();seTestAudio=null;}
-    optionsScreen.hidden=true;title.hidden=false;phase='title';
-    titleMenuOpen=true;
-    battleSubmenuOpen=false;
-    if(titleMusic.paused)playTitleMusic();
-    // Le titre reprend sur son menu stable, pas au début de la rotation.
-    titleVisualStartedAt=performance.now()-7000;
-    titleFrame=requestAnimationFrame(drawTitleFrame);
-    startButton.focus({preventScroll:true});
+    transitionTo(()=>{
+      optionsScreen.hidden=true;title.hidden=false;phase='title';
+      titleMenuOpen=true;battleSubmenuOpen=false;
+      if(titleMusic.paused)playTitleMusic();
+      titleVisualStartedAt=performance.now()-7000;
+      titleFrame=requestAnimationFrame(drawTitleFrame);
+      startButton.focus({preventScroll:true});
+    });
   }
-  function openTitleMenu(){
-    if(phase!=='title'||closed||titleMenuOpen)return false;
-    titleMenuOpen=true;battleSubmenuOpen=false;titleSelection=0;
+    function openTitleMenu(){
+    if(phase!=='title'||closed||titleMenuOpen||window.ZikaFighterScreens?.busy)return false;
     cursorConfirm();
-    return true;
+    return transitionTo(()=>{
+      titleMenuOpen=true;battleSubmenuOpen=false;titleSelection=0;
+    });
   }
-  // Un appui durant les crédits, le logo ZIKAPCOM ou la cinématique
-  // amène uniquement à PRESS START. Un nouvel appui révèle les choix.
+  // Tout START pendant le générique amène directement à PRESS START.
   function skipIntroToPressStart(){
-    if(closed||!['legal','splash','cinematic'].includes(phase))return false;
+    if(closed||!['legal','splash','cinematic'].includes(phase)||window.ZikaFighterScreens?.busy)return false;
     if(legalFrame)cancelAnimationFrame(legalFrame);
     if(raf)cancelAnimationFrame(raf);
-    if(cinematicFrame!==null){
-      cancelAnimationFrame(cinematicFrame);
-      cinematicFrame=null;
-    }
-    audio.pause();
-    try{audio.currentTime=0;}catch(_){}
+    if(cinematicFrame!==null){cancelAnimationFrame(cinematicFrame);cinematicFrame=null;}
+    audio.pause();try{audio.currentTime=0;}catch(_){}
     status='skipped';
-    unblock.hidden=true;
-    errorText.hidden=true;
-    legal.hidden=true;splash.hidden=true;cinematic.hidden=true;
-    optionsScreen.hidden=true;title.hidden=false;
-    phase='title';titleMenuOpen=false;battleSubmenuOpen=false;titleSelection=0;
-    // Fin du générique visuel ; l'écran PRESS START reste stable.
-    titleVisualStartedAt=performance.now()-7000;
+    // Démarrer la musique au geste de l'utilisateur pour éviter l'autoplay bloqué.
     if(titleMusic.paused)playTitleMusic();
-    if(titleFrame)cancelAnimationFrame(titleFrame);
-    titleFrame=requestAnimationFrame(drawTitleFrame);
-    // Dessiner immédiatement l'écran de destination, sans une frame de
-    // l'animation précédente après la pression de START.
-    renderTitleFrame(7);
-    startButton.focus({preventScroll:true});
-    return true;
+    phase='transition';
+    return transitionTo(()=>{
+      unblock.hidden=true;errorText.hidden=true;
+      legal.hidden=true;splash.hidden=true;cinematic.hidden=true;
+      optionsScreen.hidden=true;title.hidden=false;
+      phase='title';titleMenuOpen=false;battleSubmenuOpen=false;titleSelection=0;
+      titleVisualStartedAt=performance.now()-7000;
+      if(titleFrame)cancelAnimationFrame(titleFrame);
+      renderTitleFrame(7);
+      titleFrame=requestAnimationFrame(drawTitleFrame);
+      startButton.focus({preventScroll:true});
+    });
   }
   function enterBattleSubmenu(){
-    if(phase!=='title'||!titleMenuOpen||battleSubmenuOpen)return;
+    if(phase!=='title'||!titleMenuOpen||battleSubmenuOpen||window.ZikaFighterScreens?.busy)return;
     pendingGameMode=titleSelection===1?'normal':'turbo';
     battleSelection=0;
-    battleSubmenuOpen=true;
     cursorConfirm();
+    transitionTo(()=>{battleSubmenuOpen=true;});
   }
   function returnToModeMenu(){
-    if(phase!=='title'||!battleSubmenuOpen)return;
-    battleSubmenuOpen=false;
+    if(phase!=='title'||!battleSubmenuOpen||window.ZikaFighterScreens?.busy)return;
     cursorMove();
+    transitionTo(()=>{battleSubmenuOpen=false;});
   }
   function activateBattleSelection(){
-    if(phase!=='title'||!battleSubmenuOpen)return;
+    if(phase!=='title'||!battleSubmenuOpen||window.ZikaFighterScreens?.busy)return;
     settings.mode=pendingGameMode;
     if(pendingGameMode==='normal')settings.turbo=0;
     else settings.turbo=clamp(settings.turbo,0,4);
-    // GAME START = CPU ; V.S. BATTLE = duel entre deux joueurs.
     settings.players=battleSelection===1?2:1;
     settings.matchType=battleSelection===1?'versus':'arcade';
-    persistSettings();
-    cursorConfirm();
-    launch();
+    persistSettings();cursorConfirm();launch();
   }
-  function activateTitleSelection(){
+    function activateTitleSelection(){
     if(phase!=='title')return;
     if(battleSubmenuOpen){activateBattleSelection();return;}
     if(titleSelection===2){cursorConfirm();openOptions();return;}
@@ -1109,20 +1110,18 @@
     cinematicFrame=requestAnimationFrame(tick);
   }
   function showTitle(){
-    if(phase!=='splash'||closed)return;
-    phase='cinematic';
-    cancelAnimationFrame(raf);
-    unblock.hidden=true;
-    audio.pause();
-    splash.hidden=true;
-    cinematic.hidden=false;
-    titleMusic.currentTime=TITLE_MUSIC_OFFSET;
-    titleVisualStartedAt=performance.now();
-    // On garde le thème fourni par l'utilisateur dès cette première scène.
-    playTitleMusic();
-    animateCinematic(performance.now());
+    if(phase!=='splash'||closed||window.ZikaFighterScreens?.busy)return;
+    phase='transition';cancelAnimationFrame(raf);
+    unblock.hidden=true;audio.pause();
+    transitionTo(()=>{
+      splash.hidden=true;cinematic.hidden=false;phase='cinematic';
+      titleMusic.currentTime=TITLE_MUSIC_OFFSET;
+      titleVisualStartedAt=performance.now();
+      playTitleMusic();
+      animateCinematic(performance.now());
+    });
   }
-  function update(){
+    function update(){
     if(phase!=='splash')return;
     // Le fondu n'avance que lorsque le MP3 avance réellement.
     if(status==='playing')fade(audio.currentTime);
@@ -1201,14 +1200,18 @@
     drawLegalFrame(t);
     if(t>=5.20){
       cancelAnimationFrame(legalFrame);
-      legal.hidden=true;splash.hidden=false;phase='splash';
-      visualStartedAt=performance.now();
-      raf=requestAnimationFrame(update);
-      attemptPlayback();return;
+      phase='transition';
+      transitionTo(()=>{
+        legal.hidden=true;splash.hidden=false;phase='splash';
+        visualStartedAt=performance.now();
+        raf=requestAnimationFrame(update);
+        attemptPlayback();
+      });
+      return;
     }
     legalFrame=requestAnimationFrame(legalTick);
   }
-  function attemptPlayback(){
+    function attemptPlayback(){
     if(phase!=='splash'||status==='playing')return;
     unblock.hidden=true;
     errorText.hidden=true;
@@ -1247,23 +1250,20 @@
   unblock.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();attemptPlayback();});
   // La commande START de l'introduction est capturée une seule fois, sur window.
   function launch(){
-    if(phase!=='title'||closed)return;
+    if(phase!=='title'||closed||window.ZikaFighterScreens?.busy)return;
     closed=true;
     if(cinematicFrame!==null)cancelAnimationFrame(cinematicFrame);
     if(titleFrame)cancelAnimationFrame(titleFrame);
-    titleMusic.pause();
-    titleMusic.currentTime=0;
-    // Le vrai WAV de confirmation est joué par activateTitleSelection().
-    // Ne pas superposer le vieux bruitage synthétique.
-    overlay.classList.add('zf-fade');
-    setTimeout(()=>{
+    titleMusic.pause();titleMusic.currentTime=0;
+    // Préparer le MP3 de sélection sur le geste START, avant le fondu.
+    window.ZikaFighterCharacterSelect?.prewarm?.();
+    transitionTo(()=>{
       overlay.remove();
-      // The selection scene takes over the shared BGM, with the global music level.
-      window.ZikaArcadeAudio?.startTitle();
-      document.querySelector('[data-player]')?.focus({preventScroll:true});
-    },390);
+      window.ZikaArcadeAudio?.stop();
+      window.ZikaFighterCharacterSelect?.open?.();
+    },{out:210,hold:60,in:210});
   }
-  // Navigation arcade, utilisable au clavier, à la manette mappée en touches,
+    // Navigation arcade, utilisable au clavier, à la manette mappée en touches,
   // et au clic sur l'écran. Aucun passage automatique au combat.
   startButton.addEventListener('click',event=>{
     if(phase!=='title')return;
@@ -1329,7 +1329,7 @@
   const heldTitleStarts=new Set();
   const isStartKey=code=>['Enter','Space','NumpadEnter'].includes(code);
   window.addEventListener('keydown',event=>{
-    if(closed||!overlay.isConnected||!isStartKey(event.code))return;
+    if(closed||!overlay.isConnected||!isStartKey(event.code)||window.ZikaFighterScreens?.busy)return;
     const relevant=['legal','splash','cinematic'].includes(phase)||(phase==='title'&&!titleMenuOpen);
     if(!relevant)return;
     event.preventDefault();
@@ -1348,7 +1348,7 @@
   window.addEventListener('blur',()=>heldTitleStarts.clear());
 
   document.addEventListener('keydown',event=>{
-    if(closed||!overlay.isConnected)return;
+    if(closed||!overlay.isConnected||window.ZikaFighterScreens?.busy)return;
     if(phase==='title'&&!titleMenuOpen)return;
     if(phase==='title'&&battleSubmenuOpen){
       const before=battleSelection;
@@ -1411,6 +1411,7 @@
   let padHeld='',padLastActionAt=0,padStartHeld=false;
   function pollArcadePad(now){
     if(closed||!overlay.isConnected)return;
+    if(window.ZikaFighterScreens?.busy){padHeld='';padStartHeld=false;requestAnimationFrame(pollArcadePad);return;}
     let pads=[];
     try{pads=navigator.getGamepads?Array.from(navigator.getGamepads()):[];}catch(_){}
     const pad=pads.find(Boolean);
