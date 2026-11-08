@@ -22,6 +22,20 @@
  const vsSprite=new Image();
  vsSprite.onload=()=>{if(!screen.hidden)draw();};
  vsSprite.src='data:image/png;base64,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';
+ const portraitCache=new Map();
+ function cachedPortrait(path){
+   if(!path)return null;
+   if(portraitCache.has(path))return portraitCache.get(path);
+   const image=new Image();
+   image.decoding='async';
+   image.src=path;
+   portraitCache.set(path,image);
+   return image;
+ }
+ function preload(player1,player2){
+   const sources=portraitSources();
+   for(const id of [player1,player2])cachedPortrait(sources[id]);
+ }
  const selectedSlugs=['',''];
  // Orientation des illustrations sources : visage tourné vers la gauche
  // de l'image. Toutes les autres sont frontales ou orientées à droite.
@@ -97,11 +111,13 @@
   portraitImages=[null,null];
   [player1,player2].forEach((id,index)=>{
    const path=srcs[id];if(!path)return;
-   const image=new Image();image.decoding='async';
-   image.onload=()=>{if(token!==session)return;portraitImages[index]=image;draw();};
-   image.onerror=()=>console.warn('Zika Fighter VS : portrait introuvable',id);
-   image.src=path;
-   if(image.complete&&image.naturalWidth){portraitImages[index]=image;}
+   const image=cachedPortrait(path);
+   if(image.complete&&image.naturalWidth){portraitImages[index]=image;return;}
+   image.addEventListener('load',()=>{
+     if(token!==session)return;
+     portraitImages[index]=image;draw();
+   },{once:true});
+   image.addEventListener('error',()=>console.warn('Zika Fighter VS : portrait introuvable',id),{once:true});
   });
  }
  function show({player1,player2,onComplete}={}){
@@ -139,6 +155,10 @@
   };
   const enter=()=>{
    if(token!==session)return;
+   // La transition est noire à cet instant : cacher l'ancien écran ici
+   // évite un flash vide entre le choix d'arène et le VS.
+   const selection=document.getElementById('select');
+   if(selection)selection.hidden=true;
    screen.hidden=false;draw();
    canSkip=false;lastPadPressed=true;
    requestAnimationFrame(()=>{
@@ -177,5 +197,5 @@
  document.addEventListener('keyup',event=>{heldKeys.delete(event.code);},true);
  window.addEventListener('blur',()=>heldKeys.clear());
  window.ZikaSNESText?.whenReady(()=>{if(!screen.hidden)draw();});
- window.ZikaFighterVersus=Object.freeze({show,close:stop,stopAudio:()=>{soundtrack.pause();try{soundtrack.currentTime=0;}catch(_){}},getState:()=>({visible:!screen.hidden,audioTime:soundtrack.currentTime,audioDuration:soundtrack.duration})});
+ window.ZikaFighterVersus=Object.freeze({show,preload,close:stop,stopAudio:()=>{soundtrack.pause();try{soundtrack.currentTime=0;}catch(_){}},getState:()=>({visible:!screen.hidden,audioTime:soundtrack.currentTime,audioDuration:soundtrack.duration})});
 })();
