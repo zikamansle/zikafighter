@@ -91,6 +91,7 @@
   screen.hidden=false;root.hidden=false;
   root.classList.add('zf-stage-phase');
   fillGrid();draw();
+  window.ZikaArcadeAudio?.preloadClip?.('./assets/audio/zika-plane-transition.ogg');
   grid.children[0]?.focus({preventScroll:true});
   return true;
  }
@@ -99,20 +100,33 @@
   root.classList.remove('zf-stage-phase');
   const gridSource=root.querySelector('.zf-select-cabinet');if(gridSource)gridSource.hidden=false;
  }
- function playAirplane(){
-  // Réutilise le WAV d'avion lorsque le fichier est présent dans assets/audio.
-  // Le bruitage est distinct de la voix, et suit le même réglage S.E.
-  return new Promise(resolve=>{
-    const sound=new Audio('./assets/audio/SFII_0~4.WAV');
-    sound.preload='auto';
+ async function playAirplane(){
+  // Extrait SFII_0~4.WAV fourni par l'utilisateur, converti en OGG rétro
+  // et publié dans le dépôt. Lecture sur le même bus S.E. que les voix.
+  const path='./assets/audio/zika-plane-transition.ogg';
+  const audio=window.ZikaArcadeAudio;
+  let duration=2.18;
+  if(audio?.preloadClip&&audio?.playSample){
+    try{
+      const buffer=await audio.preloadClip(path);
+      if(buffer){
+        duration=buffer.duration||duration;
+        audio.playSample(buffer);
+        await new Promise(done=>setTimeout(done,Math.min(3000,Math.max(350,duration*1000))));
+        return;
+      }
+    }catch(err){console.warn('Zika Fighter : avion non décodable',err)}
+  }
+  // Repli lorsque WebAudio ne peut pas décoder la version OGG.
+  await new Promise(resolve=>{
+    const sound=new Audio(path);sound.preload='auto';
     const volume=Number(window.ZikaFighterSettings?.fxVolume??8);
     sound.volume=Math.max(0,Math.min(1,volume/10));
-    let settled=false;
-    const done=()=>{if(!settled){settled=true;resolve()}};
-    sound.onended=done;sound.onerror=done;
-    try{const p=sound.play();if(p?.catch)p.catch(done)}catch(_){done()}
-    // L'annonce ne doit pas rester bloquée en cas d'absence de média.
-    setTimeout(done,3000);
+    let done=false;
+    const finish=()=>{if(!done){done=true;resolve()}};
+    sound.onended=finish;sound.onerror=finish;
+    try{const p=sound.play();if(p?.catch)p.catch(finish)}catch(_){finish()}
+    setTimeout(finish,3000);
   });
  }
  async function confirm(){
@@ -127,6 +141,9 @@
   window.ZikaFighterBridge?.setStage?.(s.id);
   const flight=screen.querySelector('#zf-stage-flight');
   flight.hidden=false;
+  // Laisser entendre le clic de validation avant le bruit d'avion.
+  await new Promise(done=>setTimeout(done,220));
+  if(!active||stageToken!==ownToken)return;
   await playAirplane();
   if(!active||stageToken!==ownToken)return;
   await catalogue()?.announce(s.id);
