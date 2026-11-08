@@ -6,6 +6,10 @@ Date de référence : **8 novembre 2026** · Dépôt : `zikamansle/zikafighter` 
 
 ## Règles de fidélité et de validation
 
+**EXCEPTION UNIQUE POUR LA PROGRESSION :** décision utilisateur du **08/11/2026** : **NE PAS créer de carte** de progression/niveaux, malgré la présence d'une carte dans SFII Turbo SNES. La remplacer par une présentation du niveau et de l'adversaire dans le langage graphique de la console. Cela **n'autorise pas** à s'écarter de la version SNES sur les écrans, curseurs, typographies, sons, mouvements, commandes, mécaniques et transitions. Les adaptations déjà validées (20 combattants + Zika bonus, 21 arènes, choix d'arène dans le bandeau inférieur) sont conservées ; ce sont des adaptations de contenu/disposition, pas des excuses pour approximation visuelle.
+
+**Référence de contrôle authentique** : manuel Nintendo français de *Street Fighter II' Turbo: Hyper Fighting* sur SNES : https://www.nintendo.co.jp/clvs/manuals/fr/pdf/CLV-P-SABHE_fr.pdf ; planches de sprites de l'écran PLAYER SELECT du jeu SNES, The Spriters Resource : https://www.spriters-resource.com/snes/streetfighteriistreetfighteriiturbo/asset/5573/ . Confirmer les détails d'animation en vidéo sur la version exacte, avant validation.
+
 1. **Toujours lire cette checklist au début d'une reprise du projet.** Mettre à jour ce fichier après chaque tâche réellement terminée. C'est la référence permanente d'avancement, accessible lors des prochaines sessions depuis le dépôt.
 2. **Zéro approximation présentée comme fidèle** : avant de produire ou modifier un écran, comparer aux références authentiques de la version **SNES 1993** (manuel, captures, vidéo de jeu issue de la version exacte). Lorsqu'un point n'est pas vérifié, le marquer « à vérifier » au lieu de l'inventer.
 3. **Fidélité graphique** : emplacement, cadrage, ratio, résolution, palette, typographie, pixels nets, proportions, animation, tempo, transitions, position/forme des curseurs et composition de l'écran. Ne jamais mélanger des composants d'autres épisodes.
@@ -42,8 +46,8 @@ Date de référence : **8 novembre 2026** · Dépôt : `zikamansle/zikafighter` 
 
 ## 3. Écrans de préparation des combats — principalement à créer
 
-- [ ] **17** — Créer la carte de progression du tournoi adaptée à Mansle.
-- [ ] **18** — Créer l'animation indiquant le prochain adversaire.
+- [ ] **17** — Créer l'écran de **progression de tournoi sans carte** : annonce du niveau, de l'adversaire suivant et transition fidèle à l'ambiance 16 bits SNES. **Adaptation expressément validée le 8 novembre 2026 : aucune carte de progression.**
+- [ ] **18** — Créer l'animation indiquant le prochain adversaire et le niveau atteint **sans écran cartographique** ; durée, transitions et sons inspirés exclusivement de la version SNES.
 - [ ] **19** — Créer l'écran de confrontation avec les portraits des deux combattants.
 - [ ] **20** — Reproduire les transitions et les sons précédant un combat.
 - [ ] **21** — Créer la séquence `HERE COMES A NEW CHALLENGER` quand le deuxième joueur intervient.
@@ -66,7 +70,7 @@ Date de référence : **8 novembre 2026** · Dépôt : `zikamansle/zikafighter` 
 ## 5. Tournoi solo et stages bonus — à créer
 
 - [ ] **34** — Construire le tournoi solo complet avec succession automatique des adversaires.
-- [ ] **35** — Mettre à jour la carte après chaque victoire.
+- [ ] **35** — Mettre à jour le **niveau / la progression du tournoi** après chaque victoire, avec son écran de transition non cartographique.
 - [ ] **36** — Définir l'ordre des adversaires et les combats finaux.
 - [ ] **37** — Créer le stage bonus de destruction de voiture.
 - [ ] **38** — Créer le stage bonus de destruction d'un mur de briques.
@@ -104,6 +108,7 @@ Date de référence : **8 novembre 2026** · Dépôt : `zikamansle/zikafighter` 
 
 - **2026-11-08** — Création de cette checklist comme référence permanente de travail. Statuts initiaux volontairement ouverts. Référence de comparaison exclusivement **Street Fighter II Turbo sur Super Nintendo (1993)**. Prochaine priorité : fiabiliser l'introduction, l'écran légal, les menus, les options, puis la sélection des personnages, en comparant **chaque écran** à la version SNES réelle.
 
+- **2026-11-08, nouvelle directive utilisateur** — Fidélité maximale à **Street Fighter II Turbo SNES uniquement** pour le rendu et le gameplay. **Pas de carte de progression des niveaux**, exception explicitement autorisée. Écran de sélection **toujours NON VALIDÉ** : typographies, 1P/2P et curseurs personnages/arènes à réviser sur référence officielle, sans modification des portraits. Le rendu 7–7–6 et le bandeau inférieur demeurent des adaptations explicitement approuvées.
 - **2026-11-08, reprise de fin d'après-midi** — Corrections publiées sur la branche principale : (1) bandeau horizontal d'arènes alimenté par les **21 illustrations originales individuellement**, sans montage 7×3 ni déformation ; (2) miniatures des personnages en `object-fit:contain` afin de préserver les visages validés ; (3) scène de combat, dimensions du canvas et repères moteur en **1152×864 (4:3)**, avec recadrage central des décors sans étirement ; (4) mise à jour des versions de ressources pour éviter un ancien rendu en cache ; (5) ajout des tests `tests/smoke-static.mjs` et du workflow `.github/workflows/snes-smoke.yml`. **Résultat GitHub Actions : succès sur la révision 484abbb**. Les tests confirment l'intégrité technique de 20 personnages, 21 arènes, fichiers d'annonce audio, dimensions, montage des scripts et syntaxe. **Aucune case 11/12/13/22/55/57/58 cochée** : contrôle visuel des écrans et partie jouée non réalisés. Le moteur actuel reste une démonstration, pas un SFII Turbo complet.\n\n## Rappel de reprise à copier dans les futures discussions
 
 > « Travaille sur Zika Fighter en reprenant `docs/CHECKLIST_SNES_58_TACHES.md` du dépôt `zikamansle/zikafighter`. Seule référence : Street Fighter II Turbo, Super Nintendo 1993. Avant chaque changement, compare la version exacte et vérifie le rendu, les transitions, les commandes, les musiques et les bruitages. Pas d'approximation, pas d'ajout d'une autre version. Préserve les visages, portraits, logos et écrans déjà validés. Mets à jour les cases de la checklist après vérification réelle. »
