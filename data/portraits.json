@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "description": "Portraits recadrés à partir des visuels fournis. 3 portraits absents des envois : Emma, Kév, Victor.",
+  "fighters": [
+    {
+      "slug": "pascal",
+      "portrait": "https://static.wixstatic.com/media/685632_7d36db0a06c9473a87816dd260392e11~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "micka",
+      "portrait": "https://static.wixstatic.com/media/685632_a1fb8511b8e94b8db871c426755dd483~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "emma",
+      "portrait": null,
+      "status": "missing"
+    },
+    {
+      "slug": "julie",
+      "portrait": "https://static.wixstatic.com/media/685632_4209655f369148b48162b324ce4733fa~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "antho",
+      "portrait": "https://static.wixstatic.com/media/685632_1f9e507497434ffc89caa8b6eb76433f~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "fabrice",
+      "portrait": "https://static.wixstatic.com/media/685632_34ba386cba4f4539a871acc39577ced4~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "sandy",
+      "portrait": "https://static.wixstatic.com/media/685632_813bf52a46fd464ebd21eef5c1391fbe~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "fabienne-1",
+      "portrait": "https://static.wixstatic.com/media/685632_943480c3232e4d7693e081bdab0445bb~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "fabienne-2",
+      "portrait": "https://static.wixstatic.com/media/685632_15a46dd0b2dd4b13897719e415c1dc41~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "billy",
+      "portrait": "https://static.wixstatic.com/media/685632_c1a71445e9e64096befe08ce0dc1527e~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "ludo",
+      "portrait": "https://static.wixstatic.com/media/685632_1da89ff6e64d41aa8d1174cc2586ed82~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "ju",
+      "portrait": "https://static.wixstatic.com/media/685632_1d4ad94aa9fa45ed848c0703815ba41b~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "bene",
+      "portrait": "https://static.wixstatic.com/media/685632_cd72757c1c0b4a558fd6d0db64d1789f~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "kev",
+      "portrait": null,
+      "status": "missing"
+    },
+    {
+      "slug": "loic",
+      "portrait": "https://static.wixstatic.com/media/685632_7a856ac487f249a0b0f1a0d4a6d45c0f~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "laura",
+      "portrait": "https://static.wixstatic.com/media/685632_1868699cadae4910923d98401088e5d3~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "val",
+      "portrait": "https://static.wixstatic.com/media/685632_1bfad52b14e54e7b845a92a820190dd7~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "victor",
+      "portrait": null,
+      "status": "missing"
+    },
+    {
+      "slug": "elo",
+      "portrait": "https://static.wixstatic.com/media/685632_d4614fc8c1df43a99d029c36ec081724~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "djo",
+      "portrait": "https://static.wixstatic.com/media/685632_508e4ffae0ee4391819589f0338e1e03~mv2.png",
+      "status": "ready"
+    },
+    {
+      "slug": "zika",
+      "portrait": "https://static.wixstatic.com/media/685632_9687ef23572d4fb4822ea93398c1992f~mv2.png",
+      "status": "ready"
+    }
+  ]
+}
