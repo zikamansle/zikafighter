@@ -193,46 +193,67 @@
     const value=(i/(stageDistortionCurve.length-1))*2-1;
     stageDistortionCurve[i]=Math.tanh(2.7*value)/Math.tanh(2.7);
   }
+  // Chaque annonce a un lecteur actif annulable. START/validation peut
+  // interrompre immédiatement la voix et résoudre l'attente.
+  let activeStageVoice=null;
+  function stopStageVoice(){
+    const voice=activeStageVoice;
+    if(!voice)return;
+    activeStageVoice=null;
+    try{voice.stop?.();}catch(_){}
+    voice.finish(false);
+  }
   async function playStageVoice(url){
+    stopStageVoice();
     if(clamp(settings.fxVolume,0,10)===0)return true;
-    const fallback=()=>new Promise(resolve=>{
+    let resolveDone;
+    const completion=new Promise(resolve=>{resolveDone=resolve;});
+    const voice={stop:null,finish:result=>{
+      if(voice.done)return;
+      voice.done=true;
+      if(activeStageVoice===voice)activeStageVoice=null;
+      resolveDone(result);
+    }};
+    activeStageVoice=voice;
+    const fallback=()=>{
+      if(voice.done)return;
       try{
         const el=new Audio(url);
+        voice.stop=()=>{el.pause();el.currentTime=0;};
         el.volume=clamp(settings.fxVolume,0,10)/10;
         el.preload='auto';
-        el.onended=()=>resolve(true);
-        el.onerror=()=>resolve(false);
+        el.onended=()=>voice.finish(true);
+        el.onerror=()=>voice.finish(false);
         const result=el.play();
-        if(result?.catch)result.catch(()=>resolve(false));
-      }catch(_){resolve(false);}
-    });
-    if(!unlock())return fallback();
+        if(result?.catch)result.catch(()=>voice.finish(false));
+      }catch(_){voice.finish(false);}
+    };
+    if(!unlock()){fallback();return completion;}
     const buffer=await preloadClip(url);
-    if(!buffer||!ctx||ctx.state==='closed')return fallback();
-    return new Promise(resolve=>{
-      try{
-        const source=ctx.createBufferSource();
-        const level=ctx.createGain();
-        const mid=ctx.createBiquadFilter();
-        const clarity=ctx.createBiquadFilter();
-        const sat=ctx.createWaveShaper();
-        const output=ctx.createGain();
-        source.buffer=buffer;
-        level.gain.value=sampleGain(buffer);
-        mid.type='peaking';mid.frequency.value=1300;mid.Q.value=.85;mid.gain.value=4.5;
-        clarity.type='peaking';clarity.frequency.value=2500;clarity.Q.value=1;clarity.gain.value=2.5;
-        sat.curve=stageDistortionCurve;
-        sat.oversample='2x';
-        output.gain.value=.83;
-        source.connect(level);level.connect(mid);mid.connect(clarity);
-        clarity.connect(sat);sat.connect(output);output.connect(sfxOut);
-        source.onended=()=>resolve(true);
-        source.start();
-      }catch(err){
-        console.warn('Zika Fighter : traitement vocal SNES indisponible',err);
-        fallback().then(resolve);
-      }
-    });
+    if(voice.done)return completion;
+    if(!buffer||!ctx||ctx.state==='closed'){fallback();return completion;}
+    try{
+      const source=ctx.createBufferSource();
+      const level=ctx.createGain();
+      const mid=ctx.createBiquadFilter();
+      const clarity=ctx.createBiquadFilter();
+      const sat=ctx.createWaveShaper();
+      const output=ctx.createGain();
+      source.buffer=buffer;level.gain.value=sampleGain(buffer);
+      mid.type='peaking';mid.frequency.value=1300;mid.Q.value=.85;mid.gain.value=4.5;
+      clarity.type='peaking';clarity.frequency.value=2500;clarity.Q.value=1;clarity.gain.value=2.5;
+      sat.curve=stageDistortionCurve;sat.oversample='2x';
+      output.gain.value=.83;
+      source.connect(level);level.connect(mid);mid.connect(clarity);
+      clarity.connect(sat);sat.connect(output);output.connect(sfxOut);
+      voice.stop=()=>{try{source.stop();}catch(_){}};
+      source.onended=()=>voice.finish(true);
+      source.start();
+    }catch(err){
+      console.warn('Zika Fighter : traitement vocal SNES indisponible',err);
+      fallback();
+    }
+    return completion;
   }
 
   const voiceFiles={
@@ -252,7 +273,7 @@
   window.addEventListener('zika:settings-changed',event=>setSettings(event.detail));
   window.ZikaArcadeAudio={
     unlock,logo,startTitle,stop,select,transition,isRunning,volume,
-    setLevels,setSettings,playEffect,playVoice,playSample,playClip,preloadClip,sampleGain,playStageVoice,
+    setLevels,setSettings,playEffect,playVoice,playSample,playClip,preloadClip,sampleGain,playStageVoice,stopStageVoice,
     getSettings:()=>({...settings})
   };
 })();
