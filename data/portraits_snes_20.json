@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "scope": "20 human fighters only",
+  "technique": "limited 32-color palette, pixel-level contour rendering and 96px raster; not hand-painted",
+  "gridSize": [
+    256,
+    256
+  ],
+  "previewSize": [
+    512,
+    512
+  ],
+  "characters": [
+    {
+      "slug": "pascal",
+      "portrait": "https://static.wixstatic.com/media/685632_d598cbb3f12e4136b60adb4c6e933f49~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_0c92b6896b8e48219cc8fad70bd5cc75~mv2.png"
+    },
+    {
+      "slug": "micka",
+      "portrait": "https://static.wixstatic.com/media/685632_9207c8a69fe44d56ba25a9ffa3221c31~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_a5ca716890004151adeb72733c2172f1~mv2.png"
+    },
+    {
+      "slug": "emma",
+      "portrait": "https://static.wixstatic.com/media/685632_74f0dd1b43ba4619868c5a6959da2418~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_156d09bf42134bf9ad1e996a8f1a7536~mv2.png"
+    },
+    {
+      "slug": "julie",
+      "portrait": "https://static.wixstatic.com/media/685632_072e5c593cdb4be3ac986f5fff8e6939~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_aae193d4dac245f2983db43b91fc7b4d~mv2.png"
+    },
+    {
+      "slug": "antho",
+      "portrait": "https://static.wixstatic.com/media/685632_d58c0035325d460aafb854d1105bc658~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_9c05ed088cd7486dbbdac0ca0aa16d00~mv2.png"
+    },
+    {
+      "slug": "fabrice",
+      "portrait": "https://static.wixstatic.com/media/685632_98d38fd767c74ddf91af5c4a23ed6ff4~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_16b7d11df66e4c919986cca8cb7335f0~mv2.png"
+    },
+    {
+      "slug": "sandy",
+      "portrait": "https://static.wixstatic.com/media/685632_f264499022bb41d89b290219151bc405~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_10617b4dc4944d499ed9dd0b877a26af~mv2.png"
+    },
+    {
+      "slug": "fabienne-1",
+      "portrait": "https://static.wixstatic.com/media/685632_83fd9ccc457e4b729467397c85da4859~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_587f3f48742e4b1c90b2e74cefc2d30e~mv2.png"
+    },
+    {
+      "slug": "fabienne-2",
+      "portrait": "https://static.wixstatic.com/media/685632_cb0896fb9bf448e2ac7c87c8c61be0a3~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_7ded6376fd7144b6a0a058bbaff2a06f~mv2.png"
+    },
+    {
+      "slug": "billy",
+      "portrait": "https://static.wixstatic.com/media/685632_b8d6162540454fa791c31854ca2b44cc~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_e8d7656348004748a43f676689e35da0~mv2.png"
+    },
+    {
+      "slug": "ludo",
+      "portrait": "https://static.wixstatic.com/media/685632_29fcf8d47d364c4aa0e704adfdcba09f~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_d1873449c7d14315ae4cabcc972d6a6e~mv2.png"
+    },
+    {
+      "slug": "ju",
+      "portrait": "https://static.wixstatic.com/media/685632_6522179f2bec4be0baede41ba4cefc63~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_2f310e5a997644f98ab914e4b038df7b~mv2.png"
+    },
+    {
+      "slug": "bene",
+      "portrait": "https://static.wixstatic.com/media/685632_9cf66912f20f4cc0a599231f6c44585f~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_06e4e9f5b32b4325b241c2858627f144~mv2.png"
+    },
+    {
+      "slug": "kev",
+      "portrait": "https://static.wixstatic.com/media/685632_784a0221e5cd43ba843ceda3b2f541e2~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_3b501a90d154412f893dcc5fbd96a7d9~mv2.png"
+    },
+    {
+      "slug": "loic",
+      "portrait": "https://static.wixstatic.com/media/685632_1617cbc1dc6147c9901f1ab919cee99b~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_3bc015a7632b4c5f84b74d0e9cb71c8e~mv2.png"
+    },
+    {
+      "slug": "laura",
+      "portrait": "https://static.wixstatic.com/media/685632_74103576ac454f738ae1f81a1343ab35~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_489f3d4720264eda84c37c3fcb6a05c0~mv2.png"
+    },
+    {
+      "slug": "val",
+      "portrait": "https://static.wixstatic.com/media/685632_8d658c573e9a416a807ab98ed01b1955~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_c15e40f35bb44fdba9bb05d5050684c5~mv2.png"
+    },
+    {
+      "slug": "victor",
+      "portrait": "https://static.wixstatic.com/media/685632_9ef1a41fbfc2428aac47f7cacf27acea~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_36b4d5f544b34b9ab4b86f02bcfab74c~mv2.png"
+    },
+    {
+      "slug": "elo",
+      "portrait": "https://static.wixstatic.com/media/685632_03ef2ad9352c4545b7108ee1e9dd3f51~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_2b8d9b8454b848f98b246e390b22c396~mv2.png"
+    },
+    {
+      "slug": "djo",
+      "portrait": "https://static.wixstatic.com/media/685632_ed0915e3825146969ddd7299a327ff36~mv2.png",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_61385bd4e6454d01893dd393c7ff94bd~mv2.png"
+    }
+  ]
+}
