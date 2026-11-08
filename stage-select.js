@@ -36,12 +36,13 @@
    for(const tile of grid.querySelectorAll('.zf-stage-slot-name-bitmap')){
      const label=tile.dataset.stageName;
      const g=tile.getContext('2d');g.clearRect(0,0,200,36);
-     const lines=font.wrap(label,19).slice(0,3);
-     const dy=lines.length===1?11:lines.length===2?6:2;
-     const lineStep=lines.length===3?12:15;
+     const lines=font.wrap(label,18).slice(0,3);
+     const dy=lines.length===1?8:lines.length===2?3:1;
+     const lineStep=lines.length===3?12:16;
+     const size=lines.length===3?.43:lines.length===2?.60:.72;
      for(let i=0;i<lines.length;i++){
        font.draw(g,lines[i],100,dy+i*lineStep,
-         {tone:'cream',align:'center',scale:.37,maxWidth:193});
+         {tone:'cream',align:'center',scale:size,maxWidth:194,face:'game'});
      }
    }
  }
