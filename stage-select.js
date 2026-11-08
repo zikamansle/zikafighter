@@ -140,6 +140,7 @@
   if(!catalogue())return false;
   stageToken++;active=true;confirming=false;skipRequested=false;cursor=0;selected=null;
   planeFinish?.();
+  window.ZikaArcadeAudio?.stopPlaneSample?.();
   if(planeAudio){planeAudio.pause();planeAudio=null;}
   window.ZikaArcadeAudio?.stopStageVoice?.();
   screen.classList.remove('zf-stage-confirming');
@@ -159,6 +160,7 @@
  function close(){
   stageToken++;active=false;confirming=false;skipRequested=false;screen.hidden=false;
   planeFinish?.();
+  window.ZikaArcadeAudio?.stopPlaneSample?.();
   if(planeAudio){planeAudio.pause();planeAudio=null;}
   window.ZikaArcadeAudio?.stopStageVoice?.();
   screen.classList.remove('zf-stage-active','zf-stage-confirming');
@@ -186,6 +188,7 @@
   skipRequested=true;
   if(planeAudio){planeAudio.pause();planeAudio.currentTime=0;}
   planeFinish?.();
+  window.ZikaArcadeAudio?.stopPlaneSample?.();
   window.ZikaArcadeAudio?.stopStageVoice?.();
   stageSkipResolve?.();
   return true;
@@ -193,21 +196,30 @@
  async function playAirplane(){
   if(skipRequested)return;
   const path='./assets/audio/zika-plane-transition.ogg';
+  // Lire l'intégralité raisonnable du bruit d'avion, sans couper le son avant sa lecture.
+  // Le son est un bruitage, indépendant des pistes musicales.
+  const soundEngine=window.ZikaArcadeAudio;
+  let decoded=null;
+  try{decoded=await soundEngine?.preloadClip?.(path);}catch(err){console.warn('Zika Fighter : chargement avion',err);}
+  if(skipRequested)return;
+  if(decoded&&soundEngine?.playPlaneSample){
+    await soundEngine.playPlaneSample(decoded,{maxDuration:2500});
+    return;
+  }
   await new Promise(resolve=>{
-   const sound=new Audio(path);
-   planeAudio=sound;sound.preload='auto';
-   sound.volume=Math.max(0,Math.min(1,Number(window.ZikaFighterSettings?.fxVolume??8)/10));
-   let done=false;
-   const timeout=setTimeout(finish,1100);
-   planeFinish=finish;
-   function finish(){
-    if(done)return;done=true;clearTimeout(timeout);
-    sound.pause();if(planeAudio===sound)planeAudio=null;
-    if(planeFinish===finish)planeFinish=null;
-    resolve();
-   }
-   sound.onended=finish;sound.onerror=finish;
-   try{const p=sound.play();if(p?.catch)p.catch(finish);}catch(_){finish();}
+    const sound=new Audio(path);planeAudio=sound;sound.preload='auto';
+    sound.volume=Math.max(0,Math.min(1,Number(window.ZikaFighterSettings?.fxVolume??8)/10));
+    let done=false;
+    const timeout=setTimeout(finish,2700);
+    planeFinish=finish;
+    function finish(){
+      if(done)return;done=true;clearTimeout(timeout);
+      sound.pause();if(planeAudio===sound)planeAudio=null;
+      if(planeFinish===finish)planeFinish=null;
+      resolve();
+    }
+    sound.onended=finish;sound.onerror=finish;
+    try{const promise=sound.play();if(promise?.catch)promise.catch(finish)}catch(_){finish()}
   });
  }
  async function confirm(){
