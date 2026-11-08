@@ -15,12 +15,16 @@
  const niceName=id=>names[id]||String(id||'').replace(/-/g,' ').toUpperCase();
  const portraitSources=()=>window.ZikaFighterFinalHeroes||window.ZikaFighterLargePortraits||window.ZikaFighterPortraits||{};
  let session=0,ended=false,onFinish=null,portraitImages=[];
+ let canSkip=false,skipHandler=null,lastPadPressed=false;
+ let padRequest=0;
  const labels=['',''];
  function stop(){
   session++;ended=true;
   soundtrack.onended=null;soundtrack.onerror=null;
   soundtrack.pause();try{soundtrack.currentTime=0}catch(_){}
   screen.hidden=true;onFinish=null;portraitImages=[];
+  canSkip=false;skipHandler=null;lastPadPressed=false;
+  if(padRequest){cancelAnimationFrame(padRequest);padRequest=0;}
  }
  function drawBurst(){
   // Silhouette à pointes rouges comme la capture de référence, sans icône moderne.
@@ -59,8 +63,17 @@
   const font=window.ZikaSNESText;
   if(font?.ready){
    font.draw(ctx,'START',288,0,{face:'game',tone:'cream',align:'right',scale:.50,maxWidth:53});
-   font.draw(ctx,labels[0],73,152,{face:'game',tone:'gold',align:'center',scale:.76,maxWidth:92});
-   font.draw(ctx,labels[1],245,152,{face:'game',tone:'gold',align:'center',scale:.76,maxWidth:92});
+   // Noms dorés et ombre bordeaux, comme sur le VS SNES de référence.
+   const nameFont='"ZikaCPS1",Georgia,serif';
+   ctx.save();ctx.textAlign='center';ctx.textBaseline='top';
+   for(const [name,x] of [[labels[0],73],[labels[1],245]]){
+    let size=19;ctx.font='bold '+size+'px '+nameFont;
+    while(size>9&&ctx.measureText(name).width>91){size--;ctx.font='bold '+size+'px '+nameFont;}
+    ctx.fillStyle='#5c1b30';ctx.fillText(name,x+1,156);
+    ctx.fillStyle='#bb6231';ctx.fillText(name,x,154);
+    ctx.fillStyle='#f3cc76';ctx.fillText(name,x,153);
+   }
+   ctx.restore();
   }else{
    ctx.textAlign='center';ctx.fillStyle='#f5c47d';ctx.font='bold 13px monospace';
    ctx.fillText(labels[0],73,165);ctx.fillText(labels[1],245,165);
@@ -69,7 +82,7 @@
   drawBurst();
   // Lettrage "VS" or, ombre brune, position identique à la référence.
   ctx.save();ctx.textAlign='center';ctx.textBaseline='top';
-  ctx.font='italic 900 48px "ZikaCPS1",serif';
+  ctx.font='italic 900 48px "ZikaCPS1",Georgia,serif';
   ctx.lineJoin='round';
   ctx.strokeStyle='#741b27';ctx.lineWidth=3;
   ctx.strokeText('VS',162,144);
@@ -109,9 +122,32 @@
     window.ZikaFighterScreens.change(switchToFight,{out:220,hold:30,in:220});
    else switchToFight();
   };
+  // START/validation pour passer le VS, sans toucher au son de sélection.
+  skipHandler=finish;
+  const pollPad=()=>{
+   if(token!==session||ended){padRequest=0;return;}
+   let pressed=false;
+   try{
+    const pads=navigator.getGamepads?.()||[];
+    for(const pad of pads){
+     if(!pad)continue;
+     if([9,0,1,2,3].some(i=>pad.buttons?.[i]?.pressed)){pressed=true;break;}
+    }
+   }catch(_){}
+   if(canSkip&&pressed&&!lastPadPressed)skipHandler?.();
+   lastPadPressed=pressed;
+   padRequest=requestAnimationFrame(pollPad);
+  };
   const enter=()=>{
    if(token!==session)return;
    screen.hidden=false;draw();
+   canSkip=false;lastPadPressed=true;
+   requestAnimationFrame(()=>{
+    if(token!==session)return;
+    // Nécessite le relâchement de START/A pour passer au VS.
+    canSkip=true;lastPadPressed=false;
+   });
+   padRequest=requestAnimationFrame(pollPad);
    // La piste VS joue toute sa durée : SEUL "ended" déclenche la fin.
    // Aucun délai artificiel et aucun fondu d'entrée/sortie audio.
    window.ZikaArcadeAudio?.stop?.();
@@ -128,6 +164,19 @@
   else enter();
   return true;
  }
+ // Capture avant les commandes du combat et du stage. Ne pas prendre un
+ // maintien de touche pour un nouvel appui de validation.
+ const heldKeys=new Set();
+ document.addEventListener('keydown',event=>{
+  if(!['Enter','Space','NumpadEnter','KeyZ','KeyX'].includes(event.code))return;
+  if(screen.hidden||!canSkip||ended||window.ZikaFighterScreens?.busy)return;
+  if(event.repeat||heldKeys.has(event.code))return;
+  event.preventDefault();event.stopImmediatePropagation();
+  heldKeys.add(event.code);
+  skipHandler?.();
+ },true);
+ document.addEventListener('keyup',event=>{heldKeys.delete(event.code);},true);
+ window.addEventListener('blur',()=>heldKeys.clear());
  window.ZikaSNESText?.whenReady(()=>{if(!screen.hidden)draw();});
  window.ZikaFighterVersus=Object.freeze({show,close:stop,getState:()=>({visible:!screen.hidden,audioTime:soundtrack.currentTime,audioDuration:soundtrack.duration})});
 })();
