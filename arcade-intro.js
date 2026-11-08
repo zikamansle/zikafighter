@@ -333,6 +333,31 @@
   titleSprite.src='./assets/zika-fighter-title.png';
   let titleSpriteCanvas=null, titleSpritePixels=null, mosaic=null, giantLetters=null, coarseSprites=[], legalPinkSprite=null;
   const makeCanvas=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
+  function prepareGiantZika(){
+    const word='ZIKA';
+    const face='ZikaCPS1';
+    const fontSize=142;
+    const probe=makeCanvas(1,1).getContext('2d');
+    probe.font=fontSize+'px "'+face+'"';
+    const textWidth=Math.ceil(probe.measureText(word).width);
+    // Croper aux lettres : pas de grande marge noire qui déformerait le balayage.
+    const width=Math.max(180,Math.min(850,textWidth+20));
+    const img=makeCanvas(width,172),gc=img.getContext('2d');
+    gc.imageSmoothingEnabled=false;
+    gc.font=fontSize+'px "'+face+'"';
+    gc.textBaseline='middle';
+    const gradient=gc.createLinearGradient(0,11,0,155);
+    gradient.addColorStop(0,'#ffefc4');
+    gradient.addColorStop(.22,'#ffdc55');
+    gradient.addColorStop(.52,'#ff9028');
+    gradient.addColorStop(.77,'#f53d31');
+    gradient.addColorStop(1,'#cf173e');
+    gc.fillStyle='#270a25';
+    gc.fillText(word,11,85,Math.max(160,width-22));
+    gc.fillStyle=gradient;
+    gc.fillText(word,8,82,Math.max(160,width-22));
+    giantLetters=img;
+  }
   function prepareTitleSprite(){
     try{
       const src=makeCanvas(480,240),cx=src.getContext('2d',{willReadFrequently:true});
@@ -395,15 +420,11 @@
         layerCtx.drawImage(titleSpritePixels||src,0,0,ww,hh);
         return layer;
       });
-      // La séquence TURBO d'origine affiche de très grandes lettres sans contour,
-      // en dégradé rouge -> orange -> jaune -> ivoire.
-      giantLetters=makeCanvas(850,150);
-      const gc=giantLetters.getContext('2d');
-      const gr=gc.createLinearGradient(0,0,0,150);
-      gr.addColorStop(0,'#ee1b22');gr.addColorStop(.28,'#fa3e26');
-      gr.addColorStop(.55,'#ff9b35');gr.addColorStop(.82,'#ffe75c');gr.addColorStop(1,'#fffbd5');
-      gc.font='148px "ZikaCPS1"';gc.textBaseline='top';
-      gc.fillStyle=gr;gc.fillText('ZIKA',5,-7);
+      // Grand mot ZIKA distinct du logo, qui traverse la scène comme
+      // le TURBO de l'introduction SFII SNES. Un sprite de texte, pas le logo.
+      prepareGiantZika();
+      document.fonts?.load?.('148px "ZikaCPS1"','ZIKA')
+        ?.then?.(()=>prepareGiantZika()).catch(()=>{});
     }catch(_){titleSpriteCanvas=null;mosaic=null;}
   }
   if(titleSprite.complete&&titleSprite.naturalWidth)prepareTitleSprite();
@@ -1082,17 +1103,16 @@
     }
     // Phase A : petit logo sur NOIR.
     if(t<1.20){paint(sprite,160,52,90,43);return;}
-    // Phase B — balayage TURBO SNES : gigantesque logo qui traverse
-    // réellement l'écran de droite à gauche, sur 28 images à 30 FPS.
-    // À mi-parcours, le mot est ENTIER dans le cadre 320 px et lisible.
-    // Les bords sont hors champ au départ/à la sortie, comme le défilement SNES.
+    // Phase B — le mot géant ZIKA défile comme TURBO sur SNES.
+    // Il traverse tout le cadre de droite à gauche. Le logo complet
+    // ne revient qu'en phase C pour la rotation et sa stabilisation.
     if(t<2.13){
       const frame=Math.max(0,Math.floor((t-1.20)*30));
       const progress=Math.min(1,frame/27);
-      const x=480-Math.round(640*progress);
-      // Grossissement spectaculaire aux bords ; largeur contenue au centre.
-      const width=420-Math.round(110*Math.sin(Math.PI*progress));
-      paint(sprite,x,68,width,Math.round(width*.47));
+      const width=555;
+      const height=148;
+      const x=320+width/2-Math.round((320+width)*progress);
+      if(giantLetters)paint(giantLetters,x,82,width,height);
       return;
     }
     // Phase C : rotation avec un léger changement de définition (48 à 160 px).
