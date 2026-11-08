@@ -10,11 +10,12 @@
     const saved=JSON.parse(localStorage.getItem('zikafighter-options-v2')||'null');
     if(saved) settings={...settings,...saved};
   } catch (_) {}
-  let ctx=null,musicOut=null,sfxOut=null,timer=null,beat=0,playing=false,effectPan=0;
+  let ctx=null,musicOut=null,sfxOut=null,sfxLimiter=null,timer=null,beat=0,playing=false,effectPan=0;
+  const decodedClips=new Map(),levelCache=new WeakMap();
   function updateGain(){
     if(!ctx)return;
     if(musicOut)musicOut.gain.setTargetAtTime(.57*clamp(settings.musicVolume,0,10)/10,ctx.currentTime,.012);
-    if(sfxOut)sfxOut.gain.setTargetAtTime(.78*clamp(settings.fxVolume,0,10)/10,ctx.currentTime,.012);
+    if(sfxOut)sfxOut.gain.setTargetAtTime(clamp(settings.fxVolume,0,10)/10,ctx.currentTime,.012);
   }
   function unlock(){
     try {
@@ -24,7 +25,14 @@
         musicOut=ctx.createGain();
         sfxOut=ctx.createGain();
         musicOut.connect(ctx.destination);
-        sfxOut.connect(ctx.destination);
+        sfxLimiter=ctx.createDynamicsCompressor();
+        sfxLimiter.threshold.value=-9;
+        sfxLimiter.knee.value=4;
+        sfxLimiter.ratio.value=8;
+        sfxLimiter.attack.value=.003;
+        sfxLimiter.release.value=.09;
+        sfxOut.connect(sfxLimiter);
+        sfxLimiter.connect(ctx.destination);
         updateGain();
       }
       if(ctx.state==='suspended') void ctx.resume().catch(()=>{});
@@ -96,8 +104,86 @@
       default:note(525,.085,0,'square',.13);
     }
   }
-  // Effets vocaux originaux du pack personnel, joués uniquement si installés.
-  // Le dépôt public n'embarque pas les pistes protégées.
+
+  // Normalisation RMS des fichiers de bruitage : toutes les sources courtes
+  // sont calibrées avant le mixage, indépendamment de leur niveau d'origine.
+  function sampleGain(buffer){
+    if(!buffer||!buffer.numberOfChannels)return 1;
+    const cached=levelCache.get(buffer);if(cached!==undefined)return cached;
+    const stride=Math.max(1,Math.floor(buffer.length/32000));
+    let sum=0,count=0,peak=0;
+    for(let c=0;c<buffer.numberOfChannels;c++){
+      const data=buffer.getChannelData(c);
+      for(let i=0;i<data.length;i+=stride){
+        const magnitude=Math.abs(data[i]);
+        peak=Math.max(peak,magnitude);
+        if(magnitude>.012){sum+=magnitude*magnitude;count++;}
+      }
+    }
+    const rms=count?Math.sqrt(sum/count):0;
+    // Environ -16 dBFS RMS sur les passages audibles ; limiter à -1.4 dBFS crête.
+    const level=rms>0?.155/rms:1;
+    const ceiling=peak>0?.85/peak:1;
+    const gain=Math.min(12,Math.max(.16,Math.min(level,ceiling)));
+    levelCache.set(buffer,gain);
+    return gain;
+  }
+  function playSample(buffer,pan=0){
+    if(!buffer||!unlock())return false;
+    if(clamp(settings.fxVolume,0,10)===0)return true;
+    try{
+      const source=ctx.createBufferSource(),gain=ctx.createGain();
+      source.buffer=buffer;gain.gain.value=sampleGain(buffer);
+      source.connect(gain);
+      if(ctx.createStereoPanner){
+        const stereo=ctx.createStereoPanner();
+        stereo.pan.value=settings.stereo?clamp(pan,-1,1):0;
+        gain.connect(stereo);stereo.connect(sfxOut);
+      }else gain.connect(sfxOut);
+      source.start(ctx.currentTime);
+      return true;
+    }catch(err){console.warn('Zika Fighter : lecture normalisée impossible',err);return false;}
+  }
+  function preloadClip(url){
+    if(decodedClips.has(url))return decodedClips.get(url);
+    const request=Promise.resolve().then(()=>{
+      if(typeof fetch!=='function')return null;
+      return fetch(url).then(response=>{
+        if(!response.ok)throw new Error('HTTP '+response.status+' pour '+url);
+        return response.arrayBuffer();
+      }).then(arrayBuffer=>{
+        if(!unlock())return null;
+        return ctx.decodeAudioData(arrayBuffer);
+      });
+    }).catch(()=>null);
+    decodedClips.set(url,request);
+    return request;
+  }
+  function fallbackMedia(url){
+    try{
+      const audio=new Audio(url);audio.preload='auto';
+      audio.volume=clamp(settings.fxVolume,0,10)/10;
+      const promise=audio.play();if(promise?.catch)promise.catch(()=>{});
+      return true;
+    }catch(_){return false;}
+  }
+  function playClip(url,onUnavailable){
+    if(clamp(settings.fxVolume,0,10)===0)return true;
+    if(!unlock()){
+      if(typeof onUnavailable==='function')onUnavailable();
+      else fallbackMedia(url);
+      return false;
+    }
+    preloadClip(url).then(buffer=>{
+      if(buffer&&playSample(buffer))return;
+      if(typeof onUnavailable==='function')onUnavailable();
+      else fallbackMedia(url);
+    }).catch(()=>{
+      if(typeof onUnavailable==='function')onUnavailable();
+      else fallbackMedia(url);
+    });
+    return true;
+  }
   const voiceFiles={
     round:'round.mp3',fight:'fight.mp3',win:'you-win-street-fighter.mp3',
     lose:'you-lose.mp3',perfect:'perfect.mp3',hadouken:'hadouken.mp3',
@@ -105,14 +191,7 @@
   };
   function playVoice(kind){
     const filename=voiceFiles[kind];if(!filename)return false;
-    try{
-      const sound=new Audio('./assets/audio/'+encodeURIComponent(filename));
-      sound.preload='auto';
-      sound.volume=clamp(settings.fxVolume,0,10)/10;
-      const attempt=sound.play();
-      if(attempt?.catch)attempt.catch(()=>{});
-      return true;
-    }catch(_){return false;}
+    return playClip('./assets/audio/'+encodeURIComponent(filename));
   }
   function logo(){if(!unlock())return;[392,523.25,659.25,1046.5].forEach((f,i)=>note(f,.16,i*.11,'square',.12));}
   function select(){playEffect('confirm');}
@@ -122,7 +201,7 @@
   window.addEventListener('zika:settings-changed',event=>setSettings(event.detail));
   window.ZikaArcadeAudio={
     unlock,logo,startTitle,stop,select,transition,isRunning,volume,
-    setLevels,setSettings,playEffect,playVoice,
+    setLevels,setSettings,playEffect,playVoice,playSample,playClip,preloadClip,sampleGain,
     getSettings:()=>({...settings})
   };
 })();
