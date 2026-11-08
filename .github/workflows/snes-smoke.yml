@@ -1,8 +1,9 @@
-name: Zika Fighter - contrôles statiques SNES
+name: Zika Fighter - vérification manuelle
 
+# Pas de déclenchement automatique à chaque modification du jeu.
+# Le test reste disponible depuis Actions > Run workflow.
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
