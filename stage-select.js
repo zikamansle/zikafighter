@@ -15,7 +15,7 @@
   '</div>',
   '<div class="zf-stage-grid" id="zf-stage-grid" role="group" aria-label="Arènes disponibles"></div>',
   '<div class="zf-stage-help" id="zf-stage-help" aria-live="polite">FLÈCHES : CHOISIR · START : VALIDER</div>',
-  '<div class="zf-stage-flight" id="zf-stage-flight" hidden><span aria-label="STAGE APPROACH"><canvas id="zf-flight-text" width="320" height="30" aria-hidden="true"></canvas></span><strong id="zf-stage-flight-name"><canvas id="zf-flight-stage" width="320" height="54" aria-hidden="true"></canvas></strong><div id="zf-stage-confirm-card" class="zf-stage-confirm-card"><div class="zf-stage-confirm-art"></div><span class="zf-stage-confirm-random">?</span></div></div>'
+  '<div class="zf-stage-flight" id="zf-stage-flight" hidden><strong id="zf-stage-flight-name"><canvas id="zf-flight-stage" width="320" height="36" aria-hidden="true"></canvas></strong><div id="zf-stage-confirm-card" class="zf-stage-confirm-card"><div class="zf-stage-confirm-art"></div><span class="zf-stage-confirm-random">?</span></div></div>'
  ].join('');
  root.querySelector('.zf-select-cabinet').appendChild(screen);
  const grid=screen.querySelector('#zf-stage-grid');
@@ -24,15 +24,13 @@
    const heading=screen.querySelector('#zf-stage-title-pixels');
    const ctx=heading.getContext('2d');ctx.clearRect(0,0,320,22);
    font.draw(ctx,'STAGE SELECT',160,1,{align:'center',scale:.63,maxWidth:165});
-   const flightText=screen.querySelector('#zf-flight-text');
-   const ft=flightText.getContext('2d');ft.clearRect(0,0,320,30);
-   font.draw(ft,'STAGE APPROACH',160,3,{align:'center',scale:.61,maxWidth:208});
    const flightStage=screen.querySelector('#zf-flight-stage');
-   const fs=flightStage.getContext('2d');fs.clearRect(0,0,320,54);
+   const fs=flightStage.getContext('2d');
+   fs.clearRect(0,0,flightStage.width,flightStage.height);
    const stageName=screen.querySelector('#zf-stage-flight-name').dataset.stageName||'';
-   const parts=font.wrap(stageName,18).slice(0,3);
-   parts.forEach((line,i)=>font.draw(fs,line,160,2+i*17,
-      {align:'center',scale:.56,maxWidth:285}));
+   // Une seule ligne, centrée ; le moteur bitmap ajuste les très longs noms.
+   if(stageName)font.draw(fs,stageName,160,2,
+      {align:'center',scale:1.02,maxWidth:308,face:'game',tone:'cream'});
    for(const tile of grid.querySelectorAll('.zf-stage-slot-name-bitmap')){
      const label=tile.dataset.stageName;
      const g=tile.getContext('2d');g.clearRect(0,0,200,36);
@@ -159,6 +157,7 @@
  function open(choice={}){
   if(!catalogue())return false;
   stageToken++;active=true;confirming=false;cursor=0;selected=null;
+  screen.classList.remove('zf-stage-confirming');
   // Même piste audio, même position de lecture : aucun redémarrage ni silence.
   window.ZikaFighterCharacterSelect?.ensureMusic?.();
   // Ne jamais masquer les portraits : personnages en haut, stages en bas.
@@ -176,7 +175,7 @@
  }
  function close(){
   stageToken++;active=false;confirming=false;screen.hidden=false;
-  screen.classList.remove('zf-stage-active');
+  screen.classList.remove('zf-stage-active','zf-stage-confirming');
   root.classList.remove('zf-stage-phase');
   screen.querySelector('#zf-stage-flight').hidden=true;
   screen.querySelector('#zf-stage-help').textContent='PERSONNAGES 7–7–6 · PUIS CHOIX DU STAGE';
@@ -238,6 +237,7 @@
   preview.querySelector('#zf-stage-flight-name').dataset.stageName=chosen.random?'ALÉATOIRE':s.name.toUpperCase();
   drawStageTexts();
   preview.hidden=false;
+  screen.classList.add('zf-stage-confirming');
   // Laisser entendre le clic de validation avant le bruit d'avion.
   await new Promise(done=>setTimeout(done,220));
   if(!active||stageToken!==ownToken)return;
@@ -245,7 +245,7 @@
   if(!active||stageToken!==ownToken)return;
   if(!chosen.random)await catalogue()?.announce(s.id);
   if(!active||stageToken!==ownToken)return;
-  active=false;screen.classList.remove('zf-stage-active');root.classList.remove('zf-stage-phase');
+  active=false;screen.classList.remove('zf-stage-active','zf-stage-confirming');root.classList.remove('zf-stage-phase');
   const player1=window.ZikaFighterBridge?.getMatchSelection?.()?.player||'pascal';
   const player2=window.ZikaFighterBridge?.getMatchSelection?.()?.opponent||'micka';
   // Fondre uniquement la musique PLAYER SELECT pendant l'entrée sur VS.
