@@ -144,12 +144,12 @@
    Le panneau se déploie sur l'écran 4:3 le temps de l'annonce, sans
    changer le bandeau des arènes en mode sélection. */
 #select #zf-stage-screen.zf-stage-confirming{
-  overflow:visible;
-  z-index:12;
+  top:0;bottom:0;left:0;right:0;height:100%;width:100%;
+  border-top:0;overflow:hidden;z-index:12;
 }
 #select #zf-stage-screen .zf-stage-flight:not([hidden]){
   position:absolute;
-  top:-163.1579%;
+  top:0;
   bottom:0;
   left:0;
   right:0;
@@ -224,5 +224,31 @@
 #select.zf-stage-confirm-view #zf-stage-screen > .zf-stage-help{
   visibility:hidden!important;
 }
-#select.zf-stage-confirm-view #zf-stage-screen{z-index:12;overflow:visible}
+#select.zf-stage-confirm-view #zf-stage-screen{top:0;height:100%;z-index:12;overflow:hidden}
 #select.zf-stage-confirm-view #zf-stage-flight{background:#07063f!important}
+
+/* Confirmation : conserver toute la surface 4:3 et le ratio des illustrations. */
+#select #zf-stage-screen .zf-stage-flight:not([hidden]){inset:0;width:100%;height:100%;padding:5% 3% 5%}
+#select #zf-stage-screen .zf-stage-flight #zf-stage-flight-name{
+ width:98%;height:auto;min-height:0;flex:0 0 16%;overflow:hidden;
+}
+#select #zf-stage-screen .zf-stage-flight #zf-flight-stage{
+ width:100%;height:auto;max-height:100%;aspect-ratio:320 / 36;object-fit:contain;
+}
+#select #zf-stage-screen .zf-stage-flight .zf-stage-confirm-card{
+ flex:1 1 auto;width:88%;height:73%;max-height:73%;min-height:0;padding:0;
+}
+#select #zf-stage-screen .zf-stage-flight .zf-stage-confirm-art{
+ display:flex;align-items:center;justify-content:center;
+ width:100%;height:100%;min-width:0;min-height:0;
+ background:none!important;
+}
+#select #zf-stage-screen .zf-stage-flight #zf-stage-confirm-image{
+ display:block;width:100%;height:100%;
+ object-fit:contain;object-position:center;image-rendering:auto;
+}
+#select #zf-stage-screen .zf-stage-flight #zf-stage-confirm-image[hidden],
+#select #zf-stage-screen .zf-stage-flight #zf-stage-image-error[hidden]{display:none!important}
+#select #zf-stage-screen .zf-stage-flight #zf-stage-image-error{
+ color:#f5dca5;text-align:center;font:700 12px/1.2 'ZikaSFII',monospace
+}
