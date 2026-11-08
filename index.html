@@ -23,8 +23,8 @@ html:not(.zf-intro-booted) body>footer{visibility:hidden!important}
    Les illustrations ne sont pas encore des sprite sheets d'animation définitives. */
 (()=>{'use strict';
 const $=s=>document.querySelector(s); const canvas=$('#game'); const ctx=canvas.getContext('2d');const W=1152,H=864, floor=754;
-const fighterDisplayNames=['Pascal','Micka','Emma','Julie','Antho','Fabrice','Sandy','Fabienne 1','Fabienne 2','Billy','Ludo','Ju','Béné','Kév','Loïc','Laura','Val','Victor','Élo','Djo'];
-const fighterSlugs=fighterDisplayNames.map(n=>n.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''));
+const fighterDisplayNames=['Pascal','Micka','Emma','Julie','Antho','Fabrice','Sandy','Fabienne','Fabienne','Billy','Ludo','Ju','Béné','Kév','Loïc','Laura','Val','Victor','Élo','Djo'];
+const fighterSlugs=fighterDisplayNames.map((n,i)=>i===7?'fabienne-1':i===8?'fabienne-2':n.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''));
 const names=Object.fromEntries(fighterSlugs.map((key,i)=>[key,fighterDisplayNames[i].toUpperCase()]));
 const images={};
 for(const key of ['pascal','micka','mairie','superu','culture']){const im=new Image();im.src=ASSETS[key];images[key]=im;}
