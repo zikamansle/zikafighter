@@ -9,7 +9,7 @@ const fighters=[
 ['Fabienne 1','#dc849e'],['Fabienne 2','#985577'],['Billy','#69abb7'],
 ['Ludo','#e4a067'],['Ju','#8d8bc6'],['Béné','#6e9cdb'],['Kév','#7fb371'],
 ['Loïc','#5fab7f'],['Laura','#e9ac8a'],['Val','#bfa3d8'],['Victor','#687fb4'],
-['Élo','#d474ae'],['Djo','#9cacce']
+['Élo','#d474ae'],['Djo','#9cacce'],['Zika','#e9b64d']
 ].map(([name,color],id)=>({name,color,id,slug:name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}));
 // Les 20 personnages humains seulement. Zika est réservé à une future option bonus.
 const bridge=()=>window.ZikaFighterBridge;
@@ -118,50 +118,12 @@ function count(){return Number(window.ZikaFighterSettings?.players??bridge()?.ge
 // Portraits 20 humains recréés en style pixel SNES ; Zika n'est pas sélectionnable.
 // PORTRAITS FACIAUX uniquement, extraits du cadre visage sur les fiches fournies.
 // Ne jamais remettre les fiches complètes dans la grille.
-const portraitSources={
-  "pascal": "https://static.wixstatic.com/media/685632_538d4c78182f48eab9e4acbd0a107386~mv2.png",
-  "micka": "https://static.wixstatic.com/media/685632_d74893355591477e96cc39c13ab10c77~mv2.png",
-  "emma": "https://static.wixstatic.com/media/685632_473654c3d0714511a482903c5ee1efce~mv2.png",
-  "julie": "https://static.wixstatic.com/media/685632_510eac7d2edf47c2b035f45c381ca484~mv2.png",
-  "antho": "https://static.wixstatic.com/media/685632_47af7c83bf6c4322bfdd227c402edc87~mv2.png",
-  "fabrice": "https://static.wixstatic.com/media/685632_046807549f4d44498f7f035db42f4354~mv2.png",
-  "sandy": "https://static.wixstatic.com/media/685632_92d7c46fffbe4ef498317ee0e7b1cd77~mv2.png",
-  "fabienne-1": "https://static.wixstatic.com/media/685632_b39e89f637684257a9ec74912ad7ddae~mv2.png",
-  "fabienne-2": "https://static.wixstatic.com/media/685632_07b9438834a14539a53cc34b0e232d0d~mv2.png",
-  "billy": "https://static.wixstatic.com/media/685632_7f56755777ae49deaac30919fd53a29e~mv2.png",
-  "ludo": "https://static.wixstatic.com/media/685632_d4b0c33b9bb642bb89df6a5fc506ccca~mv2.png",
-  "ju": "https://static.wixstatic.com/media/685632_ea3ce72023a14c59b670cad94290cb85~mv2.png",
-  "bene": "https://static.wixstatic.com/media/685632_24dd526ddb2a419ea88e031b13449c73~mv2.png",
-  "kev": "https://static.wixstatic.com/media/685632_875015401b6242f8a519d01369ae1a20~mv2.png",
-  "loic": "https://static.wixstatic.com/media/685632_8f2bfc4b4a57470e9f32298c321e49c0~mv2.png",
-  "laura": "https://static.wixstatic.com/media/685632_500c4dbc8cf64968bd2cd129de63f76e~mv2.png",
-  "val": "https://static.wixstatic.com/media/685632_d27eb1d91a8c41db90b7aa2f05ca191e~mv2.png",
-  "victor": "https://static.wixstatic.com/media/685632_71880e23c288475180a70f2ffe75f22e~mv2.png",
-  "elo": "https://static.wixstatic.com/media/685632_fdfdc42cd3ac4133bdae171f0eb4dce7~mv2.png",
-  "djo": "https://static.wixstatic.com/media/685632_8ae74e2a234240049eb1b2195d6513f5~mv2.png"
-};
-const largePortraitSources={
-  "pascal": "https://static.wixstatic.com/media/685632_0c58ab0ac7c54593bb95c53419c1f585~mv2.png",
-  "micka": "https://static.wixstatic.com/media/685632_cada7561c9874737b3534b9e78032cb5~mv2.png",
-  "emma": "https://static.wixstatic.com/media/685632_282d1d4dcc9d4e6f9453df70f4ec0784~mv2.png",
-  "julie": "https://static.wixstatic.com/media/685632_72e5f8b195b24d6192caf7e42fa7c29b~mv2.png",
-  "antho": "https://static.wixstatic.com/media/685632_6c7ae13b22e84dd28d63496c5da30865~mv2.png",
-  "fabrice": "https://static.wixstatic.com/media/685632_6d87a929c292488097b1e3b5e121a3b2~mv2.png",
-  "sandy": "https://static.wixstatic.com/media/685632_907431d49e1a4231b6de1fb9d4021b77~mv2.png",
-  "fabienne-1": "https://static.wixstatic.com/media/685632_49dbdff30e924d3e8771f2e281285c44~mv2.png",
-  "fabienne-2": "https://static.wixstatic.com/media/685632_c31733a23f604cbca6fa4ddd90fc39ed~mv2.png",
-  "billy": "https://static.wixstatic.com/media/685632_ada8e583f1b74b8295c89579aa162bed~mv2.png",
-  "ludo": "https://static.wixstatic.com/media/685632_5b4c5a111ec64b3083d1ccbb5c642976~mv2.png",
-  "ju": "https://static.wixstatic.com/media/685632_2fc6c115599c448d9d3d00277c1bc4de~mv2.png",
-  "bene": "https://static.wixstatic.com/media/685632_f5a2847727594c76a44c8db606e255f5~mv2.png",
-  "kev": "https://static.wixstatic.com/media/685632_98152c0e647d4adc9ef817b9714dfbbc~mv2.png",
-  "loic": "https://static.wixstatic.com/media/685632_025ff17e508e477c9c91f2d8b935b13c~mv2.png",
-  "laura": "https://static.wixstatic.com/media/685632_1c3e820304dc40f0a8b3958962bf852a~mv2.png",
-  "val": "https://static.wixstatic.com/media/685632_645ba6ac522c44ab90a77c82bb6c1aa6~mv2.png",
-  "victor": "https://static.wixstatic.com/media/685632_4e2b537bb08c49e8b3c84e9028660e74~mv2.png",
-  "elo": "https://static.wixstatic.com/media/685632_13a06465092d45df954746771e6b9732~mv2.png",
-  "djo": "https://static.wixstatic.com/media/685632_36e9aa82e3d14451b470c0294e5880b2~mv2.png"
-};
+// EXACTEMENT les portraits sans texte de la maquette 7-7-6 validée.
+// La seule exception est Zika, masqué jusqu'au déblocage du bonus.
+const portraitSources=window.ZikaFighterFinalThumbnails||{};
+const largePortraitSources=window.ZikaFighterFinalHeroes||{};
+const zikaUnlocked=()=>window.ZikaFighterStages?.isZikaUnlocked?.()===true;
+const visibleCount=()=>zikaUnlocked()?21:20;
 const photos=fighters.map(f=>{
  const im=new Image();
  im.decoding='async';
@@ -294,6 +256,8 @@ function render(){
  if(!opened)return;
  for(const cell of roster.children){
   const i=Number(cell.dataset.index),src=portrait(i),picture=cell.querySelector('.photo');
+  cell.hidden=i>=visibleCount();
+  cell.classList.toggle('zf-bonus-portrait',i===20);
   cell.classList.toggle('p1',i===chosen[0]);
   cell.classList.toggle('p2',count()===2&&i===chosen[1]);
   cell.classList.toggle('focused',i===pointerCursor[activePlayer]);
@@ -323,7 +287,8 @@ function playCursorMoveSound(){
 }
 function choose(index,player=activePlayer){
  if(!opened||window.ZikaFighterScreens?.busy)return;
- const i=(index+fighters.length)%fighters.length;
+ const n=visibleCount();
+ const i=((index%n)+n)%n;
  // Un clic sur la même case confirme le personnage; il ne déplace pas le curseur.
  if(i===pointerCursor[player])return;
  chosen[player]=i;pointerCursor[player]=i;
@@ -332,8 +297,15 @@ function choose(index,player=activePlayer){
  playCursorMoveSound();
  render();
 }
-function move(dx,dy){const i=pointerCursor[activePlayer],x=i%10,y=Math.floor(i/10);
- choose(((y+dy+2)%2)*10+(x+dx+10)%10);
+function move(dx,dy){
+ const current=pointerCursor[activePlayer];
+ const row=current<7?0:current<14?1:2;
+ const x=current-(row===0?0:row===1?7:14);
+ const nextRow=(row+dy+3)%3;
+ const sizes=zikaUnlocked()?[7,7,7]:[7,7,6];
+ const nextX=Math.min(sizes[nextRow]-1,(x+dx+7)%7);
+ const next=(nextRow===0?0:nextRow===1?7:14)+nextX;
+ choose(next);
 }
 function enter(){
  // À chaque retour depuis un combat, réafficher la sélection des portraits.
