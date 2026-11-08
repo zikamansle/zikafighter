@@ -209,15 +209,17 @@
  async function confirm(){
   if(!active||confirming)return;
   const chosen=list()[cursor];if(!chosen)return;
-  // L'encart ALÉATOIRE tire un véritable stage accessible, puis utilise
-  // son décor et SON annonce audio (pas d'arène fictive).
+  // ALÉATOIRE tire un stage accessible, mais ne joue QUE l'avion :
+  // aucun son de validation ni annonce vocale du décor tiré.
   const available=actualStages();
   const s=chosen.random?available[Math.floor(Math.random()*available.length)]:chosen;
   if(!s)return;
   confirming=true;selected=s.id;
-  if(window.ZikaFighterCharacterSelect?.playConfirmSound){
-    window.ZikaFighterCharacterSelect.playConfirmSound();
-  }else window.ZikaFighterMenuSfx?.confirm?.();
+  if(!chosen.random){
+    if(window.ZikaFighterCharacterSelect?.playConfirmSound){
+      window.ZikaFighterCharacterSelect.playConfirmSound();
+    }else window.ZikaFighterMenuSfx?.confirm?.();
+  }
   const ownToken=stageToken;
   // La musique de PLAYER SELECT reste continue pendant l'annonce du stage.
   window.ZikaFighterBridge?.setStage?.(s.id);
@@ -228,7 +230,7 @@
   if(!active||stageToken!==ownToken)return;
   await playAirplane();
   if(!active||stageToken!==ownToken)return;
-  await catalogue()?.announce(s.id);
+  if(!chosen.random)await catalogue()?.announce(s.id);
   if(!active||stageToken!==ownToken)return;
   active=false;screen.classList.remove('zf-stage-active');root.classList.remove('zf-stage-phase');
   // Passer à la bande-son de combat seulement à l'ouverture effective du combat.
