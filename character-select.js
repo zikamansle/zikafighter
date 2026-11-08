@@ -240,16 +240,16 @@ function drawArcadeSelectionText(){
  ctx.setTransform(1,0,0,1,0,0);
  ctx.clearRect(0,0,320,240);ctx.imageSmoothingEnabled=false;
  const first=fighters[chosen[0]];
- if(!root.querySelector('.zf-select-cabinet').classList.contains('reference-ready')){
-   // Secours lorsque la capture du fond ne peut pas être chargée.
-   ctx.font='bold 15px monospace';ctx.fillStyle='#4dc8ff';ctx.fillText('1P',31,116);
- }
- arcadeName(ctx,first.name.toUpperCase(),27,121,97);
+ // Les repères 1P et 2P restent visibles même sans la vieille carte.
+ ctx.font='bold 15px monospace';
+ ctx.fillStyle='#142c83';ctx.fillText('1P',11,117);
+ ctx.fillStyle='#51c8ff';ctx.fillText('1P',10,116);
+ arcadeName(ctx,first.name.toUpperCase(),7,122,100);
  if(count()===2){
    ctx.font='bold 16px monospace';
    ctx.fillStyle='#13235a';ctx.fillText('2P',248,119);
    ctx.fillStyle='#85e1ff';ctx.fillText('2P',247,118);
-   arcadeName(ctx,fighters[chosen[1]].name.toUpperCase(),219,123,94);
+   arcadeName(ctx,fighters[chosen[1]].name.toUpperCase(),212,123,102);
  }
 }
 
