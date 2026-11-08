@@ -78,15 +78,43 @@ function startMusic(){
 }
 function stopMusic(){if(music){music.pause();music.currentTime=0;}}
 function count(){return Number(window.ZikaFighterSettings?.players??bridge()?.getPlayers?.()??1)===2?2:1;}
+// 18 portraits existants découpés sans changer les visages.
+const portraitSources={
+  "pascal": "https://static.wixstatic.com/media/685632_7d36db0a06c9473a87816dd260392e11~mv2.png",
+  "micka": "https://static.wixstatic.com/media/685632_a1fb8511b8e94b8db871c426755dd483~mv2.png",
+  "julie": "https://static.wixstatic.com/media/685632_4209655f369148b48162b324ce4733fa~mv2.png",
+  "antho": "https://static.wixstatic.com/media/685632_1f9e507497434ffc89caa8b6eb76433f~mv2.png",
+  "fabienne-1": "https://static.wixstatic.com/media/685632_943480c3232e4d7693e081bdab0445bb~mv2.png",
+  "billy": "https://static.wixstatic.com/media/685632_c1a71445e9e64096befe08ce0dc1527e~mv2.png",
+  "loic": "https://static.wixstatic.com/media/685632_7a856ac487f249a0b0f1a0d4a6d45c0f~mv2.png",
+  "bene": "https://static.wixstatic.com/media/685632_cd72757c1c0b4a558fd6d0db64d1789f~mv2.png",
+  "ju": "https://static.wixstatic.com/media/685632_1d4ad94aa9fa45ed848c0703815ba41b~mv2.png",
+  "elo": "https://static.wixstatic.com/media/685632_d4614fc8c1df43a99d029c36ec081724~mv2.png",
+  "val": "https://static.wixstatic.com/media/685632_1bfad52b14e54e7b845a92a820190dd7~mv2.png",
+  "djo": "https://static.wixstatic.com/media/685632_508e4ffae0ee4391819589f0338e1e03~mv2.png",
+  "zika": "https://static.wixstatic.com/media/685632_9687ef23572d4fb4822ea93398c1992f~mv2.png",
+  "laura": "https://static.wixstatic.com/media/685632_1868699cadae4910923d98401088e5d3~mv2.png",
+  "ludo": "https://static.wixstatic.com/media/685632_1da89ff6e64d41aa8d1174cc2586ed82~mv2.png",
+  "sandy": "https://static.wixstatic.com/media/685632_813bf52a46fd464ebd21eef5c1391fbe~mv2.png",
+  "fabienne-2": "https://static.wixstatic.com/media/685632_15a46dd0b2dd4b13897719e415c1dc41~mv2.png",
+  "fabrice": "https://static.wixstatic.com/media/685632_34ba386cba4f4539a871acc39577ced4~mv2.png"
+};
 const photos=fighters.map(f=>{
  const im=new Image();
  im.decoding='async';
  im.onload=()=>{if(opened)render();};
- im.onerror=()=>{if(opened)render();};
- const known=bridge()?.portraitFor?.(f.slug);
+ im.onerror=()=>{
+   // Une éventuelle photo locale prend le relais si la médiathèque n'est pas joignable.
+   const fallback='./assets/fighters/'+f.slug+'.png';
+   if(im.src!==new URL(fallback,location.href).href)im.src=fallback;
+   else if(opened)render();
+ };
+ const known=portraitSources[f.slug]||bridge()?.portraitFor?.(f.slug);
  im.src=known||'./assets/fighters/'+f.slug+'.png';
  return im;
 });
+// Zika reste le combattant bonus ; sa photo est également disponible.
+window.ZikaFighterPortraits=Object.freeze({...portraitSources});
 function portrait(i){return photos[i]?.complete&&photos[i]?.naturalWidth>0?photos[i].src:null;}
 function initials(name){return name.split(' ').filter(Boolean).map(p=>p[0]).join('').slice(0,2).toUpperCase();}
 fighters.forEach((f,i)=>{
