@@ -1082,15 +1082,16 @@
     }
     // Phase A : petit logo sur NOIR.
     if(t<1.20){paint(sprite,160,52,90,43);return;}
-    // Phase B : arrivée du logo dans la fenêtre 320×180, à l'échelle lisible.
-    // Pas de zoom 740 px hors champ : le logo devient entier avant de tourner.
+    // Phase B — balayage TURBO SNES : gigantesque logo qui traverse
+    // réellement l'écran de droite à gauche, sur 28 images à 30 FPS.
+    // À mi-parcours, le mot est ENTIER dans le cadre 320 px et lisible.
+    // Les bords sont hors champ au départ/à la sortie, comme le défilement SNES.
     if(t<2.13){
       const frame=Math.max(0,Math.floor((t-1.20)*30));
-      // Le logo entre complètement dès la première moitié du balayage.
-      const p=Math.min(1,frame/12);
-      const easeInOut=p*p*(3-2*p);
-      const x=330-Math.round(170*easeInOut);
-      const width=260+Math.round(48*easeInOut);
+      const progress=Math.min(1,frame/27);
+      const x=480-Math.round(640*progress);
+      // Grossissement spectaculaire aux bords ; largeur contenue au centre.
+      const width=420-Math.round(110*Math.sin(Math.PI*progress));
       paint(sprite,x,68,width,Math.round(width*.47));
       return;
     }
