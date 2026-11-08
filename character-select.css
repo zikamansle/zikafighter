@@ -45,7 +45,7 @@
 }
 #select .zf-fighter-slot img{
   display:block;width:100%;height:100%;object-fit:cover;
-  object-position:center 28%;image-rendering:pixelated;
+  object-position:center 13%;image-rendering:pixelated;
 }
 #select .zf-fighter-slot .initial{
   color:#ffe3b2;font:900 clamp(10px,2vw,23px)/1 "ZikaSFII",monospace;
@@ -85,7 +85,7 @@
 #select .zf-select-preview[hidden]{display:none!important}
 #select .zf-select-preview img{
   display:block;width:100%;max-width:100%;height:100%;
-  object-fit:contain;object-position:center bottom;
+  object-fit:cover;object-position:center 12%;
   image-rendering:pixelated;filter:none;
 }
 #select .zf-select-preview .zf-select-initials{
@@ -125,3 +125,22 @@ body.zf-in-selection main{max-width:990px;padding:6px 6px 20px;margin:0 auto}
   #select .zf-fighter-slot{border-width:1px}
   #select .zf-fighter-slot.p1,#select .zf-fighter-slot.p2{border-width:2px}
   }
+
+/* Ajustements du 08/11 : aucun vide superflu au-dessus des têtes.
+   On ne modifie pas les images approuvées : cadrage CSS seulement. */
+#select .zf-fighter-slot .photo{background:#081142}
+#select .zf-fighter-slot img{object-fit:cover;object-position:center 14%;transform:scale(1.10);transform-origin:center 30%}
+#select .zf-select-preview img{object-fit:cover;object-position:center 11%;}
+/* Curseurs SNES : cadre à coins carrés, doubles pixels contrastés,
+   joueur 1 bleu et joueur 2 rouge, sans arrondis ni halo moderne. */
+#select .zf-fighter-slot.p1,#select .zf-fighter-slot.p2{border:2px solid #fff;outline:0;box-shadow:none;z-index:6}
+#select .zf-fighter-slot.p1::after,#select .zf-fighter-slot.p2::after{
+ content:"";position:absolute;inset:0;pointer-events:none;z-index:4;
+ border:2px solid var(--zf-cursor-color);border-radius:0;
+ box-shadow:inset 0 0 0 2px #f8f8f8,0 0 0 1px #111;
+ animation:zf-selection-square-blink 260ms steps(1,end) infinite;
+}
+#select .zf-fighter-slot.p1{--zf-cursor-color:#21a8ff}
+#select .zf-fighter-slot.p2{--zf-cursor-color:#ed3541}
+#select .zf-fighter-slot.p1.focused,#select .zf-fighter-slot.p2.focused{animation:none}
+@keyframes zf-selection-square-blink{0%,49%{border-color:var(--zf-cursor-color)}50%,100%{border-color:#fff}}
