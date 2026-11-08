@@ -15,32 +15,9 @@
   background:#05045d;
   box-shadow:inset 0 0 0 2px #192673;
 }
-#select #zf-select-reference{display:none!important}
-#select .zf-select-heading,
-#select .zf-select-cabinet.reference-ready .zf-select-heading{
-  position:absolute;z-index:4;top:0;left:0;width:100%;height:14%;
-  display:block;visibility:visible!important;pointer-events:none;
-  /* Le vrai titre et START proviennent de la référence approuvée,
-     sans réinterprétation de leurs caractères ni de leur relief. */
-  background-image:url("https://static.wixstatic.com/media/685632_531e2c5c545244bb82df966c634c1800~mv2.png");
-  background-repeat:no-repeat;background-position:left top;background-size:100% auto;
-}
-#select .zf-select-heading h1,#select .zf-select-heading small{
-  visibility:hidden!important; /* texte accessible préservé dans le DOM */
-}
-#select .zf-select-heading h1{
-  position:absolute;top:4%;left:22%;width:56%;margin:0;
-  color:#f6bd78;letter-spacing:.03em;
-  font:900 clamp(17px,3vw,41px)/1.05 Georgia,"Times New Roman",serif;
-  -webkit-text-stroke:.5px #7d4551;
-  text-shadow:1px 1px #ffdfa5,2px 3px #653548,4px 4px #0b0825;
-}
-#select .zf-select-heading small{
-  position:absolute;right:3%;top:14%;
-  color:#f7c47f;
-  font:900 clamp(12px,2.3vw,31px)/1 Georgia,"Times New Roman",serif;
-  text-shadow:1px 2px #64364e,3px 3px #100721;
-}
+/* Le titre, START, 1P et 2P proviennent de vrais glyphes pixels SNES.
+   L'en-tête HTML est réservé à l'accessibilité, jamais à l'affichage. */
+#select .zf-select-heading{display:none!important}
 /* Au centre : trois rangées fixes, 7 cases à chaque colonne.
    La dernière n'utilise que les colonnes 1 à 6. */
 #select .zf-select-roster-wrap{
@@ -76,17 +53,20 @@
 }
 #select .zf-fighter-slot.has-photo .initial{display:none}
 #select .zf-fighter-slot .name{display:none!important}
-#select .zf-fighter-slot.p1{
-  z-index:2;border:3px solid #4ac9ff;
-  box-shadow:inset 0 0 0 1px #ebffff,0 0 0 1px #125dd3;
-}
+/* Cadres de curseur SNES : contour lumineux discret, sans effet
+   moderne ni éclaircissement des visages. Le repère 1P/2P est en bitmap. */
+#select .zf-fighter-slot.p1,
 #select .zf-fighter-slot.p2{
-  z-index:2;border:3px solid #ffdc63;
-  box-shadow:inset 0 0 0 1px #fff6c7,0 0 0 1px #ad6b19;
+ z-index:2;border:2px solid #f9f9ff;box-shadow:none;
 }
-#select .zf-fighter-slot.focused{animation:zf-portrait-focus .6s steps(2,end) infinite}
-@keyframes zf-portrait-focus{50%{filter:brightness(1.32)}}
-#select .zf-fighter-slot:focus-visible{outline:2px solid white;outline-offset:-2px}
+#select .zf-fighter-slot.p1{outline:2px solid #21a8fb;outline-offset:-2px}
+#select .zf-fighter-slot.p2{outline:2px solid #fa5365;outline-offset:-2px}
+#select .zf-fighter-slot.focused{animation:zf-snes-cursor 240ms steps(1,end) infinite}
+@keyframes zf-snes-cursor{
+  0%,49%{border-color:#f7ffff}
+  50%,100%{border-color:#397be3}
+}
+#select .zf-fighter-slot:focus-visible{outline-offset:-2px}
 /* Les grandes vues ne passent JAMAIS sur les cases 7/7/6. */
 #select .zf-select-preview,
 #select #zf-select-preview-2{
@@ -138,6 +118,4 @@ body.zf-in-selection main{max-width:990px;padding:6px 6px 20px;margin:0 auto}
   #select .zf-select-roster{gap:1px}
   #select .zf-fighter-slot{border-width:1px}
   #select .zf-fighter-slot.p1,#select .zf-fighter-slot.p2{border-width:2px}
-  #select .zf-select-heading h1{font-size:clamp(13px,3.5vw,23px)}
-  #select .zf-select-heading small{font-size:clamp(9px,2vw,14px)}
-}
+  }
