@@ -59,10 +59,12 @@ assert.match(introSrc,/const CINEMATIC_LENGTH=3\.60;/,
   'Conserver les images de stabilisation de la rotation 30 FPS');
 assert.match(introSrc,/coarseSprites=\[\[96,48\],\[104,52\]/,
   'Mosaïque SNES progressive obligatoire');
-assert.match(introSrc,/const x=480-Math\.round\(640\*progress\)/,
-  'Le logo doit défiler à travers tout le cadre façon Turbo SNES');
-assert.match(introSrc,/420-Math\.round\(110\*Math\.sin\(Math\.PI\*progress\)\)/,
-  'Largeur du balayage : grand logo aux extrémités, lisible au centre');
+assert.match(introSrc,/paint\(giantLetters,x,82,width,height\)/,
+  'Le mot ZIKA géant doit défiler, pas le logo entier');
+assert.match(introSrc,/const x=320\+width\/2-Math\.round\(\(320\+width\)\*progress\)/,
+  'Grand balayage latéral du lettrage comme TURBO SNES');
+assert.match(introSrc,/prepareGiantZika\(\)/,
+  'Le mot ZIKA doit être fabriqué indépendamment du logo');
 assert.match(introSrc,/const band=titleMenuOpen&&!battleSubmenuOpen/,
   'Bandeaux de mode uniquement dans les choix TURBO ou NORMAL');
 assert.match(introSrc,/if\(previewScreen==='cinematic'\)/,
@@ -71,7 +73,7 @@ assert.match(introCss,/background-image:none!important/,
   'Interdire la vieille image bleue derrière le Canvas du titre');
 assert.match(introCss,/\.zf-title-flash\{/,
   'Neutraliser les anciens flashs de la page titre');
-assert.ok(html.includes('arcade-intro.js?v=20261108-turbo-sweep-v23'),
+assert.ok(html.includes('arcade-intro.js?v=20261108-giant-zika-turbo-v24'),
   'Forcer le rechargement de la nouvelle introduction');
 assert.ok(html.includes('snes-fonts.css?'),
   'Les polices doivent être intégrées au jeu entier');
@@ -133,7 +135,7 @@ assert.ok(html.includes('html:not(.zf-intro-booted) body>main'),
   'Protection contre le flash du HTML avant l’introduction absente');
 assert.ok(read('arcade-intro.js').includes("classList.add('zf-intro-booted')"),
   'Le montage de l’introduction doit activer la page après création du masque');
-assert.ok(html.includes('arcade-intro.js?v=20261108-turbo-sweep-v23'),
+assert.ok(html.includes('arcade-intro.js?v=20261108-giant-zika-turbo-v24'),
   'L’ancienne version de l’intro reste en cache');
 
 for(const path of [
