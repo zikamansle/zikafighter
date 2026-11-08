@@ -546,12 +546,13 @@
   const battleChoicesReference=new Image();
   battleChoicesReference.crossOrigin='anonymous';
   battleChoicesReference.decoding='async';
-  // Rectangles serrés sur les glyphes réels de la capture 1230×870.
-  // Les anciens rectangles incluaient 30 px de vide vertical et
-  // écrasaient les lettres au redimensionnement.
+  // Recadrages mesurés sur la capture SNES originale (1230×870).
+  // GAME START commence à x443 et V.S. BATTLE à x443. La marge gauche
+  // x435 et les marges verticales gardent toutes les lettres et leurs reliefs.
+  // L'ancien début x503 coupait les deux mots : ne pas le réintroduire.
   const battleChoiceRects={
-    game:[503,661,286,38],
-    versus:[505,723,316,38]
+    game:[435,654,361,56],
+    versus:[435,717,399,53]
   };
   let battleChoiceSprites=null;
   function cropBattleChoice(rect){
@@ -592,34 +593,36 @@
   battleChoicesReference.addEventListener('load',prepareBattleChoices);
   battleChoicesReference.src='https://static.wixstatic.com/media/685632_48fffa2998304f8b9ac0c600bbf792ef~mv2.png';
   if(battleChoicesReference.complete&&battleChoicesReference.naturalWidth)prepareBattleChoices();
-  // Rangs mesurés sur la référence : 62 px d'écart sur 870 px de haut,
-  // soit environ 13 unités sur le canevas 320×180.
+  // Mêmes dimensions et alignement que TURBO / NORMAL / OPTION :
+  // texte à x115, curseur à x92, lignes espacées de 13 unités SNES.
   const battleRows=[141,154];
-  const battleTextCenterX=169;
+  const battleTextLeft=115;
   function drawBattleSubmenu(ctx){
     ctx.save();
     ctx.imageSmoothingEnabled=false;
-    const texts=['GAME START','V.S. BATTLE'];
-    texts.forEach((text,index)=>{
-      const width=index===0?97:107;
-      const height=13;
-      const x=Math.round(battleTextCenterX-width/2);
-      const y=Math.round(battleRows[index]-height/2);
-      if(battleChoiceSprites){
-        const sprite=battleChoiceSprites[index===0?'game':'versus'];
-        // Ne pas déformer les caractères ni changer leurs couleurs.
+    const names=['game','versus'];
+    const labels=['GAME START','V.S. BATTLE'];
+    names.forEach((name,index)=>{
+      const src=battleChoiceRects[name];
+      // Correspondance pixel pour pixel de la capture vers le menu 320×180.
+      // Hauteur : 12 ou 11 pixels, comme les 9–11 px du menu principal.
+      const w=Math.round(src[2]*320/1230);
+      const h=Math.round(src[3]*180/870);
+      const x=battleTextLeft;
+      const y=index===0?135:148;
+      if(battleChoiceSprites?.[name]){
         ctx.globalAlpha=1;
-        ctx.drawImage(sprite,x,y,width,height);
+        ctx.drawImage(battleChoiceSprites[name],x,y,w,h);
       }else{
-        // Texte de secours si le sprite n'est pas encore chargé.
-        menuText(ctx,text,x,battleRows[index]+4,12,'#f0ac70');
+        menuText(ctx,labels[index],x,y+h,10,'#f0ac70');
       }
     });
-    // Cur­seur verticalement centré, sans chevaucher les textes.
-    const cursorX=105,cursorSize=13,cursorY=Math.round(battleRows[battleSelection]-cursorSize/2);
-    if(titleChoiceSprites&&titleChoiceSprites.cursor)
-      ctx.drawImage(titleChoiceSprites.cursor,cursorX,cursorY,cursorSize,cursorSize);
-    else drawZCursor(ctx,cursorX,battleRows[battleSelection]+5);
+    // Même curseur Z que le menu TURBO, positionné avant les glyphes.
+    const cursorX=92;
+    const cursorY=battleRows[battleSelection]-7;
+    if(titleChoiceSprites?.cursor)
+      ctx.drawImage(titleChoiceSprites.cursor,cursorX,cursorY,14,13);
+    else drawZCursor(ctx,cursorX,battleRows[battleSelection]+6);
     ctx.restore();
   }
 
