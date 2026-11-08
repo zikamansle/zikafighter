@@ -54,6 +54,15 @@ assert.match(fontsCss,/font-family:'ZikaCPS1'/,
 assert.match(fontsCss,/font-family:'ZikaSFII'/,
   'Street Fighter II Large doit exister dans les styles');
 const introSrc=read('arcade-intro.js');
+assert.match(introSrc,/function skipZikapcomToLogo\(\)/,
+  'START sur ZIKAPCOM doit ouvrir la cinématique du logo');
+assert.match(introSrc,/if\(closed\|\|phase!=='cinematic'/,
+  'Seule la cinématique peut être passée directement vers PRESS START');
+assert.match(introSrc,/legal\.addEventListener\('click',\(\)=>skipZikapcomToLogo\(\)\)/,
+  'Le clic doit permettre de passer les crédits vers ZIKA FIGHTER');
+assert.match(introSrc,/cinematic\.addEventListener\('click',\(\)=>skipIntroToPressStart\(\)\)/,
+  'Le clic doit permettre de passer le logo vers PRESS START');
+
 const introCss=read('arcade-intro.css');
 assert.match(introSrc,/const CINEMATIC_LENGTH=5\.40;/,
   'Conserver les images de stabilisation de la rotation 30 FPS');
@@ -73,7 +82,7 @@ assert.match(introCss,/background-image:none!important/,
   'Interdire la vieille image bleue derrière le Canvas du titre');
 assert.match(introCss,/\.zf-title-flash\{/,
   'Neutraliser les anciens flashs de la page titre');
-assert.ok(html.includes('arcade-intro.js?v=20261108-continuous-zika-v27'),
+assert.ok(html.includes('arcade-intro.js?v=20261108-stepwise-start-v28'),
   'Forcer le rechargement de la nouvelle introduction');
 assert.ok(html.includes('snes-fonts.css?'),
   'Les polices doivent être intégrées au jeu entier');
@@ -135,7 +144,7 @@ assert.ok(html.includes('html:not(.zf-intro-booted) body>main'),
   'Protection contre le flash du HTML avant l’introduction absente');
 assert.ok(read('arcade-intro.js').includes("classList.add('zf-intro-booted')"),
   'Le montage de l’introduction doit activer la page après création du masque');
-assert.ok(html.includes('arcade-intro.js?v=20261108-continuous-zika-v27'),
+assert.ok(html.includes('arcade-intro.js?v=20261108-stepwise-start-v28'),
   'L’ancienne version de l’intro reste en cache');
 
 for(const path of [
