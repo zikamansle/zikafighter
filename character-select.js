@@ -80,6 +80,11 @@ function startMusic(){
  if(player.paused)void player.play().catch(err=>console.warn('Zika Fighter : musique de sélection',err));
 }
 function stopMusic(){if(music){music.pause();music.currentTime=0;}}
+function ensureSelectionMusic(){
+ // Ne jamais réinitialiser currentTime entre PLAYER SELECT et STAGE SELECT.
+ const player=getMusic();changeVolume();
+ if(player.paused)void player.play().catch(err=>console.warn('Zika Fighter : reprise musique sélection',err));
+}
 function count(){return Number(window.ZikaFighterSettings?.players??bridge()?.getPlayers?.()??1)===2?2:1;}
 // 20 portraits SNES visibles : Zika sera ajouté ultérieurement comme bonus.
 // Portraits 20 humains recréés en style pixel SNES ; Zika n'est pas sélectionnable.
@@ -266,6 +271,10 @@ function finish(){
  };
  // Comme sur SFII Turbo SNES : affichage immédiat du choix des arènes.
  // Aucun rideau noir ni fondu à cette étape ; la musique continue.
+ // Un éventuel voile hérité d'une transition précédente ne doit pas rester visible.
+ const curtain=window.ZikaFighterScreens?.element;
+ if(curtain){curtain.style.transition='none';curtain.style.opacity='0';curtain.style.pointerEvents='none';}
+ ensureSelectionMusic();
  transition();
 }
 function confirm(){
@@ -320,7 +329,7 @@ function pollPad(now){
 requestAnimationFrame(pollPad);
 window.addEventListener('zika:settings-changed',changeVolume);
 window.ZikaFighterCharacterSelect={
- open:enter,playMusic:startMusic,stopMusic,playConfirmSound:playCharacterConfirmSound,
+ open:enter,playMusic:startMusic,ensureMusic:ensureSelectionMusic,stopMusic,playConfirmSound:playCharacterConfirmSound,
  prewarm:()=>{
    window.ZikaArcadeAudio?.preloadClip?.(confirmSoundFile);
    confirmationFallback.load();
