@@ -261,3 +261,77 @@ body.zf-in-selection main{max-width:1020px;padding:12px 8px 24px}
 #select .zf-select-player-label{
   visibility:hidden!important;
 }
+
+/* ZIKA FIGHTER — écran unique VALIDÉ : personnages EN HAUT, stages EN BAS.
+   Rangées des personnages 7 / 7 / 6 alignées à gauche. Zika 21e bonus.
+   Les crops d'origine de la maquette validée ne contiennent aucun nom incrusté. */
+#select .zf-select-cabinet{
+  background:#04035c!important;
+  aspect-ratio:4/3;
+}
+#select #zf-select-reference{display:none!important} /* suppression de la carte */
+#select .zf-select-cabinet.reference-ready .zf-select-heading{
+  visibility:visible!important;
+}
+#select .zf-select-heading{top:0;left:0;height:12%;z-index:6}
+#select .zf-select-heading h1{
+  left:24%;top:7%;width:52%;
+  font:900 clamp(18px,3.8vw,45px)/1.03 Georgia,"Times New Roman",serif;
+  color:#f6c47b;text-shadow:1px 1px #f9e2a1,2px 3px #75394a,4px 5px #1a0826;
+}
+#select .zf-select-heading small{
+  right:3%;top:12%;font:900 clamp(11px,2.3vw,27px)/1 Georgia,"Times New Roman",serif;
+}
+#select .zf-select-roster-wrap{
+  left:20%;right:20%;top:14%;height:42%;z-index:4;
+  border:2px solid #cbcade;background:#050635;
+  box-shadow:0 0 0 2px #070722;overflow:hidden;
+}
+#select .zf-select-roster{
+  display:grid;grid-template-columns:repeat(7,minmax(0,1fr));
+  grid-template-rows:repeat(3,minmax(0,1fr));
+  gap:2px;width:100%;height:100%;align-content:stretch;justify-content:start;
+}
+#select .zf-fighter-slot{
+  min-height:0;min-width:0;aspect-ratio:auto;border:2px solid #89a3bc;
+  background:#10235b;overflow:hidden;
+}
+#select .zf-fighter-slot[hidden]{display:none!important}
+#select .zf-fighter-slot .photo{background:#10235b}
+#select .zf-fighter-slot img{
+  width:100%;height:100%;
+  object-fit:fill;object-position:center;
+  image-rendering:pixelated;
+}
+/* Zika, lorsqu'il est débloqué, utilise l'original en masquant uniquement
+   la bande du titre en haut. Les 20 autres crops ont déjà cette bande supprimée. */
+#select .zf-fighter-slot.zf-bonus-portrait img{
+  position:absolute;width:100%;height:118%;bottom:0;left:0;
+  object-fit:cover;object-position:center bottom;
+}
+#select .zf-select-preview{
+  display:flex;left:1%;right:auto;top:14%;bottom:auto;
+  width:18%;height:42%;z-index:3;overflow:hidden;align-items:flex-end;
+}
+#select #zf-select-preview-2{
+  display:flex;left:auto;right:1%;top:14%;bottom:auto;
+  width:18%;height:42%;
+}
+#select #zf-select-preview-2[hidden]{display:none!important}
+#select .zf-select-preview img{
+  width:100%;height:100%;max-width:100%;
+  object-fit:contain;object-position:center bottom;image-rendering:pixelated;
+}
+#select .zf-select-preview.zf-bonus-portrait img{
+  position:absolute;height:118%;bottom:0;left:0;object-fit:cover;
+}
+#select .zf-select-player-label{visibility:hidden!important}
+#select #zf-select-type{z-index:5;display:block}
+#select .zf-select-help,#select .zf-select-controls{display:none!important}
+@media(max-width:650px){
+  #select .zf-select-roster-wrap{left:19.5%;right:19.5%;border-width:1px}
+  #select .zf-select-roster{gap:1px}
+  #select .zf-fighter-slot{border-width:1px}
+  #select .zf-select-heading h1{font-size:clamp(13px,3.9vw,24px)}
+  #select .zf-select-heading small{font-size:clamp(9px,2.1vw,14px)}
+}
