@@ -265,6 +265,15 @@
     playMenuSfx('move');
   }
   function cursorConfirm(){playMenuSfx('confirm');}
+  // Même bruitage fourni par l'utilisateur pour les menus ET pour le déplacement
+  // des curseurs de sélection 1P/2P. Une seule source sonore et un seul réglage FX.
+  window.ZikaFighterMenuSfx=Object.freeze({
+    move:cursorMove,
+    // Son de confirmation conservé pour les menus; la confirmation des
+    // combattants sera remplacée lorsque l'utilisateur fournira son extrait.
+    confirm:cursorConfirm,
+    getState:()=>({...window.ZikaMenuAudioState})
+  });
   // Pre-decode on load; playback only starts on user menu input.
   prepareMenuSfx();
   let lastTitleNav=null,lastOptionsNav=null;
