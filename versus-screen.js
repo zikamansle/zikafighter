@@ -90,7 +90,7 @@
    ctx.drawImage(vsSprite,118,145,84,60);
    ctx.restore();
   }
-  ctx.fillStyle='#243a82';ctx.fillRect(0,204,320,1);
+
  }
  function loadPortraits(player1,player2,token){
   const srcs=portraitSources();
