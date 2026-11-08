@@ -121,3 +121,10 @@
  #select #zf-stage-screen .zf-stage-slot-title{font-size:5px}
  #select #zf-stage-screen .zf-stage-help{font-size:6px}
 }
+
+/* Miniatures exactes des 21 décors, regroupées dans une planche légère. */
+#select #zf-stage-screen .zf-stage-thumb{
+  display:block;flex:1;min-height:0;width:100%;
+  background-repeat:no-repeat;background-color:#101d54;
+  image-rendering:pixelated;background-origin:content-box;
+}
