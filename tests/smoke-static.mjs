@@ -60,6 +60,21 @@ assert.match(html,/const W=1152,H=864, floor=754;/,
 assert.match(html,/const sw=Math\.min\(bg\.naturalWidth,bg\.naturalHeight\*W\/H\)/,
   'Les décors doivent être recadrés, jamais étirés');
 assert.match(html,/stage-select\.js\?/,'Le choix des arènes doit être chargé');
+// Non-régression : aucune vieille page Pascal/Micka ne doit apparaître
+// avant que l'introduction 16 bits soit montée.
+assert.ok(html.includes('<section id="select" class="select" hidden>'),
+  'Écran de sélection invisible tant que le menu SNES ne l’a pas ouvert');
+assert.ok(!html.includes('Premier test des vrais visuels de Pascal et Micka'),
+  'Ancien texte de sélection encore présent');
+assert.ok(!html.includes('class="pickcard'),
+  'Anciennes cartes de combattants encore présentes');
+assert.ok(html.includes('html:not(.zf-intro-booted) body>main'),
+  'Protection contre le flash du HTML avant l’introduction absente');
+assert.ok(read('arcade-intro.js').includes("classList.add('zf-intro-booted')"),
+  'Le montage de l’introduction doit activer la page après création du masque');
+assert.ok(html.includes('arcade-intro.js?v=20261108-clean-first-paint-v18'),
+  'L’ancienne version de l’intro reste en cache');
+
 for(const path of [
   'data/approved-portrait-thumbs.js','data/approved-portrait-heroes.js'
 ]){
