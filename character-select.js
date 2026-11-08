@@ -68,6 +68,20 @@ if(oldStage)toolbar.appendChild(oldStage);
 let opened=false,activePlayer=0;
 const chosen=[0,1],pointerCursor=[0,1];
 let music=null;
+// Validation du personnage : clip SFII_0~3.WAV fourni, allégé en MP3.
+// Le même bruitage est joué pour la sélection du joueur 1 ou du joueur 2.
+const characterConfirmClip=new Audio('./assets/audio/SFII-character-confirm.mp3');
+characterConfirmClip.preload='auto';
+function playCharacterConfirmSound(){
+ const fx=Number(window.ZikaFighterSettings?.fxVolume??8);
+ const sound=characterConfirmClip.cloneNode(true);
+ sound.volume=Math.max(0,Math.min(1,fx/10));
+ sound.loop=false;
+ const promise=sound.play();
+ if(promise&&typeof promise.catch==='function'){
+  promise.catch(err=>console.warn('Zika Fighter : confirmation du combattant',err));
+ }
+}
 function getMusic(){
  if(!music){music=new Audio('./assets/audio/Player Select EXTENDED Street Fighter 2 SNES.mp3');music.loop=true;music.preload='auto';}
  return music;
@@ -324,7 +338,7 @@ function finish(){
 }
 function confirm(){
  if(!opened||window.ZikaFighterScreens?.busy)return;
- window.ZikaArcadeAudio?.playEffect?.('confirm');
+ playCharacterConfirmSound();
  if(count()===2&&activePlayer===0){activePlayer=1;render();}
  else finish();
 }
@@ -375,7 +389,10 @@ requestAnimationFrame(pollPad);
 window.addEventListener('zika:settings-changed',changeVolume);
 window.ZikaFighterCharacterSelect={
  open:enter,playMusic:startMusic,stopMusic,
- prewarm:()=>{const m=getMusic();m.volume=0;if(m.paused)void m.play().catch(()=>{});},
+ prewarm:()=>{
+   characterConfirmClip.load();
+   const m=getMusic();m.volume=0;if(m.paused)void m.play().catch(()=>{});
+ },
  getFighters:()=>fighters.map(f=>({...f})),
  getState:()=>({opened,activePlayer,chosen:[...chosen]})
 };
