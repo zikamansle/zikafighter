@@ -52,9 +52,14 @@
    const art=document.createElement('div');
    art.className='zf-stage-thumb';
    art.setAttribute('aria-hidden','true');
-   art.style.backgroundImage='url("https://static.wixstatic.com/media/685632_f509bf019885487fb1e97f53e321e587~mv2.png")';
-   art.style.backgroundSize='700% 300%';
-   art.style.backgroundPosition=((index%7)/6*100)+'% '+(Math.floor(index/7)/2*100)+'%';
+   // Chaque vignette réutilise le décor ORIGINAL de cette arène,
+   // jamais une case d'un montage compressé ou une illustration inventée.
+   // L'image reste entière dans une zone 16:9, sans étirement.
+   const imageUrl=s.imageUrl||catalogue()?.imageFor?.(s.id);
+   art.style.backgroundImage=imageUrl?'url("'+imageUrl.replace(/"/g,'%22')+'")':'none';
+   art.style.backgroundSize='contain';
+   art.style.backgroundRepeat='no-repeat';
+   art.style.backgroundPosition='center center';
    button.append(art,title);
    button.addEventListener('click',()=>{
     if(!active||confirming)return;
