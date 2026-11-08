@@ -1,43 +1,153 @@
-/* Sélection des 20 personnages : proportions 4:3 et composition arcade 16 bits. */
-#select.zf-select-screen{max-width:1000px;margin:0 auto;padding:0;border:5px solid #151526;border-radius:0;box-shadow:0 15px 50px #000a;background:#061231;color:#fff;text-align:center;overflow:hidden}
+/* Zika Fighter - PLAYER SELECT, présentation inspirée de la capture SNES fournie.
+   Un portrait à gauche, carte du monde en haut, 20 portraits en deux rangées. */
+#select.zf-select-screen{
+  max-width:1000px;margin:0 auto;padding:0;overflow:hidden;
+  border:0;border-radius:0;background:#070b76;color:#fff;text-align:center;
+  box-shadow:0 12px 42px #000a;
+}
 #select.zf-select-screen[hidden]{display:none!important}
-#select .zf-select-cabinet{aspect-ratio:4/3;position:relative;overflow:hidden;background:linear-gradient(#1c5eae,#08336d 65%,#07112c);box-shadow:inset 0 0 0 3px #8eafd3}
-#select .zf-select-heading{height:12%;display:grid;place-items:center;background:linear-gradient(#001748,#001e5c);border-bottom:4px solid #93a9d5;position:relative}
-#select .zf-select-heading h1{margin:0;font:italic 1000 clamp(23px,4vw,45px)/1 Impact,"Arial Black",sans-serif;letter-spacing:.1em;color:#ffe17b;-webkit-text-stroke:.6px #711e40;text-shadow:3px 3px #ba3133,5px 5px #16172c}
-#select .zf-select-heading small{position:absolute;right:2%;bottom:2%;font:900 clamp(8px,1.2vw,13px) monospace;color:#9ce7fa}
-#select .zf-select-upper{height:55%;display:grid;grid-template-columns:27% 46% 27%;padding:1% 2% 0;gap:0}
-#select .zf-select-preview{min-width:0;position:relative;overflow:hidden;border:4px ridge #c0c6d5;background:linear-gradient(135deg,#2e75ad,#071a50 75%);box-shadow:inset 0 0 12px #0009;display:flex;align-items:flex-end;justify-content:center}
-#select .zf-select-preview.right{background:linear-gradient(225deg,#755183,#0d225a 78%)}
-#select .zf-select-preview img{display:block;width:100%;height:91%;object-fit:contain;object-position:bottom center;image-rendering:pixelated;filter:drop-shadow(3px 3px 0 #07112f)}
-#select .zf-select-initials{position:absolute;inset:8% 0 23%;display:grid;place-items:center;font:900 clamp(35px,6vw,88px) Impact,"Arial Black",sans-serif;color:#b4c3d5;letter-spacing:-.06em;text-shadow:4px 5px #07132e;opacity:.82}
+#select .zf-select-cabinet{
+  position:relative;aspect-ratio:4/3;width:100%;overflow:hidden;
+  background:#090a7a;isolation:isolate;border:4px solid #060527;
+  box-shadow:inset 0 0 12px #030218;
+}
+#select #zf-select-reference{
+  display:block;position:absolute;inset:0;width:100%;height:100%;z-index:0;
+  image-rendering:pixelated;pointer-events:none;
+}
+#select .zf-select-heading{
+  position:absolute;top:0;left:0;width:100%;height:20%;
+  border:0;pointer-events:none;z-index:1;
+}
+#select .zf-select-heading h1{
+  position:absolute;left:30%;top:11%;width:46%;margin:0;
+  font:900 clamp(17px,3.9vw,46px)/1 Georgia,serif;
+  color:#f3bb68;letter-spacing:.04em;text-shadow:2px 3px #553045,3px 4px #05031a;
+  text-transform:uppercase;
+}
+#select .zf-select-heading small{
+  position:absolute;right:7%;top:8%;
+  font:900 clamp(12px,2.5vw,28px)/1 Georgia,serif;
+  color:#f3bb68;text-shadow:2px 3px #563244;
+}
+#select .zf-select-cabinet.reference-ready .zf-select-heading{visibility:hidden}
+#select .zf-select-preview{
+  position:absolute;left:2.1%;bottom:0;width:25%;height:45%;
+  overflow:hidden;z-index:3;background:transparent;border:0;
+  display:flex;align-items:flex-end;justify-content:center;
+}
+#select .zf-select-preview img{
+  height:100%;max-width:100%;object-fit:contain;object-position:center bottom;
+  image-rendering:pixelated;filter:drop-shadow(4px 2px 0 #0a042f);
+}
+#select .zf-select-preview .zf-select-initials{
+  position:absolute;inset:14% 5% 10%;
+  display:grid;place-items:center;
+  font:900 clamp(39px,7vw,84px)/1 Impact,"Arial Black",sans-serif;
+  color:#e9d9b2;text-shadow:4px 5px #251645,0 0 4px #e3bb7c;
+}
 #select .zf-select-preview.has-photo .zf-select-initials{display:none}
-#select .zf-select-preview strong{position:absolute;bottom:0;inset-inline:0;background:#061129e8;border-top:2px solid #ffd366;padding:1.5%;color:#ffdf7f;font:900 clamp(12px,2vw,24px)/1.4 Impact,"Arial Black",sans-serif;text-shadow:2px 2px #5e1838;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#select .zf-world{position:relative;border:3px solid #8ed1e1;overflow:hidden;background:repeating-linear-gradient(0deg,transparent 0 19px,#ccedff15 20px 21px),repeating-linear-gradient(90deg,transparent 0 24px,#ccedff15 25px 26px),linear-gradient(#2175ac,#103e78 60%,#062553)}
-#select .zf-world svg{width:100%;height:100%;display:block;filter:drop-shadow(3px 3px 1px #092441)}
-#select .zf-world .land{fill:#89ad71;stroke:#e0c58d;stroke-width:1.6}
-#select .zf-world label{position:absolute;bottom:4%;left:6%;right:6%;background:#071943da;border:2px solid #c8dfda;color:#f7e5a8;font:900 clamp(9px,1.3vw,17px) monospace;padding:1%}
-#select .zf-select-roster-wrap{height:29%;background:#06102f;border-top:4px solid #9fa8c9;padding:1% 2% 1.5%}
-#select .zf-select-roster{height:100%;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:3px}
-#select .zf-fighter-slot{min-height:0;min-width:0;position:relative;display:flex;flex-direction:column;align-items:stretch;justify-content:stretch;background:#1a3161;border:2px solid #abbad0;border-radius:0;color:#fff;padding:0;overflow:hidden;box-shadow:inset 1px 1px #d6c7a0,inset -2px -2px #051327}
-#select .zf-fighter-slot .photo{flex:1;min-height:0;background:linear-gradient(135deg,var(--fighter-color,#37517a),#102043 85%);position:relative;display:grid;place-items:center}
-#select .zf-fighter-slot img{width:100%;height:100%;object-fit:cover;object-position:top;image-rendering:pixelated}
-#select .zf-fighter-slot .initial{font:900 clamp(10px,1.6vw,19px) Impact,"Arial Black",sans-serif;color:#f1dfac;text-shadow:2px 2px #0b1123}
+#select .zf-select-preview strong{display:none}
+#select #zf-select-preview-2{display:none}
+#select .zf-select-player-label{
+  position:absolute;left:2.5%;top:36%;width:25%;z-index:4;
+  display:flex;align-items:flex-start;justify-content:center;flex-direction:column;gap:0;
+  pointer-events:none;text-align:left;
+}
+#select .zf-select-player-label b{
+  display:block;padding-left:2%;color:#40b8ff;
+  font:900 clamp(23px,4vw,48px)/1 Impact,"Arial Black",sans-serif;
+  letter-spacing:.02em;text-shadow:2px 2px #153c9c;
+}
+#select .zf-select-player-label strong{
+  display:block;color:#efb068;
+  font:900 clamp(17px,3.3vw,39px)/1 Georgia,serif;
+  letter-spacing:-.03em;text-shadow:2px 3px #563149;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;
+}
+#select .zf-select-player-label.right-player{
+  left:auto;right:3%;top:43%;align-items:flex-end;
+}
+#select .zf-select-player-label.right-player b{color:#a9edff}
+#select .zf-select-player-label.right-player strong{font-size:clamp(11px,1.7vw,20px)}
+#select .zf-select-player-label[hidden]{display:none!important}
+#select .zf-select-roster-wrap{
+  position:absolute;left:29%;right:3.5%;top:63%;height:32%;
+  z-index:4;border:2px solid #dee4e6;background:#080a2e;overflow:hidden;
+  box-shadow:0 0 0 2px #111332,2px 2px #04051c;
+}
+#select .zf-select-roster{
+  height:100%;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));
+  grid-template-rows:repeat(2,minmax(0,1fr));gap:1px;
+}
+#select .zf-fighter-slot{
+  position:relative;display:block;min-width:0;min-height:0;
+  border:1px solid #8da6ca;border-radius:0;
+  padding:0;overflow:hidden;cursor:pointer;background:#173b75;box-shadow:none;color:#fff;
+}
+#select .zf-fighter-slot .photo{
+  position:absolute;inset:0;display:grid;place-items:center;overflow:hidden;
+  background:linear-gradient(140deg,var(--fighter-color,#597caf),#102458 70%);
+}
+#select .zf-fighter-slot img{
+  display:block;width:100%;height:100%;object-fit:cover;
+  object-position:top center;image-rendering:pixelated;
+}
+#select .zf-fighter-slot .initial{
+  font:900 clamp(10px,1.8vw,23px)/1 Impact,"Arial Black",sans-serif;
+  color:#fff0cc;text-shadow:2px 2px #081030;
+}
 #select .zf-fighter-slot.has-photo .initial{display:none}
-#select .zf-fighter-slot .name{font:900 clamp(6px,.85vw,11px)/1.1 Arial,sans-serif;min-height:13px;display:grid;place-items:center;background:#090e27;padding:0 1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#f6eacb}
-#select .zf-fighter-slot.p1{border-color:#ffea60;box-shadow:0 0 0 2px #d13232,inset 0 0 0 1px #fff2ad;z-index:2}
-#select .zf-fighter-slot.p2{border-color:#a6eaff;box-shadow:0 0 0 2px #2fa5f4,inset 0 0 0 1px #cde8ff;z-index:2}
-#select .zf-fighter-slot.focused{animation:zf-roster-blink .62s steps(2,end) infinite}
-@keyframes zf-roster-blink{50%{filter:brightness(1.55)}}
-#select .zf-fighter-slot:focus-visible{outline:3px solid #fff;outline-offset:-3px}
-#select .zf-select-help{height:4%;display:flex;align-items:center;justify-content:center;background:#030c24;font:900 clamp(7px,1.15vw,14px) monospace;color:#faf0b1;letter-spacing:.04em}
-#select .zf-select-controls{display:flex;align-items:center;justify-content:center;gap:12px;padding:12px 8px;border-top:3px solid #91a8d2;background:#07122f;flex-wrap:wrap}
-#select .zf-select-controls label{display:flex;align-items:center;gap:6px;font:900 12px monospace;color:#efd180}
-#select .zf-select-controls select{color:white;background:#112c60;border:2px solid #92bce6;font:700 13px monospace;padding:7px}
-#select .zf-select-controls button{border:2px solid #fff3a1;background:#e9a132;color:#141e40;padding:9px 18px;border-radius:0;font:900 15px Impact,"Arial Black",sans-serif;box-shadow:3px 4px #54243a}
-#select .zf-select-controls button:focus-visible{outline:3px solid white;outline-offset:3px}
-@media(max-width:650px){#select .zf-select-roster{gap:1px}#select .zf-fighter-slot{border-width:1px}#select .zf-select-roster-wrap{padding-inline:1%}#select .zf-select-upper{padding-inline:1%}#select .zf-select-preview{border-width:2px}#select .zf-select-heading{border-bottom-width:2px}#select .zf-fighter-slot .name{font-size:5.5px}}
-
-/* L'interface HTML du prototype ne doit pas apparaître autour de l'écran SNES. */
+#select .zf-fighter-slot .name{
+  position:absolute;bottom:0;left:0;right:0;height:19%;
+  display:grid;place-items:center;
+  padding:0 1px;background:#071432e8;
+  font:900 clamp(5px,.72vw,9px)/1 Arial,sans-serif;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff4d0;
+}
+#select .zf-fighter-slot.p1{
+  border:3px solid #58c5ff;z-index:2;
+  box-shadow:inset 0 0 0 1px #e4f9ff,0 0 2px 1px #45a7ff;
+}
+#select .zf-fighter-slot.p2{
+  border:3px solid #ffde53;z-index:2;
+  box-shadow:inset 0 0 0 1px #fff3b5,0 0 2px 1px #fedb52;
+}
+#select .zf-fighter-slot.focused{animation:zf-select-cursor .7s steps(2,end) infinite}
+@keyframes zf-select-cursor{50%{filter:brightness(1.45)}}
+#select .zf-fighter-slot:focus-visible{outline:2px solid #fff;outline-offset:-2px}
+#select .zf-select-help{
+  position:absolute;bottom:0;left:29%;right:3.5%;z-index:5;
+  height:3%;background:#081038d9;color:#d7c5a1;
+  display:flex;align-items:center;justify-content:center;
+  font:900 clamp(7px,.95vw,12px)/1 monospace;letter-spacing:.03em;
+  pointer-events:none;
+}
+#select .zf-select-controls{
+  display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;
+  padding:11px 8px;border-top:3px solid #8eaad6;background:#08132f;
+}
+#select .zf-select-controls label{
+  display:flex;align-items:center;gap:7px;font:900 13px monospace;color:#e6d18b;
+}
+#select .zf-select-controls select{
+  padding:7px;background:#142b5c;border:2px solid #91b6d8;
+  border-radius:0;color:#fff;font:700 13px monospace;
+}
+#select .zf-select-controls button{
+  padding:9px 17px;border:2px solid #ffeba5;border-radius:0;
+  background:#f0aa49;color:#18204a;font:900 15px Impact,"Arial Black",sans-serif;
+  box-shadow:3px 4px #662a3b;
+}
+#select .zf-select-controls button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 body.zf-in-selection>header,body.zf-in-selection>footer{display:none}
 body.zf-in-selection main{max-width:1020px;padding:12px 8px 24px}
-@media(max-width:650px){body.zf-in-selection main{padding:4px 0 10px}}
+@media(max-width:650px){
+ body.zf-in-selection main{padding:4px 0 10px}
+ #select .zf-select-cabinet{border-width:2px}
+ #select .zf-fighter-slot{border-width:1px}
+ #select .zf-fighter-slot .name{font-size:5px}
+ #select .zf-select-roster-wrap{border-width:1px}
+ #select .zf-select-help{font-size:7px}
+ #select .zf-select-player-label strong{font-size:clamp(12px,3vw,20px)}
+}
