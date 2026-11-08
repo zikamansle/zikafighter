@@ -170,3 +170,76 @@ body.zf-in-selection main{max-width:1020px;padding:12px 8px 24px}
 #select .zf-select-player-label.right-player strong[data-long="true"]{
   font-size:clamp(10px,1.5vw,18px);
 }
+
+/* Typographies SNES : uniquement les textes, sans retoucher ni déplacer
+   les 20 portraits déjà validés et sans modifier leurs sources. */
+
+/* Le titre et START de la capture originale restent prioritaires :
+   ne pas les recouvrir avec un doublon HTML. */
+#select .zf-select-cabinet.reference-ready .zf-select-heading{
+  visibility:hidden;
+}
+
+/* Texte du titre de secours (si la référence est indisponible). */
+#select .zf-select-heading h1,
+#select .zf-select-heading small{
+  font-family:Georgia,"Times New Roman",serif;
+  font-style:normal;
+  font-weight:900;
+  letter-spacing:.01em;
+  color:#f4be74;
+  -webkit-text-stroke:.6px #64334b;
+  text-shadow:1px 1px 0 #6e3d4c,2px 2px 0 #20142e,3px 3px 0 #05051b;
+}
+
+/* Numéro du joueur : chiffres carrés, contours nets comme les repères SNES. */
+#select .zf-select-player-label b{
+  font-family:"Lucida Console",Consolas,"Courier New",monospace;
+  font-weight:900;
+  font-style:normal;
+  font-size:clamp(20px,3.55vw,42px);
+  line-height:1;
+  letter-spacing:-.09em;
+  color:#51c8ff;
+  -webkit-text-stroke:.5px #16418b;
+  text-shadow:2px 2px 0 #0b2c87,3px 3px 0 #050532;
+}
+
+/* Nom sélectionné : lettres empattées dorées, relief sombre et aucun rognage.
+   Le nom reste dynamique (PASCAL, FABIENNE 1, etc.). */
+#select .zf-select-player-label strong,
+#select .zf-select-player-label.right-player strong{
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:900;
+  font-style:normal;
+  font-size:clamp(14px,2.45vw,29px);
+  line-height:1.13;
+  letter-spacing:-.045em;
+  color:#f2b96f;
+  -webkit-text-stroke:.45px #663447;
+  text-shadow:1px 1px 0 #a26462,2px 2px 0 #321438,3px 3px 0 #090624;
+  max-width:100%;
+  white-space:nowrap;
+  text-overflow:clip;
+  overflow:visible;
+}
+#select .zf-select-player-label strong[data-long="true"]{
+  font-size:clamp(10px,1.75vw,21px);
+}
+#select .zf-select-player-label.right-player strong{
+  font-size:clamp(12px,1.75vw,21px);
+}
+#select .zf-select-player-label.right-player strong[data-long="true"]{
+  font-size:clamp(9px,1.4vw,16px);
+}
+
+/* Dans le Street Fighter II Turbo de référence, les cases contiennent
+   les portraits seuls. Le nom se lit à côté du grand portrait sélectionné.
+   On conserve toutefois le nom accessible via aria-label sur chaque bouton. */
+#select .zf-fighter-slot .name{display:none!important}
+
+@media(max-width:650px){
+  #select .zf-select-player-label b{font-size:clamp(16px,3.4vw,24px)}
+  #select .zf-select-player-label strong{font-size:clamp(10px,2.4vw,17px)}
+  #select .zf-select-player-label strong[data-long="true"]{font-size:clamp(8px,1.85vw,13px)}
+}
