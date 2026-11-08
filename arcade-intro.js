@@ -30,6 +30,9 @@
     '</div>'
   ].join('');
   document.body.appendChild(overlay);
+  // L'interface historique reste invisible jusqu'à ce que la véritable
+  // introduction ait été construite et montée au-dessus de la page.
+  document.documentElement.classList.add('zf-intro-booted');
   const zikapcomLogo=document.getElementById('zf-zikapcom-logo');
   zikapcomLogo.addEventListener('error',()=>{
     // Text fallback until approved PNG is added to assets.
