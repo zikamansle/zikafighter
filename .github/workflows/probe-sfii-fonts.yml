@@ -1,4 +1,4 @@
-name: Verify authentic SFII font packages
+name: Inspect font licenses and actual font packages
 on:
   push:
     paths:
@@ -6,27 +6,30 @@ on:
 permissions:
   contents: read
 jobs:
-  probe:
+  inspect:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check real font package availability (no fonts are uploaded)
+      - name: Download archive metadata and bundled font licenses
         run: |
           python3 - <<'PY'
-          import urllib.request,urllib.error
-          for n,url in [
-            ('SFII_LARGE_WOFF2','https://fontstruct.com/font_archives/download/2467222/woff2'),
-            ('SFII_LARGE_OTF','https://fontstruct.com/font_archives/download/2467222/otf'),
-            ('CAPCOM_SERIF_WOFF2','https://fontstruct.com/font_archives/download/821406/woff2'),
-            ('SFII_FONTS_SITE','https://fontstruct.com/fontstructions/download/2467222'),
-          ]:
+          import urllib.request,zipfile,io
+          fonts={
+           'Capcom Serif Large':821406,
+           'CPS-1 Fighter':1525503,
+           'Street Fighter II Large':2467222,
+           '16-bit Battle':2298559,
+          }
+          for name,number in fonts.items():
+            url=f'https://fontstruct.com/font_archives/download/{number}/woff2'
             try:
-              req=urllib.request.Request(url,headers={
-                 'User-Agent':'Mozilla/5.0',
-                 'Referer':'https://fontstruct.com/fontstructions/download/2467222',
-                 'Accept':'*/*'})
-              with urllib.request.urlopen(req,timeout=12) as r:
-                data=r.read(150)
-                print(n,'status',r.status,'content-type',r.headers.get('Content-Type'),'sample',repr(data[:35]),flush=True)
-            except Exception as e:print(n,'error',type(e).__name__,str(e)[:160],flush=True)
+              req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'})
+              data=urllib.request.urlopen(req,timeout=30).read()
+              z=zipfile.ZipFile(io.BytesIO(data))
+              print('FONT:',name,'BYTES:',len(data),'FILES:',[(x.filename,x.file_size) for x in z.infolist()],flush=True)
+              for f in z.namelist():
+                if any(a in f.lower() for a in ('license','readme','licence')):
+                  txt=z.read(f).decode('utf8','replace')[:2500]
+                  print('LICENSE',name,f,repr(txt),flush=True)
+            except Exception as e:print('ERROR',name,str(e),flush=True)
           PY
