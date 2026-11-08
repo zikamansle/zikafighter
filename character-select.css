@@ -151,3 +151,22 @@ body.zf-in-selection main{max-width:1020px;padding:12px 8px 24px}
  #select .zf-select-help{font-size:7px}
  #select .zf-select-player-label strong{font-size:clamp(12px,3vw,20px)}
 }
+
+/* Aucun panneau ajouté sous l'écran : la sélection se fait comme sur la SNES.
+   START et les portraits sont les zones tactiles actives. */
+#select .zf-select-controls{display:none!important}
+#select .zf-select-help{display:none!important}
+#select #zf-select-start-control{
+  position:absolute;z-index:6;right:5%;top:0;width:24%;height:13%;
+  background:transparent;border:0;padding:0;opacity:0;
+  cursor:pointer;border-radius:0;
+}
+#select #zf-select-start-control:focus-visible{
+  opacity:1;outline:2px solid #fff;outline-offset:-2px;
+}
+#select .zf-select-player-label strong[data-long="true"]{
+  font-size:clamp(12px,2.25vw,27px);
+}
+#select .zf-select-player-label.right-player strong[data-long="true"]{
+  font-size:clamp(10px,1.5vw,18px);
+}
