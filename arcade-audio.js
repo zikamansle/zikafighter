@@ -184,6 +184,57 @@
     });
     return true;
   }
+  // Traitement vocal commun des 21 annonces de stage.
+  // AUCUN décalage de hauteur : +4,5 dB à 1,3 kHz, +2,5 dB à 2,5 kHz,
+  // saturation douce (SNES granuleux), sans écho ni réverbération.
+  // Les fichiers source restent inchangés dans assets/audio.
+  const stageDistortionCurve=new Float32Array(2048);
+  for(let i=0;i<stageDistortionCurve.length;i++){
+    const value=(i/(stageDistortionCurve.length-1))*2-1;
+    stageDistortionCurve[i]=Math.tanh(2.7*value)/Math.tanh(2.7);
+  }
+  async function playStageVoice(url){
+    if(clamp(settings.fxVolume,0,10)===0)return true;
+    const fallback=()=>new Promise(resolve=>{
+      try{
+        const el=new Audio(url);
+        el.volume=clamp(settings.fxVolume,0,10)/10;
+        el.preload='auto';
+        el.onended=()=>resolve(true);
+        el.onerror=()=>resolve(false);
+        const result=el.play();
+        if(result?.catch)result.catch(()=>resolve(false));
+      }catch(_){resolve(false);}
+    });
+    if(!unlock())return fallback();
+    const buffer=await preloadClip(url);
+    if(!buffer||!ctx||ctx.state==='closed')return fallback();
+    return new Promise(resolve=>{
+      try{
+        const source=ctx.createBufferSource();
+        const level=ctx.createGain();
+        const mid=ctx.createBiquadFilter();
+        const clarity=ctx.createBiquadFilter();
+        const sat=ctx.createWaveShaper();
+        const output=ctx.createGain();
+        source.buffer=buffer;
+        level.gain.value=sampleGain(buffer);
+        mid.type='peaking';mid.frequency.value=1300;mid.Q.value=.85;mid.gain.value=4.5;
+        clarity.type='peaking';clarity.frequency.value=2500;clarity.Q.value=1;clarity.gain.value=2.5;
+        sat.curve=stageDistortionCurve;
+        sat.oversample='2x';
+        output.gain.value=.83;
+        source.connect(level);level.connect(mid);mid.connect(clarity);
+        clarity.connect(sat);sat.connect(output);output.connect(sfxOut);
+        source.onended=()=>resolve(true);
+        source.start();
+      }catch(err){
+        console.warn('Zika Fighter : traitement vocal SNES indisponible',err);
+        fallback().then(resolve);
+      }
+    });
+  }
+
   const voiceFiles={
     round:'round.mp3',fight:'fight.mp3',win:'you-win-street-fighter.mp3',
     lose:'you-lose.mp3',perfect:'perfect.mp3',hadouken:'hadouken.mp3',
@@ -201,7 +252,7 @@
   window.addEventListener('zika:settings-changed',event=>setSettings(event.detail));
   window.ZikaArcadeAudio={
     unlock,logo,startTitle,stop,select,transition,isRunning,volume,
-    setLevels,setSettings,playEffect,playVoice,playSample,playClip,preloadClip,sampleGain,
+    setLevels,setSettings,playEffect,playVoice,playSample,playClip,preloadClip,sampleGain,playStageVoice,
     getSettings:()=>({...settings})
   };
 })();
