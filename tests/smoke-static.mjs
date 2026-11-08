@@ -42,6 +42,22 @@ assert.ok(!html.includes('zf-pixel-lettering.js'),
   'Rejet de l’alphabet artificiel invalidé par l’utilisateur');
 assert.ok(!select.includes('ZikaFighterPixelText'),
   'La sélection ne doit pas dépendre du faux lettrage');
+assert.ok(existsSync(join(root,'assets/snes-ui-letters.png')),
+  'Véritable atlas de titres source SNES introuvable');
+assert.ok(html.includes('snes-ui-text.js?'),
+  'Le moteur d’écriture SNES doit être chargé');
+assert.ok(html.indexOf('<script defer src="./snes-ui-text.js')<
+          html.indexOf('<script defer src="./character-select.js'),
+  'Charger la fonte bitmap avant la sélection');
+assert.match(select,/window\.ZikaSNESText/,'Titres et noms en pixels SNES');
+assert.doesNotMatch(select,/zfNameGlyphs/,'Supprimer le faux alphabet 7×9');
+assert.doesNotMatch(select,/reference\.src=/,'Supprimer l’ancienne capture montée dans la page');
+assert.match(stages,/zf-stage-title-pixels/,'Titre STAGE SELECT en pixels SNES');
+assert.match(stages,/zf-stage-slot-name-bitmap/,'Noms d’arènes en pixels SNES');
+assert.match(stages,/zf-flight-text/,'Transition des arènes en pixels SNES');
+assert.doesNotMatch(selectCss,/background-image:url/,'Plus de faux bandeau de titre');
+assert.doesNotMatch(selectCss,/filter:brightness/,'Ne pas faire clignoter les visages');
+assert.doesNotMatch(stageCss,/filter:brightness/,'Ne pas éclaircir les arènes');
 assert.match(selectCss,/object-fit:contain/,
   'Ne jamais déformer les portraits approuvés');
 assert.doesNotMatch(selectCss,/object-fit:fill/,
@@ -92,7 +108,7 @@ assert.ok(embedded,'Moteur principal introuvable');
 new vm.Script(embedded[1],{filename:'index-inline.js'});
 for(const path of [
   'arcade-audio.js','arcade-intro.js','character-select.js','stage-select.js',
-  'stage-audio.js','screen-transitions.js'
+  'stage-audio.js','screen-transitions.js','snes-ui-text.js'
 ]){
   new vm.Script(read(path),{filename:path});
 }
