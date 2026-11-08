@@ -91,10 +91,14 @@ const portraitSources=window.ZikaFighterFinalThumbnails||{};
 const largePortraitSources=window.ZikaFighterFinalHeroes||{};
 const zikaUnlocked=()=>window.ZikaFighterStages?.isZikaUnlocked?.()===true;
 const visibleCount=()=>zikaUnlocked()?21:20;
-const photos=fighters.map(f=>{
+const normalizedThumbnails=Array(fighters.length).fill(null);
+const photos=fighters.map((f,index)=>{
  const im=new Image();
  im.decoding='async';
- im.onload=()=>{if(opened)render();};
+ im.onload=()=>{
+   normalizedThumbnails[index]=window.ZikaFighterThumbNormalize?.fromImage?.(f.slug,im)||null;
+   if(opened)render();
+ };
  im.onerror=()=>{
    // Une éventuelle photo locale prend le relais si la médiathèque n'est pas joignable.
    const fallback='./assets/fighters/'+f.slug+'.png';
@@ -109,6 +113,7 @@ const photos=fighters.map(f=>{
 window.ZikaFighterPortraits=Object.freeze({...portraitSources});
 window.ZikaFighterLargePortraits=Object.freeze({...largePortraitSources});
 function portrait(i){return photos[i]?.complete&&photos[i]?.naturalWidth>0?photos[i].src:null;}
+function thumbnail(i){return normalizedThumbnails[i]||portrait(i);}
 function initials(name){return name.split(' ').filter(Boolean).map(p=>p[0]).join('').slice(0,2).toUpperCase();}
 fighters.forEach((f,i)=>{
  const cell=document.createElement('button');cell.type='button';cell.className='zf-fighter-slot';
@@ -148,14 +153,13 @@ function drawArcadeSelectionText(){
  // Équivalent géométrique d'une image native 320×240 pour le 4:3.
  font.draw(ctx,'PLAYER SELECT',161,8,{align:'center',scale:.55,maxWidth:164});
  font.draw(ctx,'START',282,1,{align:'center',scale:.54,maxWidth:59});
- font.draw(ctx,'1P',33,20,{tone:'cyan',scale:.66,maxWidth:31});
- font.draw(ctx,'1P',6,43,{tone:'cyan',scale:.53,maxWidth:26});
- font.draw(ctx,fighters[chosen[0]].name,4,136,
-   {scale:.57,maxWidth:67});
+ // Le nom se trouve juste AU-DESSUS du grand portrait.
+ // Le seul 1P visible est celui attaché à la vignette active.
+ font.draw(ctx,fighters[chosen[0]].name,4,29,
+   {scale:.46,maxWidth:64,face:'game',tone:'cream'});
  if(count()===2){
-   font.draw(ctx,'2P',272,20,{tone:'cyan',scale:.65,maxWidth:32});
-   font.draw(ctx,fighters[chosen[1]].name,316,136,
-     {align:'right',scale:.57,maxWidth:67});
+   font.draw(ctx,fighters[chosen[1]].name,316,29,
+     {align:'right',scale:.46,maxWidth:64,face:'game',tone:'cream'});
  }
  // Curseurs 1P/2P en pixels — pas de filtre sur la photographie.
  const rect=root.querySelector('.zf-select-cabinet')?.getBoundingClientRect();
@@ -169,7 +173,7 @@ function drawArcadeSelectionText(){
   if(blinkFrame)font.draw(ctx,text,x+1,Math.max(24,y-8),{tone,scale:.22,maxWidth:13,face:'game'});
  }
  marker(pointerCursor[0],'1P','cyan');
- if(count()===2)marker(pointerCursor[1],'2P','cream');
+ if(count()===2)marker(pointerCursor[1],'2P','red');
 }
 window.ZikaSNESText?.whenReady(drawArcadeSelectionText);
 setInterval(()=>{
@@ -187,8 +191,9 @@ function render(){
   cell.classList.toggle('p2',count()===2&&i===chosen[1]);
   cell.classList.toggle('focused',i===pointerCursor[activePlayer]);
   cell.classList.toggle('has-photo',!!src);
-  const current=picture.querySelector('img');
-  if(src&&!current){const im=new Image();im.alt='';im.src=src;picture.prepend(im);}
+  const current=picture.querySelector('img'),thumb=thumbnail(i);
+  if(src&&!current){const im=new Image();im.alt='';im.src=thumb;picture.prepend(im);}
+  else if(src&&current&&current.src!==thumb)current.src=thumb;
   if(!src&&current)current.remove();
  }
  showPortrait(1,chosen[0]);
