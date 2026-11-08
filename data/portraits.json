@@ -1,111 +1,156 @@
 {
-  "version": 1,
-  "description": "Portraits recadrés à partir des visuels fournis. 3 portraits absents des envois : Emma, Kév, Victor.",
+  "version": 2,
+  "description": "21 authentic portraits cropped from user's 21 named originals. Grid 256px, large preview 512px.",
+  "count": 21,
+  "ready": 21,
+  "missing": [],
   "fighters": [
     {
       "slug": "pascal",
-      "portrait": "https://static.wixstatic.com/media/685632_7d36db0a06c9473a87816dd260392e11~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_27b48e1f5aca4cf1a2f6a326f7f7c2f9~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_5ab88476280945c1a523b1d644e25741~mv2.png",
+      "originalFile": "pascal.png"
     },
     {
       "slug": "micka",
-      "portrait": "https://static.wixstatic.com/media/685632_a1fb8511b8e94b8db871c426755dd483~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_3fae05bc42924dbb90b816288d77ba4d~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_ac7af6b2ed37447a93705f8a0cdfd40b~mv2.png",
+      "originalFile": "micka.png"
     },
     {
       "slug": "emma",
-      "portrait": null,
-      "status": "missing"
+      "portrait": "https://static.wixstatic.com/media/685632_a96827ca84094dcb836c973048a56219~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_455716b641e94ac8944f249d8fcb0981~mv2.png",
+      "originalFile": "emma.png"
     },
     {
       "slug": "julie",
-      "portrait": "https://static.wixstatic.com/media/685632_4209655f369148b48162b324ce4733fa~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_eeaa15a02d4d46c7a94d748bc445ed70~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_c7628c77c9db41ab9b5b1e207e8b783d~mv2.png",
+      "originalFile": "julie.png"
     },
     {
       "slug": "antho",
-      "portrait": "https://static.wixstatic.com/media/685632_1f9e507497434ffc89caa8b6eb76433f~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_9699ed97eec94928a6f47e503afa0059~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_67f68b9ea1a04dbe80c099e59f47c1c4~mv2.png",
+      "originalFile": "antho.png"
     },
     {
       "slug": "fabrice",
-      "portrait": "https://static.wixstatic.com/media/685632_34ba386cba4f4539a871acc39577ced4~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_7209f600d76d472d9bdf60ee86106ccf~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_088a8aeb820f40be914d7941430a4a11~mv2.png",
+      "originalFile": "fabrice.png"
     },
     {
       "slug": "sandy",
-      "portrait": "https://static.wixstatic.com/media/685632_813bf52a46fd464ebd21eef5c1391fbe~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_168f534e1274455c92dfbb5f76bc9917~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_afeb5055edde4085a1aff0059129d0fc~mv2.png",
+      "originalFile": "sandy.png"
     },
     {
       "slug": "fabienne-1",
-      "portrait": "https://static.wixstatic.com/media/685632_943480c3232e4d7693e081bdab0445bb~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_66f635291c39420c8028dee96389f9cb~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_4ccaaf4a29a347b0a32bcf5fa42d422d~mv2.png",
+      "originalFile": "Fabienne.png"
     },
     {
       "slug": "fabienne-2",
-      "portrait": "https://static.wixstatic.com/media/685632_15a46dd0b2dd4b13897719e415c1dc41~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_d2f2da3a0dac468e8333388335ffc6e8~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_19b89ee31e584d4a8fbb2e111e379240~mv2.png",
+      "originalFile": "Fabienne 2.png"
     },
     {
       "slug": "billy",
-      "portrait": "https://static.wixstatic.com/media/685632_c1a71445e9e64096befe08ce0dc1527e~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_6fdbaa74a062468a94556f0d24f78ad6~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_fd2c14244dd44fa0b8d9a35721696f1e~mv2.png",
+      "originalFile": "billy.png"
     },
     {
       "slug": "ludo",
-      "portrait": "https://static.wixstatic.com/media/685632_1da89ff6e64d41aa8d1174cc2586ed82~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_9305f11d194845fbbd5978262f4b56de~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_e5fe8498ccfb4132a748cb5699dce9b2~mv2.png",
+      "originalFile": "ludo.png"
     },
     {
       "slug": "ju",
-      "portrait": "https://static.wixstatic.com/media/685632_1d4ad94aa9fa45ed848c0703815ba41b~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_6446fe74a9b2484db5857678ce541eef~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_eb7949f751c84749956449b68eeca750~mv2.png",
+      "originalFile": "ju.png"
     },
     {
       "slug": "bene",
-      "portrait": "https://static.wixstatic.com/media/685632_cd72757c1c0b4a558fd6d0db64d1789f~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_7f661c2865284a23b95638de7df0d682~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_a2d744590872434f9e4ff609a835c132~mv2.png",
+      "originalFile": "bene.png"
     },
     {
       "slug": "kev",
-      "portrait": null,
-      "status": "missing"
+      "portrait": "https://static.wixstatic.com/media/685632_478e8242ddd948089d8a253adec306a1~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_ff59272dd04b40b9b36fab21487ede7b~mv2.png",
+      "originalFile": "Kèv.png"
     },
     {
       "slug": "loic",
-      "portrait": "https://static.wixstatic.com/media/685632_7a856ac487f249a0b0f1a0d4a6d45c0f~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_6e37b180f5ec4be4b2be90891a3d6d02~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_fde2259c63864bac91d1f554e039f81f~mv2.png",
+      "originalFile": "loic.png"
     },
     {
       "slug": "laura",
-      "portrait": "https://static.wixstatic.com/media/685632_1868699cadae4910923d98401088e5d3~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_3bae37b00c654eab8235c4f610babb58~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_6a17521140d84ccd8e46df395aa43e82~mv2.png",
+      "originalFile": "laura.png"
     },
     {
       "slug": "val",
-      "portrait": "https://static.wixstatic.com/media/685632_1bfad52b14e54e7b845a92a820190dd7~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_5f093e7ba30246fc9cfecec84edb37da~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_9d9393c44e334c29bcb3efdf731a24a4~mv2.png",
+      "originalFile": "val.png"
     },
     {
       "slug": "victor",
-      "portrait": null,
-      "status": "missing"
+      "portrait": "https://static.wixstatic.com/media/685632_491f046aa6be43f98ccab04ea5d71f1a~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_7baed92eb6764c1ba098e4baae31c7e8~mv2.png",
+      "originalFile": "victor.png"
     },
     {
       "slug": "elo",
-      "portrait": "https://static.wixstatic.com/media/685632_d4614fc8c1df43a99d029c36ec081724~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_3de50e9a3e9a4bf681421b8d7dd32fda~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_aea68b1e2f444135875223d4d9edbc63~mv2.png",
+      "originalFile": "elo.png"
     },
     {
       "slug": "djo",
-      "portrait": "https://static.wixstatic.com/media/685632_508e4ffae0ee4391819589f0338e1e03~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_f6c2386a16414c8c9e9a162018fcba18~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_24109ba352ec48ebb153c244cb08283b~mv2.png",
+      "originalFile": "djo.png"
     },
     {
       "slug": "zika",
-      "portrait": "https://static.wixstatic.com/media/685632_9687ef23572d4fb4822ea93398c1992f~mv2.png",
-      "status": "ready"
+      "portrait": "https://static.wixstatic.com/media/685632_472063cde71b4616abc6a06b9742fb50~mv2.png",
+      "status": "ready",
+      "portraitLarge": "https://static.wixstatic.com/media/685632_45452eed6d9b48fd8fa2d65545c8aea4~mv2.png",
+      "originalFile": "zika.png"
     }
   ]
 }
