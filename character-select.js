@@ -336,6 +336,9 @@ function move(dx,dy){const i=pointerCursor[activePlayer],x=i%10,y=Math.floor(i/1
  choose(((y+dy+2)%2)*10+(x+dx+10)%10);
 }
 function enter(){
+ // À chaque retour depuis un combat, réafficher la sélection des portraits.
+ window.ZikaFighterStageSelect?.close?.();
+ const cabinet=root.querySelector('.zf-select-cabinet');if(cabinet)cabinet.hidden=false;
  opened=true;activePlayer=0;chosen[0]=0;chosen[1]=1;pointerCursor[0]=0;pointerCursor[1]=1;
  bridge()?.setFighter?.(fighters[0].slug);bridge()?.setOpponent?.(fighters[1].slug);
  document.body.classList.add('zf-in-selection');root.hidden=false;
