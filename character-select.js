@@ -11,6 +11,8 @@ const fighters=[
 ['Loïc','#5fab7f'],['Laura','#e9ac8a'],['Val','#bfa3d8'],['Victor','#687fb4'],
 ['Élo','#d474ae'],['Djo','#9cacce']
 ].map(([name,color],id)=>({name,color,id,slug:name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}));
+// Le 21e personnage reste secret : KeyZ sur la sélection révèle son portrait.
+fighters.push({name:'Zika',color:'#2ec4e6',id:20,slug:'zika'});
 const bridge=()=>window.ZikaFighterBridge;
 const oldStage=document.getElementById('stage'),oldStart=document.getElementById('start');
 root.classList.add('zf-select-screen');
@@ -78,26 +80,52 @@ function startMusic(){
 }
 function stopMusic(){if(music){music.pause();music.currentTime=0;}}
 function count(){return Number(window.ZikaFighterSettings?.players??bridge()?.getPlayers?.()??1)===2?2:1;}
-// 18 portraits existants découpés sans changer les visages.
+// 21 portraits définitifs issus des fichiers nommés reçus (20 humains + Zika bonus).
 const portraitSources={
-  "pascal": "https://static.wixstatic.com/media/685632_7d36db0a06c9473a87816dd260392e11~mv2.png",
-  "micka": "https://static.wixstatic.com/media/685632_a1fb8511b8e94b8db871c426755dd483~mv2.png",
-  "julie": "https://static.wixstatic.com/media/685632_4209655f369148b48162b324ce4733fa~mv2.png",
-  "antho": "https://static.wixstatic.com/media/685632_1f9e507497434ffc89caa8b6eb76433f~mv2.png",
-  "fabienne-1": "https://static.wixstatic.com/media/685632_943480c3232e4d7693e081bdab0445bb~mv2.png",
-  "billy": "https://static.wixstatic.com/media/685632_c1a71445e9e64096befe08ce0dc1527e~mv2.png",
-  "loic": "https://static.wixstatic.com/media/685632_7a856ac487f249a0b0f1a0d4a6d45c0f~mv2.png",
-  "bene": "https://static.wixstatic.com/media/685632_cd72757c1c0b4a558fd6d0db64d1789f~mv2.png",
-  "ju": "https://static.wixstatic.com/media/685632_1d4ad94aa9fa45ed848c0703815ba41b~mv2.png",
-  "elo": "https://static.wixstatic.com/media/685632_d4614fc8c1df43a99d029c36ec081724~mv2.png",
-  "val": "https://static.wixstatic.com/media/685632_1bfad52b14e54e7b845a92a820190dd7~mv2.png",
-  "djo": "https://static.wixstatic.com/media/685632_508e4ffae0ee4391819589f0338e1e03~mv2.png",
-  "zika": "https://static.wixstatic.com/media/685632_9687ef23572d4fb4822ea93398c1992f~mv2.png",
-  "laura": "https://static.wixstatic.com/media/685632_1868699cadae4910923d98401088e5d3~mv2.png",
-  "ludo": "https://static.wixstatic.com/media/685632_1da89ff6e64d41aa8d1174cc2586ed82~mv2.png",
-  "sandy": "https://static.wixstatic.com/media/685632_813bf52a46fd464ebd21eef5c1391fbe~mv2.png",
-  "fabienne-2": "https://static.wixstatic.com/media/685632_15a46dd0b2dd4b13897719e415c1dc41~mv2.png",
-  "fabrice": "https://static.wixstatic.com/media/685632_34ba386cba4f4539a871acc39577ced4~mv2.png"
+  "pascal": "https://static.wixstatic.com/media/685632_27b48e1f5aca4cf1a2f6a326f7f7c2f9~mv2.png",
+  "micka": "https://static.wixstatic.com/media/685632_3fae05bc42924dbb90b816288d77ba4d~mv2.png",
+  "emma": "https://static.wixstatic.com/media/685632_a96827ca84094dcb836c973048a56219~mv2.png",
+  "julie": "https://static.wixstatic.com/media/685632_eeaa15a02d4d46c7a94d748bc445ed70~mv2.png",
+  "antho": "https://static.wixstatic.com/media/685632_9699ed97eec94928a6f47e503afa0059~mv2.png",
+  "fabrice": "https://static.wixstatic.com/media/685632_7209f600d76d472d9bdf60ee86106ccf~mv2.png",
+  "sandy": "https://static.wixstatic.com/media/685632_168f534e1274455c92dfbb5f76bc9917~mv2.png",
+  "fabienne-1": "https://static.wixstatic.com/media/685632_66f635291c39420c8028dee96389f9cb~mv2.png",
+  "fabienne-2": "https://static.wixstatic.com/media/685632_d2f2da3a0dac468e8333388335ffc6e8~mv2.png",
+  "billy": "https://static.wixstatic.com/media/685632_6fdbaa74a062468a94556f0d24f78ad6~mv2.png",
+  "ludo": "https://static.wixstatic.com/media/685632_9305f11d194845fbbd5978262f4b56de~mv2.png",
+  "ju": "https://static.wixstatic.com/media/685632_6446fe74a9b2484db5857678ce541eef~mv2.png",
+  "bene": "https://static.wixstatic.com/media/685632_7f661c2865284a23b95638de7df0d682~mv2.png",
+  "kev": "https://static.wixstatic.com/media/685632_478e8242ddd948089d8a253adec306a1~mv2.png",
+  "loic": "https://static.wixstatic.com/media/685632_6e37b180f5ec4be4b2be90891a3d6d02~mv2.png",
+  "laura": "https://static.wixstatic.com/media/685632_3bae37b00c654eab8235c4f610babb58~mv2.png",
+  "val": "https://static.wixstatic.com/media/685632_5f093e7ba30246fc9cfecec84edb37da~mv2.png",
+  "victor": "https://static.wixstatic.com/media/685632_491f046aa6be43f98ccab04ea5d71f1a~mv2.png",
+  "elo": "https://static.wixstatic.com/media/685632_3de50e9a3e9a4bf681421b8d7dd32fda~mv2.png",
+  "djo": "https://static.wixstatic.com/media/685632_f6c2386a16414c8c9e9a162018fcba18~mv2.png",
+  "zika": "https://static.wixstatic.com/media/685632_472063cde71b4616abc6a06b9742fb50~mv2.png"
+};
+const largePortraitSources={
+  "pascal": "https://static.wixstatic.com/media/685632_5ab88476280945c1a523b1d644e25741~mv2.png",
+  "micka": "https://static.wixstatic.com/media/685632_ac7af6b2ed37447a93705f8a0cdfd40b~mv2.png",
+  "emma": "https://static.wixstatic.com/media/685632_455716b641e94ac8944f249d8fcb0981~mv2.png",
+  "julie": "https://static.wixstatic.com/media/685632_c7628c77c9db41ab9b5b1e207e8b783d~mv2.png",
+  "antho": "https://static.wixstatic.com/media/685632_67f68b9ea1a04dbe80c099e59f47c1c4~mv2.png",
+  "fabrice": "https://static.wixstatic.com/media/685632_088a8aeb820f40be914d7941430a4a11~mv2.png",
+  "sandy": "https://static.wixstatic.com/media/685632_afeb5055edde4085a1aff0059129d0fc~mv2.png",
+  "fabienne-1": "https://static.wixstatic.com/media/685632_4ccaaf4a29a347b0a32bcf5fa42d422d~mv2.png",
+  "fabienne-2": "https://static.wixstatic.com/media/685632_19b89ee31e584d4a8fbb2e111e379240~mv2.png",
+  "billy": "https://static.wixstatic.com/media/685632_fd2c14244dd44fa0b8d9a35721696f1e~mv2.png",
+  "ludo": "https://static.wixstatic.com/media/685632_e5fe8498ccfb4132a748cb5699dce9b2~mv2.png",
+  "ju": "https://static.wixstatic.com/media/685632_eb7949f751c84749956449b68eeca750~mv2.png",
+  "bene": "https://static.wixstatic.com/media/685632_a2d744590872434f9e4ff609a835c132~mv2.png",
+  "kev": "https://static.wixstatic.com/media/685632_ff59272dd04b40b9b36fab21487ede7b~mv2.png",
+  "loic": "https://static.wixstatic.com/media/685632_fde2259c63864bac91d1f554e039f81f~mv2.png",
+  "laura": "https://static.wixstatic.com/media/685632_6a17521140d84ccd8e46df395aa43e82~mv2.png",
+  "val": "https://static.wixstatic.com/media/685632_9d9393c44e334c29bcb3efdf731a24a4~mv2.png",
+  "victor": "https://static.wixstatic.com/media/685632_7baed92eb6764c1ba098e4baae31c7e8~mv2.png",
+  "elo": "https://static.wixstatic.com/media/685632_aea68b1e2f444135875223d4d9edbc63~mv2.png",
+  "djo": "https://static.wixstatic.com/media/685632_24109ba352ec48ebb153c244cb08283b~mv2.png",
+  "zika": "https://static.wixstatic.com/media/685632_45452eed6d9b48fd8fa2d65545c8aea4~mv2.png"
 };
 const photos=fighters.map(f=>{
  const im=new Image();
@@ -115,9 +143,10 @@ const photos=fighters.map(f=>{
 });
 // Zika reste le combattant bonus ; sa photo est également disponible.
 window.ZikaFighterPortraits=Object.freeze({...portraitSources});
+window.ZikaFighterLargePortraits=Object.freeze({...largePortraitSources});
 function portrait(i){return photos[i]?.complete&&photos[i]?.naturalWidth>0?photos[i].src:null;}
 function initials(name){return name.split(' ').filter(Boolean).map(p=>p[0]).join('').slice(0,2).toUpperCase();}
-fighters.forEach((f,i)=>{
+fighters.slice(0,20).forEach((f,i)=>{
  const cell=document.createElement('button');cell.type='button';cell.className='zf-fighter-slot';
  cell.dataset.index=String(i);cell.style.setProperty('--fighter-color',f.color);cell.setAttribute('aria-label',f.name);
  cell.innerHTML='<span class="photo"><span class="initial"></span></span><span class="name"></span>';
@@ -132,7 +161,7 @@ function showPortrait(side,index){
  panel.querySelector('strong').textContent=f.name.toUpperCase();
  panel.querySelector('.zf-select-initials').textContent=initials(f.name);
  const previous=panel.querySelector('img');if(previous)previous.remove();
- if(src){const im=new Image();im.src=src;im.alt=f.name;panel.prepend(im);}
+ if(src){const im=new Image();im.src=largePortraitSources[f.slug]||src;im.alt=f.name;panel.prepend(im);}
 }
 function render(){
  if(!opened)return;
@@ -199,9 +228,10 @@ if(oldStart){oldStart.textContent='GAME START';toolbar.appendChild(oldStart);
 document.addEventListener('keydown',event=>{
  if(!opened||window.ZikaFighterScreens?.busy||event.repeat)return;
  const code=event.code;
- if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','KeyA','KeyD','KeyW','KeyS','Enter','Space','NumpadEnter'].includes(code))return;
+ if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','KeyA','KeyD','KeyW','KeyS','KeyZ','Enter','Space','NumpadEnter'].includes(code))return;
  event.preventDefault();event.stopImmediatePropagation();
- if(code==='ArrowLeft'||code==='KeyA')move(-1,0);
+ if(code==='KeyZ')choose(20);
+ else if(code==='ArrowLeft'||code==='KeyA')move(-1,0);
  else if(code==='ArrowRight'||code==='KeyD')move(1,0);
  else if(code==='ArrowUp'||code==='KeyW')move(0,-1);
  else if(code==='ArrowDown'||code==='KeyS')move(0,1);
