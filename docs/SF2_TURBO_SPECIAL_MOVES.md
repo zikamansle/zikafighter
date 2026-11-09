@@ -45,3 +45,80 @@ Référence de jouabilité : **Street Fighter II Turbo (Super Nintendo)**, et no
 - Les 20 personnages humains demeurent jouables ; Zika est bonus/déblocable selon les règles du jeu.
 - Les captures des anciennes fiches peuvent contenir une ligne « SUPER COMBO » : elles doivent être remplacées/régénérées séparément. Ne pas supprimer les **assets graphiques** sans inventorier leurs usages.
 - **Statut** : cahier de techniques préparé. La logique des commandes, collisions et animations n'est **pas encore implémentée ni testée** par la création de ce document.
+
+
+## Correspondances de sensations avec les coups spéciaux de Street Fighter II Turbo SNES
+
+**Exigence de conception :** le joueur doit reconnaître *le type de mouvement et son rôle tactique* des classiques SFII, pas seulement leurs combinaisons de touches. S'inspirer des mécaniques (trajectoire, cadence, distance, fenêtres d'attaque, réaction à la garde), sans reproduire les sprites, bruitages ni animations à l'identique. Les noms Zika Fighter restent originaux. Ce tableau précise le comportement des coups déjà inscrits plus haut ; il ne crée **aucun Super Combo**.
+
+| Zika Fighter | Technique | Référence mécanique SFII Turbo SNES | Comportement attendu |
+|---|---|---|---|
+| Antho | Charge Solidaire | Balrog — Dash Straight | Ruée horizontale au poing |
+| Antho | Sangle d'Appui | Ken/Ryu — Shoryuken | Ascension offensive anti-air |
+| Antho | Esprit ZikaTeam | Ryu — Hadoken | Projectile horizontal court |
+| Pascal | Vague de Paume | Ryu — Hadoken | Projectile de face |
+| Pascal | Charge Française | E. Honda — Sumo Headbutt | Charge frontale avec reprise |
+| Pascal | Prise du Bricoleur | Zangief — Spinning Piledriver | Prise rapprochée non bloquable à distance de saisie |
+| Micka | Roda Rapide | Ken/Ryu — Tatsumaki | Rotation en déplacement |
+| Micka | Esquive Gingada | Chun-Li — Spinning Bird Kick (inspiration mobile) | Enchaînement acrobatique à trajectoire différente |
+| Micka | Coup Rotatif | Ken — Shoryuken (fonction anti-air) | Coup montant |
+| Micka | Roda Aérienne | Ryu/Ken — Tatsumaki aérien | Rotation en plein saut |
+| Emma | Vrille d'Emma | Chun-Li — Spinning Bird Kick | Coup tournoyant, avance contrôlée |
+| Emma | Combo Aérien | Ryu/Ken — Shoryuken | Montée anti-air |
+| Emma | Éclipse Rapide | Balrog — Dash Straight | Ruée rapide |
+| Julie | Charge d'Énergie | Blanka — Rolling Attack | Charge horizontale percutante |
+| Julie | Frappe Organisatrice | Ryu — Hadoken (fonction distance) | Onde offensive |
+| Julie | Projection Éclair | Zangief — Spinning Piledriver | Projection de corps-à-corps |
+| Béné | Réflexe Express | Balrog — Dash Straight | Rush rapide |
+| Béné | Analyse Tactique | Guile — Sonic Boom (fonction zoning) | Onde régulière de contrôle |
+| Billy | Réflexe Éclair | Balrog — Dash Straight | Percée de garde |
+| Billy | Contre Instinct | Guile — Flash Kick (fonction anti-air) | Revers défensif montant |
+| Billy | Esprit d'Équipe | E. Honda — Hundred Hand Slap | Rafale de poings sur place |
+| Djo | Coup de Main Logistique | Dhalsim — Yoga Fire | Projectile à distance |
+| Djo | Montage Express | Guile — Flash Kick | Attaque anti-air en charge basse |
+| Djo | Esprit d'Équipe | E. Honda — Headbutt (fonction ruée) | Attaque chargée vers l'avant |
+| Elo | Gestion d'Équipe | Guile — Sonic Boom | Projectile horizontal |
+| Elo | ZikaParade | Blanka — Rolling Attack (fonction charge) | Ruée rythmée |
+| Elo | Coup de Fil Express | Dhalsim — Yoga Fire | Projectile lent permettant le placement |
+| Fabienne (45 ans) | Gestion de Crise | Balrog — Dash Straight | Charge au poing |
+| Fabienne (45 ans) | Esprit d'Équipe | Ryu — Hadoken | Onde de soutien |
+| Fabienne (45 ans) | Coordination Totale | Guile — Flash Kick | Contre anti-air |
+| Fabrice | Barrière Flash | Guile — Sonic Boom (fonction contrôle) | Barrière/projectile frontal |
+| Fabrice | Signal Parking | Ken/Ryu — Tatsumaki (fonction trajectoire) | Frappe en mouvement |
+| Fabrice | Contrôle d'Accès | Guile — Flash Kick | Anti-air vertical |
+| Sandy | Déco Créative | Dhalsim — Yoga Fire | Projectile atypique |
+| Sandy | Coup de Bricol' | Ryu — Shoryuken | Anti-air montant |
+| Sandy | Esprit d'Équipe | Chun-Li — Hyakuretsukyaku | Rafale rapide répétée |
+| Laura | Vitesse Furtive | Balrog — Dash Straight | Charge en déplacement |
+| Laura | Projection Aérienne | Zangief — Spinning Piledriver (fonction prise) | Saisie courte portée |
+| Laura | Énergie Zika | Guile — Flash Kick | Réaction anti-air sur charge |
+| Kév | Analyse Flash | Guile — Sonic Boom | Projectile de contrôle |
+| Kév | Projection Fluide | Zangief — Spinning Piledriver | Projection rapprochée |
+| Loïc | Adaptation Rapide | E. Honda — Sumo Headbutt | Charge qui traverse rapidement la distance |
+| Loïc | Prise de Terrain | Zangief — Spinning Piledriver | Saisie rapprochée |
+| Loïc | Vision Stratégique | Guile — Flash Kick | Anti-air en charge |
+| Val | Pas de Côté Fulgurant | Vega — Flying Barcelona Attack (inspiration esquive) | Entrée mobile depuis angle inhabituel |
+| Val | Coup Tourbillon | Chun-Li — Spinning Bird Kick | Coup de pied tournoyant |
+| Val | Focus & Précision | Ryu — Shoryuken (fonction) | Anti-air précis |
+| Victor | Mixage Parfait | Guile — Sonic Boom | Onde sonore |
+| Victor | Synchro d'Équipe | Balrog — Dash Straight (fonction charge) | Onde de contact après déplacement |
+| Victor | Gestion de Flux | Guile — Flash Kick | Mur sonore vertical |
+| Ju | Charge Barbare | E. Honda — Sumo Headbutt | Ruée massive |
+| Ju | Projection Festive | Zangief — Spinning Piledriver | Projection |
+| Ju | Rage du Barbu | E. Honda — Hundred Hand Slap | Frappes répétées |
+| Ludo | Charge Solide | Balrog — Dash Straight | Charge directe |
+| Ludo | Boule de Force | Sagat — Tiger Shot | Projectile plus lourd |
+| Ludo | Esprit ZikaTeam | Guile — Flash Kick | Anti-air en charge |
+| Fabienne (48 ans) | Gestion d'Équipe | Guile — Sonic Boom | Onde horizontale |
+| Fabienne (48 ans) | Logistique Express | E. Honda — Sumo Headbutt (fonction charge) | Charge avec équipement |
+| **Zika (boss)** | **Zika Crusher** | **M. Bison — Psycho Crusher** | **Charge horizontale très rapide, anticipation et récupération si bloquée** |
+| **Zika (boss)** | **Zika Double Kick** | **M. Bison — Double Knee Press** | **Double impact vers l'avant, contrôle de distance** |
+| **Zika (boss)** | **Zika Head Press** | **M. Bison — Head Press** | **Bond depuis une charge basse, attaque plongeante avec trajectoire lisible** |
+
+### Important pour l'implémentation
+
+- La diversité des **mécaniques** n'impose pas une diversité artificielle des touches : deux attaques similaires peuvent avoir des commandes différentes et inversement.
+- Pour un mouvement inspiré de *Flash Kick*, respecter le fait que c'est une **charge bas → haut** dans la configuration prévue ; pour *Sonic Boom*, une **charge arrière → avant** ; pour les projections de type Zangief, un 360° + poing à courte distance.
+- La palette actuelle et les personnages validés ne sont **pas** redessinés pour ces inspirations. On garde leurs accessoires identitaires et leur silhouette.
+- Les mouvements doivent être lisibles en **4:3**, testables avec manette, et équilibrés entre attaques à charge, projectiles, projections et mouvements aériens.
+- **Rien dans ce tableau n'est encore une preuve d'intégration au moteur ou de réussite des tests** : c'est la spécification d'animation et de comportement à implémenter.
