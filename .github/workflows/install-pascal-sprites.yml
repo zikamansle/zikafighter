@@ -28,7 +28,7 @@ jobs:
 
       - name: Install Pascal individual PNG sprites
         env:
-          PACK_URL: https://bd98605c-3058-4728-b28a-0b55031d7cbc.usrfiles.com/archives/685632_ed4f4075b8ed4d00bf71524ef8fc5b87.zip
+          PACK_URL: https://bd98605c-3058-4728-b28a-0b55031d7cbc.usrfiles.com/archives/685632_ca0a7f22af184b4ca1e6e9ca1eb38b03.zip
         run: |
           python - <<'PY'
           import os, re, json, zipfile, urllib.request
@@ -64,10 +64,18 @@ jobs:
             "character":"Pascal","canvas":[256,256],
             "anchor":[128,227],"palette":"original",
             "counts":counts,"total_frames":sum(counts.values()),
-            "source":"ZikaFighter_Pascal_Sprites_Individuels_Reconstruits.zip",
-            "status":"test graphique non validé"
+            "source":"ZikaFighter_Pascal_TAILLE_UNIFORME_JEU.zip",
+            "normalized": True,
+            "status":"échelle de combat harmonisée, contrôle visuel restant"
           },ensure_ascii=False,indent=2)+"\n",encoding="utf8")
-          print(f"OK : {len(groups)} animations / {sum(counts.values())} sprites installés.")
+          with zipfile.ZipFile(archive) as z:
+            reports=[x for x in z.namelist() if x.endswith('/manifest.json')]
+            if len(reports)!=1: raise RuntimeError("Rapport technique introuvable.")
+            m=json.loads(z.read(reports[0]))
+            if m.get('canvas') != [256,256] or len(m.get('frames',{})) != 316:
+              raise RuntimeError("Sprites non normalisés ou rapport invalide.")
+            (target/"normalisation.json").write_text(json.dumps(m,ensure_ascii=False,indent=2)+"\n",encoding="utf8")
+          print(f"OK : {len(groups)} animations / {sum(counts.values())} PNG uniformisés.")
           PY
 
       - name: Commit Pascal sprite images
@@ -76,7 +84,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add assets/fighters/pascal
           if ! git diff --cached --quiet; then
-            git commit -m "Install Pascal 316 individual pixel-art frames for playable testing"
+            git commit -m "Normalize Pascal fighter size and anchor across all 316 frames"
             git push origin HEAD:main
           fi
 
