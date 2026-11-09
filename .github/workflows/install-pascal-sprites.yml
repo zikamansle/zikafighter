@@ -1,0 +1,96 @@
+name: Installer les sprites Pascal dans Zika Fighter
+on:
+  push:
+    paths:
+      - '.github/workflows/install-pascal-sprites.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pascal-sprites-install
+  cancel-in-progress: false
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Retrieve Zika Fighter source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Install Pascal individual PNG sprites
+        env:
+          PACK_URL: https://bd98605c-3058-4728-b28a-0b55031d7cbc.usrfiles.com/archives/685632_ed4f4075b8ed4d00bf71524ef8fc5b87.zip
+        run: |
+          python - <<'PY'
+          import os, re, json, zipfile, urllib.request
+          from pathlib import Path
+          url=os.environ["PACK_URL"]
+          req=urllib.request.Request(url,headers={"User-Agent":"ZikaFighter-PascalSpriteInstaller/1.0"})
+          blob=urllib.request.urlopen(req,timeout=90).read()
+          if len(blob)>80_000_000: raise RuntimeError("Archive trop lourde.")
+          archive=Path("/tmp/pascal.zip")
+          archive.write_bytes(blob)
+          groups={}
+          target=Path("assets/fighters/pascal")
+          with zipfile.ZipFile(archive) as z:
+            for name in z.namelist():
+              match=re.search(r"/sprites/original/([a-z0-9_]+)/(\d{2})\.png$",name)
+              if not match: continue
+              category,index=match.group(1),int(match.group(2))
+              data=z.read(name)
+              if not data.startswith(b"\x89PNG\r\n\x1a\n"): raise RuntimeError(f"PNG invalide: {name}")
+              output=target/"original"/category/f"{index:02d}.png"
+              output.parent.mkdir(parents=True,exist_ok=True)
+              output.write_bytes(data)
+              groups.setdefault(category,[]).append(index)
+          if sum(map(len,groups.values()))!=316 or len(groups)!=44:
+            raise RuntimeError(f"Pack inattendu : {len(groups)} animations, {sum(map(len,groups.values()))} images (attendu 44/316).")
+          counts={}
+          for name,indices in groups.items():
+            indices=sorted(indices)
+            if indices!=list(range(1,len(indices)+1)):
+              raise RuntimeError(f"Frames manquantes ou doublées : {name}")
+            counts[name]=len(indices)
+          (target/"manifest.json").write_text(json.dumps({
+            "character":"Pascal","canvas":[256,256],
+            "anchor":[128,227],"palette":"original",
+            "counts":counts,"total_frames":sum(counts.values()),
+            "source":"ZikaFighter_Pascal_Sprites_Individuels_Reconstruits.zip",
+            "status":"test graphique non validé"
+          },ensure_ascii=False,indent=2)+"\n",encoding="utf8")
+          print(f"OK : {len(groups)} animations / {sum(counts.values())} sprites installés.")
+          PY
+
+      - name: Commit Pascal sprite images
+        run: |
+          git config user.name "Zika Fighter sprite importer"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/fighters/pascal
+          if ! git diff --cached --quiet; then
+            git commit -m "Install Pascal 316 individual pixel-art frames for playable testing"
+            git push origin HEAD:main
+          fi
+
+      - name: Static game smoke checks
+        run: node tests/smoke-static.mjs
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload game files
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy updated game
+        id: deployment
+        uses: actions/deploy-pages@v4
