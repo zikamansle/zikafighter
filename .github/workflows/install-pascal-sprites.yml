@@ -101,7 +101,7 @@ jobs:
             for i in range(1,n+1):
               f=root/'original'/pose/f'{i:02d}.png'
               b=f.read_bytes()
-              assert b[:8]==b'\\x89PNG\\r\\n\\x1a\\n',str(f)
+              assert b[:8]==bytes((137,80,78,71,13,10,26,10)),str(f)
               assert struct.unpack('>II',b[16:24])==(256,256),str(f)
           report=json.loads((root/'normalisation.json').read_text(encoding='utf8'))
           assert len(report['frames'])==316
