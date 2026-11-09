@@ -27,8 +27,9 @@ const essentialPoses=Object.freeze([
  'attente','marche_avant','marche_arriere','saut_neutre','saut_avant','saut_arriere',
  'garde_debout','jab','pied_moyen','charge_francaise','touche_moyen','ko'
 ]);
-const renderMode=new WeakMap();
+const readyListeners=new Set();
 let essentialReady=false;
+let idleReady=false;
 const allEssentialsLoaded=()=>essentialPoses.every(p=>available[p]?.length>0);
 const lastPose=new WeakMap();
 const oneShot=new Set(['descente_accroupie','retour_debout','reception','releve',
@@ -44,6 +45,11 @@ function install(pose,images){
  if(!categoryLabels[pose]||!Array.isArray(images)||images.length<1||
     !images.every(im=>im&&im.complete&&im.naturalWidth>0))return false;
  available[pose]=images.slice();counts[pose]=images.length;
+ if(pose==='attente'&&images.length){
+   idleReady=true;
+   for(const callback of readyListeners){callback(true);}
+   readyListeners.clear();
+ }
  return true;
 }
 function poseFor(f,now){
@@ -70,24 +76,27 @@ function state(f,now){
  const current=Math.floor(Math.max(0,now-old.start)*speedFor(pose)/1000);
  return {pose,frame:oneShot.has(pose)?Math.min(count-1,current):current%count};
 }
+function waitForIdle(timeoutMs=14000){
+ if(available.attente?.length)return Promise.resolve(true);
+ return new Promise(resolve=>{
+   let done=false;
+   function finish(ok){
+     if(done)return;
+     done=true;readyListeners.delete(finish);clearTimeout(timer);resolve(!!ok);
+   }
+   const timer=setTimeout(()=>finish(false),timeoutMs);
+   readyListeners.add(finish);
+ });
+}
 function draw(ctx,f,now){
- // Choisir UN mode d'affichage par combattant, une fois au début du combat.
- // Évite tout mélange entre le vieux portrait de 442px et les sprites de 383px.
- let mode=renderMode.get(f);
- if(mode===undefined){
-  mode=essentialReady?'sprites':'portrait';
-  renderMode.set(f,mode);
- }
- if(mode==='portrait')return false;
+ // Un seul atlas de personnage : jamais d'ancien portrait, jamais de changement d'échelle.
  const {pose,frame}=state(f,now);
- // Ne jamais revenir au portrait lorsqu'une animation manque.
- const frames=available[pose]||available.attente;
- const sprite=frames?.[Math.min(frame,frames.length-1)]||available.attente?.[0];
+ const seq=available[pose]||available.attente;
+ const sprite=seq?.[Math.min(frame,seq.length-1)]||available.attente?.[0];
  if(!sprite)return false;
  ctx.save();
  ctx.imageSmoothingEnabled=false;
- // Échelle constante de 442px pour un Pascal debout de 105px dans les PNG.
- // Le moteur gère hauteur de saut et déplacement; ne jamais changer l'échelle par pose.
+ // Même échelle visuelle et même ancrage sur toute l'animation.
  const scale=442/105;
  ctx.drawImage(sprite,-128*scale,-226*scale,256*scale,256*scale);
  ctx.restore();
@@ -235,7 +244,7 @@ async function preloadHostedSprites(){
  hostedStatus='loading';
  const status=document.querySelector('#pascal-sprite-test p:last-of-type');
  try{
-  const res=await fetch('./assets/fighters/pascal/manifest.json?v=zf-20261109-pascal-fixed-scale-v69',{cache:'no-store'});
+  const res=await fetch('./assets/fighters/pascal/manifest.json?v=zf-20261109-pascal-realtime-v70',{cache:'no-store'});
   if(!res.ok)throw Error('Manifeste non publié (HTTP '+res.status+').');
   const manifest=await res.json();
   if(manifest.character!=='Pascal'||!manifest.counts||manifest.normalized!==true)throw Error('Manifeste Pascal normalisé absent.');
@@ -278,6 +287,6 @@ if(document.readyState==='loading'){
 }
 window.ZikaPascalAnimation=Object.freeze({
  counts,fps,url,install,state,draw,ready:()=>Object.keys(available),
- consistentSizeReady:()=>essentialReady,loadPack
+ consistentSizeReady:()=>essentialReady,waitForIdle,loadPack
 });
 })();
