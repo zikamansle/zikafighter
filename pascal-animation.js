@@ -67,7 +67,7 @@ function draw(ctx,f,now){
  const {pose,frame}=state(f,now),sprite=available[pose]?.[frame];
  if(!sprite)return false;
  ctx.save();ctx.imageSmoothingEnabled=false;
- // Sprites de 256x256 ; pivot à (128,227) selon le manifest du ZIP.
+ // Les 316 PNG ont été normalisés hors-ligne : échelle graphique constante par famille,\n // base alignée, poses accroupies, sauts et chutes proportionnées.
  // Ancrage fixe au sol, aucune rotation du visage ni redimensionnement pose par pose.
  const scale=3.65;
  ctx.drawImage(sprite,-128*scale,-227*scale,256*scale,256*scale);
@@ -214,10 +214,10 @@ async function preloadHostedSprites(){
  hostedStatus='loading';
  const status=document.querySelector('#pascal-sprite-test p:last-of-type');
  try{
-  const res=await fetch('./assets/fighters/pascal/manifest.json?v=zf-20261109-pascal-hosted-v67',{cache:'no-store'});
+  const res=await fetch('./assets/fighters/pascal/manifest.json?v=zf-20261109-pascal-normalized-v68',{cache:'no-store'});
   if(!res.ok)throw Error('Manifeste non publié (HTTP '+res.status+').');
   const manifest=await res.json();
-  if(manifest.character!=='Pascal'||!manifest.counts)throw Error('Manifeste Pascal invalide.');
+  if(manifest.character!=='Pascal'||!manifest.counts||manifest.normalized!==true)throw Error('Manifeste Pascal normalisé absent.');
   const primary=['attente','marche_avant','marche_arriere','saut_neutre','saut_avant','saut_arriere',
    'garde_debout','jab','pied_moyen','charge_francaise','touche_moyen','ko'];
   const poses=Object.keys(manifest.counts).filter(k=>k in categoryLabels);
@@ -229,7 +229,7 @@ async function preloadHostedSprites(){
    const images=await Promise.all(Array.from({length:n},(_,i)=>new Promise(resolve=>{
     const im=new Image();im.decoding='async';
     im.onload=()=>resolve(im);im.onerror=()=>resolve(null);
-    im.src=url(pose,i)+'?v=zf-20261109-pascal-hosted-v67';
+    im.src=url(pose,i)+'?v=zf-20261109-pascal-normalized-v68';
    })));
    if(images.every(im=>im&&im.naturalWidth>0)&&install(pose,images)){
     groups++;frames+=n;
