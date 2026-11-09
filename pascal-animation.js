@@ -204,7 +204,7 @@ function mountControls(){
   requestAnimationFrame(tick);
  }
  requestAnimationFrame(tick);
- cachedPack().then(blob=>blob&&loadPack(blob,announce)).catch(err=>console.info('Pascal: pas de pack enregistré',err?.message));
+ // Le pack hébergé sur GitHub est prioritaire ; le chargement ZIP reste manuel.
 }
 
 /* Les vrais PNG sont chargés automatiquement depuis le dépôt (pas de ZIP à choisir). */
@@ -214,7 +214,7 @@ async function preloadHostedSprites(){
  hostedStatus='loading';
  const status=document.querySelector('#pascal-sprite-test p:last-of-type');
  try{
-  const res=await fetch('./assets/fighters/pascal/manifest.json?v=zf-20261109-pascal-hosted-v66',{cache:'no-store'});
+  const res=await fetch('./assets/fighters/pascal/manifest.json?v=zf-20261109-pascal-hosted-v67',{cache:'no-store'});
   if(!res.ok)throw Error('Manifeste non publié (HTTP '+res.status+').');
   const manifest=await res.json();
   if(manifest.character!=='Pascal'||!manifest.counts)throw Error('Manifeste Pascal invalide.');
@@ -229,7 +229,7 @@ async function preloadHostedSprites(){
    const images=await Promise.all(Array.from({length:n},(_,i)=>new Promise(resolve=>{
     const im=new Image();im.decoding='async';
     im.onload=()=>resolve(im);im.onerror=()=>resolve(null);
-    im.src=url(pose,i)+'?v=zf-20261109-pascal-hosted-v66';
+    im.src=url(pose,i)+'?v=zf-20261109-pascal-hosted-v67';
    })));
    if(images.every(im=>im&&im.naturalWidth>0)&&install(pose,images)){
     groups++;frames+=n;
@@ -246,10 +246,13 @@ async function preloadHostedSprites(){
  }
 }
 
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mountControls,{once:true});
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',preloadHostedSprites,{once:true});
-else preloadHostedSprites();
-else mountControls();
+if(document.readyState==='loading'){
+ document.addEventListener('DOMContentLoaded',mountControls,{once:true});
+ document.addEventListener('DOMContentLoaded',preloadHostedSprites,{once:true});
+}else{
+ mountControls();
+ preloadHostedSprites();
+}
 window.ZikaPascalAnimation=Object.freeze({
  counts,fps,url,install,state,draw,ready:()=>Object.keys(available),loadPack
 });
