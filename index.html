@@ -2,7 +2,7 @@
 /* Chaque publication porte son numéro de version. Les réglages restent conservés,
    seuls les anciens fichiers/cache du jeu sont nettoyés. */
 (function(){
-  const BUILD='zf-20261109-pascal-fixed-scale-v69';
+  const BUILD='zf-20261109-pascal-stage-boot-v71';
   window.ZikaFighterBuild=BUILD;
   try {
     const key='zikafighter-current-build';
@@ -63,6 +63,24 @@ const names=Object.fromEntries(fighterSlugs.map((key,i)=>[key,fighterDisplayName
 const images={};
 for(const key of ['pascal','micka','mairie','superu','culture']){const im=new Image();im.src=ASSETS[key];images[key]=im;}
 for(const key of fighterSlugs){if(images[key])continue;const im=new Image();im.src='./assets/fighters/'+key+'.png';images[key]=im;}
+// Précharger l'image du décor choisi pour ne jamais afficher le fond bleu.
+const stageLoading=Object.create(null);
+function ensureStageArt(id){
+ const url=window.ZikaFighterStages?.imageFor?.(id);
+ if(!url)return Promise.resolve(!!images[id]?.naturalWidth);
+ const existing=stageLoading[id];
+ if(existing?.url===url)return existing.promise;
+ const image=new Image();
+ image.decoding='async';
+ const promise=new Promise(resolve=>{
+  image.onload=()=>resolve(image.naturalWidth>0&&image.naturalHeight>0);
+  image.onerror=()=>{console.error('Zika Fighter : arène non chargée',id,url);resolve(false)};
+ });
+ images[id]=image;
+ stageLoading[id]={url,promise};
+ image.src=url;
+ return promise;
+}
 const keys=Object.create(null),p2keys=Object.create(null),config={player:'pascal',opponent:'micka',stage:'mairie'};
 const settingsDefaults={difficulty:3,timeLimit:true,players:1,controlPreset:0,controlPresetP2:0,stereo:true,musicVolume:7,fxVolume:8,turbo:3};
 let gameSettings={...settingsDefaults};
@@ -96,8 +114,20 @@ function beginRound(){
   window.ZikaArcadeAudio?.playVoice('round');
 }
 let battleMusicSession=0;
-function start(){
+async function start(){
   const session=++battleMusicSession;
+  const usesPascal=config.player==='pascal'||config.opponent==='pascal';
+  const idleReady=usesPascal
+    ? (window.ZikaPascalAnimation?.waitForIdle?.(14000)??Promise.resolve(false))
+    : Promise.resolve(true);
+  const [spriteOk,stageOk]=await Promise.all([idleReady,ensureStageArt(config.stage)]);
+  if(session!==battleMusicSession)return;
+  if(!spriteOk||!stageOk){
+    const missing=!spriteOk?'les PNG animés de Pascal':'le décor de l’arène';
+    console.error('Zika Fighter : ressources indisponibles',missing);
+    window.alert('Impossible de lancer ce combat : '+missing+' ne sont pas chargés. Réactualise la page.');
+    menu();return;
+  }
   window.ZikaFighterStageMusic?.stop?.();
   cancelAnimationFrame(anim);applyGameSettings(window.ZikaFighterSettings||null);
   roundNumber=1;roundWins=[0,0];koTime=0;
@@ -185,15 +215,8 @@ function ai(now){
 }
 function drawFigure(f,now){const im=images[f.name];ctx.save();ctx.translate(f.x,f.y);ctx.scale(f.dir,1);ctx.fillStyle='#010918a3';ctx.beginPath();ctx.ellipse(0,0,80,15,0,0,Math.PI*2);ctx.fill();// Pascal : sprites indépendants si présents, sinon illustration d'origine immobile.
 if(f.name==='pascal'){
-  const animated=window.ZikaPascalAnimation?.draw?.(ctx,f,now);
-  if(!animated){
-    window.ZikaPascalAnimation?.state?.(f,now);
-    if(im?.complete&&im.naturalWidth){
-      const height=442,width=im.naturalWidth/im.naturalHeight*height;
-      ctx.imageSmoothingEnabled=false;
-      ctx.drawImage(im,-width/2,-height,width,height);
-    }
-  }
+  // Ne jamais afficher l'ancien WebP (fond rose/noir et visage tronqué).
+  window.ZikaPascalAnimation?.draw?.(ctx,f,now);
   if(f.guard){ctx.strokeStyle='#8df3ff';ctx.lineWidth=9;ctx.beginPath();ctx.ellipse(0,-150,87,155,0,0,2*Math.PI);ctx.stroke()}
   ctx.restore();return;
 }
@@ -297,13 +320,8 @@ window.ZikaFighterBridge={
     const stage=window.ZikaFighterStages?.get(id);
     if(!stage)return false;
     config.stage=id;
-    // Utiliser le décor original si son image est disponible dans assets/stages.
-    // Ne jamais substituer un bâtiment ou un sponsor inventé.
-    if(!images[id]){
-      const im=new Image();
-      im.src=window.ZikaFighterStages.imageFor(id);
-      images[id]=im;
-    }
+    // Préchargement dès le choix de l'arène, avant l'annonce et le VS.
+    void ensureStageArt(id);
     return true;
   },
   getPlayers:()=>Number(gameSettings.players)||1,
@@ -313,7 +331,7 @@ window.ZikaFighterBridge={
   getMatchState:()=>({status,roundNumber,roundWins:[...roundWins],player:p?.name||null,opponent:e?.name||null})
 };
 })();
-</script><script defer src="./pascal-animation.js?v=zf-20261109-pascal-fixed-scale-v69"></script><script defer src="./arcade-audio.js?v=zf-20261109-pascal-v64"></script>
+</script><script defer src="./pascal-animation.js?v=zf-20261109-pascal-stage-boot-v71"></script><script defer src="./arcade-audio.js?v=zf-20261109-pascal-v64"></script>
 <script defer src="./screen-transitions.js?v=zf-20261109-pascal-v64"></script>
 <script defer src="./stage-audio.js?v=zf-20261109-pascal-v64"></script><script defer src="./stage-music.js?v=zf-20261108-stage-music-v1"></script>
 <script defer src="./data/approved-portrait-thumbs.js?v=zf-20261109-pascal-v64"></script>
