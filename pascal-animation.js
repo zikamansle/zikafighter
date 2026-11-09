@@ -206,7 +206,49 @@ function mountControls(){
  requestAnimationFrame(tick);
  cachedPack().then(blob=>blob&&loadPack(blob,announce)).catch(err=>console.info('Pascal: pas de pack enregistré',err?.message));
 }
+
+/* Les vrais PNG sont chargés automatiquement depuis le dépôt (pas de ZIP à choisir). */
+let hostedStatus='pending';
+async function preloadHostedSprites(){
+ if(hostedStatus==='loading'||hostedStatus==='done')return;
+ hostedStatus='loading';
+ const status=document.querySelector('#pascal-sprite-test p:last-of-type');
+ try{
+  const res=await fetch('./assets/fighters/pascal/manifest.json?v=zf-20261109-pascal-hosted-v66',{cache:'no-store'});
+  if(!res.ok)throw Error('Manifeste non publié (HTTP '+res.status+').');
+  const manifest=await res.json();
+  if(manifest.character!=='Pascal'||!manifest.counts)throw Error('Manifeste Pascal invalide.');
+  const primary=['attente','marche_avant','marche_arriere','saut_neutre','saut_avant','saut_arriere',
+   'garde_debout','jab','pied_moyen','charge_francaise','touche_moyen','ko'];
+  const poses=Object.keys(manifest.counts).filter(k=>k in categoryLabels);
+  const order=[...primary.filter(k=>poses.includes(k)),...poses.filter(k=>!primary.includes(k))];
+  let groups=0,frames=0;
+  for(const pose of order){
+   const n=Number(manifest.counts[pose]);
+   if(!Number.isInteger(n)||n<1||n>50)continue;
+   const images=await Promise.all(Array.from({length:n},(_,i)=>new Promise(resolve=>{
+    const im=new Image();im.decoding='async';
+    im.onload=()=>resolve(im);im.onerror=()=>resolve(null);
+    im.src=url(pose,i)+'?v=zf-20261109-pascal-hosted-v66';
+   })));
+   if(images.every(im=>im&&im.naturalWidth>0)&&install(pose,images)){
+    groups++;frames+=n;
+    if(status)status.textContent='Pascal : '+groups+' animations chargées automatiquement ('+frames+' images).';
+   }
+  }
+  if(!groups)throw Error('Aucune animation publiée.');
+  hostedStatus='done';
+  window.dispatchEvent(new CustomEvent('zika:pascal-sprites-loaded',{detail:{accepted:groups,frames,source:'github'}}));
+  if(status)status.textContent='Pascal animé actif : '+groups+' animations et '+frames+' PNG chargés depuis GitHub.';
+ }catch(err){
+  hostedStatus='failed';console.warn('Pascal : téléchargement automatique',err);
+  if(status)status.textContent='Chargement des sprites indisponible : '+err.message;
+ }
+}
+
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mountControls,{once:true});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',preloadHostedSprites,{once:true});
+else preloadHostedSprites();
 else mountControls();
 window.ZikaPascalAnimation=Object.freeze({
  counts,fps,url,install,state,draw,ready:()=>Object.keys(available),loadPack
