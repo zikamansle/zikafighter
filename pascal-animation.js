@@ -23,6 +23,13 @@ const categoryLabels={
  releve_apres_ko:'Relevé après K.O.',victoire:'Victoire',victoire_alternative:'Victoire alternative'
 };
 const available=Object.create(null), objectUrls=[];
+const essentialPoses=Object.freeze([
+ 'attente','marche_avant','marche_arriere','saut_neutre','saut_avant','saut_arriere',
+ 'garde_debout','jab','pied_moyen','charge_francaise','touche_moyen','ko'
+]);
+const renderMode=new WeakMap();
+let essentialReady=false;
+const allEssentialsLoaded=()=>essentialPoses.every(p=>available[p]?.length>0);
 const lastPose=new WeakMap();
 const oneShot=new Set(['descente_accroupie','retour_debout','reception','releve',
  'jab','direct','crochet','uppercut','pied_bas','pied_moyen','pied_haut','balayage',
@@ -64,14 +71,27 @@ function state(f,now){
  return {pose,frame:oneShot.has(pose)?Math.min(count-1,current):current%count};
 }
 function draw(ctx,f,now){
- const {pose,frame}=state(f,now),sprite=available[pose]?.[frame];
+ // Choisir UN mode d'affichage par combattant, une fois au début du combat.
+ // Évite tout mélange entre le vieux portrait de 442px et les sprites de 383px.
+ let mode=renderMode.get(f);
+ if(mode===undefined){
+  mode=essentialReady?'sprites':'portrait';
+  renderMode.set(f,mode);
+ }
+ if(mode==='portrait')return false;
+ const {pose,frame}=state(f,now);
+ // Ne jamais revenir au portrait lorsqu'une animation manque.
+ const frames=available[pose]||available.attente;
+ const sprite=frames?.[Math.min(frame,frames.length-1)]||available.attente?.[0];
  if(!sprite)return false;
- ctx.save();ctx.imageSmoothingEnabled=false;
- // Les 316 PNG ont été normalisés hors-ligne : échelle graphique constante par famille,\n // base alignée, poses accroupies, sauts et chutes proportionnées.
- // Ancrage fixe au sol, aucune rotation du visage ni redimensionnement pose par pose.
- const scale=3.65;
- ctx.drawImage(sprite,-128*scale,-227*scale,256*scale,256*scale);
- ctx.restore();return true;
+ ctx.save();
+ ctx.imageSmoothingEnabled=false;
+ // Échelle constante de 442px pour un Pascal debout de 105px dans les PNG.
+ // Le moteur gère hauteur de saut et déplacement; ne jamais changer l'échelle par pose.
+ const scale=442/105;
+ ctx.drawImage(sprite,-128*scale,-226*scale,256*scale,256*scale);
+ ctx.restore();
+ return true;
 }
 function readZip(buffer){
  const v=new DataView(buffer),len=buffer.byteLength;
@@ -128,6 +148,7 @@ async function loadPack(blob,report){
   if(install(pose,group.map(x=>x[1]))){accepted++;frames+=group.length;}
  }
  if(!accepted){loaded.forEach(URL.revokeObjectURL);throw Error('Aucune animation exploitable.');}
+ essentialReady=allEssentialsLoaded();
  objectUrls.splice(0).forEach(URL.revokeObjectURL);
  objectUrls.push(...loaded);
  if(report)report(accepted+' animations et '+frames+' PNG chargés pour Pascal.');
@@ -214,12 +235,11 @@ async function preloadHostedSprites(){
  hostedStatus='loading';
  const status=document.querySelector('#pascal-sprite-test p:last-of-type');
  try{
-  const res=await fetch('./assets/fighters/pascal/manifest.json?v=zf-20261109-pascal-normalized-v68',{cache:'no-store'});
+  const res=await fetch('./assets/fighters/pascal/manifest.json?v=zf-20261109-pascal-fixed-scale-v69',{cache:'no-store'});
   if(!res.ok)throw Error('Manifeste non publié (HTTP '+res.status+').');
   const manifest=await res.json();
   if(manifest.character!=='Pascal'||!manifest.counts||manifest.normalized!==true)throw Error('Manifeste Pascal normalisé absent.');
-  const primary=['attente','marche_avant','marche_arriere','saut_neutre','saut_avant','saut_arriere',
-   'garde_debout','jab','pied_moyen','charge_francaise','touche_moyen','ko'];
+  const primary=essentialPoses;
   const poses=Object.keys(manifest.counts).filter(k=>k in categoryLabels);
   const order=[...primary.filter(k=>poses.includes(k)),...poses.filter(k=>!primary.includes(k))];
   let groups=0,frames=0;
@@ -236,10 +256,13 @@ async function preloadHostedSprites(){
     if(status)status.textContent='Pascal : '+groups+' animations chargées automatiquement ('+frames+' images).';
    }
   }
-  if(!groups)throw Error('Aucune animation publiée.');
+  if(!allEssentialsLoaded())throw Error('Animations principales incomplètes : impossible d’éviter le changement d’échelle.');
+  essentialReady=true;
   hostedStatus='done';
+  const zipInput=document.querySelector('#pascal-sprite-test input[type=file]');
+  if(zipInput)zipInput.disabled=true;
   window.dispatchEvent(new CustomEvent('zika:pascal-sprites-loaded',{detail:{accepted:groups,frames,source:'github'}}));
-  if(status)status.textContent='Pascal animé actif : '+groups+' animations et '+frames+' PNG chargés depuis GitHub.';
+  if(status)status.textContent='Pascal animé : '+groups+' animations et '+frames+' PNG. Taille de rendu fixe, aucun mélange avec l’ancien portrait.';
  }catch(err){
   hostedStatus='failed';console.warn('Pascal : téléchargement automatique',err);
   if(status)status.textContent='Chargement des sprites indisponible : '+err.message;
@@ -254,6 +277,7 @@ if(document.readyState==='loading'){
  preloadHostedSprites();
 }
 window.ZikaPascalAnimation=Object.freeze({
- counts,fps,url,install,state,draw,ready:()=>Object.keys(available),loadPack
+ counts,fps,url,install,state,draw,ready:()=>Object.keys(available),
+ consistentSizeReady:()=>essentialReady,loadPack
 });
 })();
