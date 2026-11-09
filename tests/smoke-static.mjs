@@ -19,7 +19,9 @@ const stageData=JSON.parse(read('data/stages.json'));
 
 const fighterCount=fightersData.fighters.length;
 assert.equal(fighterCount,20,'La grille doit comporter les 20 combattants humains');
-assert.equal(new Set(fightersData.fighters.map(f=>f.name)).size,20,'Noms humains uniques');
+assert.equal(new Set(fightersData.fighters.map(f=>f.id)).size,20,'Identifiants humains uniques');
+assert.equal(fightersData.fighters.filter(f=>f.name==='Fabienne').length,2,
+  'Les deux Fabienne distinctes doivent conserver le même nom public');
 assert.equal(fightersData.bonus.name,'Zika','Zika est uniquement le bonus');
 assert.equal(stageData.stageConcepts.length,21,'21 arènes prévues');
 assert.equal(stageData.stageConcepts.filter(s=>!s.bonus).length,20,'20 arènes initiales');
