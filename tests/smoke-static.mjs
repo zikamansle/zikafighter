@@ -228,6 +228,44 @@ assert.doesNotMatch(introSrc,/c\.fillStyle=t<\.19\?'#120b98'/,
 assert.match(html,/arcade-intro\.css\?v=20261109-startup-black-v6/,
   'Le CSS corrigé du démarrage doit être chargé');
 
+// Conserver le rendu 16 bits des impacts et attaques, sans halos vectoriels.
+const combatSrc=embedded[1];
+for(const leftover of ["kind:'ring'","kind:'spark'","kind:'ball'","shadowBlur=24",
+                        "ctx.ellipse(0,-160,100+Math.sin(now*.02)"]){
+  assert.ok(!combatSrc.includes(leftover),'Effet lumineux artificiel revenu : '+leftover);
+}
+assert.match(combatSrc,/kind:'impact'/,'Les coups doivent montrer un impact en pixels');
+assert.match(combatSrc,/kind:'projectile'/,'Les projectiles doivent encore fonctionner');
+assert.match(combatSrc,/fx.kind==='projectile'/,'Les projectiles doivent conserver leurs collisions');
+const fxStart=combatSrc.indexOf('function drawImpactPixels(fx){');
+const fxEnd=combatSrc.indexOf('function draw(now){',fxStart);
+assert.ok(fxStart>=0&&fxEnd>fxStart,'Dessinateur de sprites d’effets manquant');
+const painted=[];
+const pixelCtx={
+  save(){},restore(){},translate(){},scale(){},fillStyle:'',
+  imageSmoothingEnabled:true,
+  fillRect(x,y,w,h){
+    assert.ok([x,y,w,h].every(Number.isInteger),'Effet dessiné hors grille pixel');
+    assert.ok(w>0&&h>0,'Pixel de largeur ou hauteur nulle');
+    painted.push({x,y,w,h,color:this.fillStyle});
+  }
+};
+const pixelFx=new Function('ctx',combatSrc.slice(fxStart,fxEnd)+
+  ';return {drawImpactPixels,drawProjectilePixels};')(pixelCtx);
+pixelFx.drawImpactPixels({kind:'impact',x:320,y:640,life:.13,blocked:false});
+const attackColors=new Set(painted.map(p=>p.color));
+assert.ok(painted.length>6&&attackColors.has('#fff8d2'),
+  'L’impact doit être visible avec la palette SNES');
+painted.length=0;
+pixelFx.drawImpactPixels({kind:'impact',x:320,y:640,life:.13,blocked:true});
+assert.ok(painted.some(p=>p.color==='#ebf4f7'),
+  'La garde doit avoir un impact discret, sans bouclier');
+painted.length=0;
+pixelFx.drawProjectilePixels({kind:'projectile',x:400,y:620,vx:-650,life:.65});
+assert.ok(painted.length>8,'Le projectile doit être visible comme un sprite 16 bits');
+assert.ok(!combatSrc.includes('#8df3ff'),
+  'L’ancien anneau permanent de garde ne doit pas revenir');
+
 console.log('Zika Fighter : tests statiques OK — '+fighterCount+
   ' combattants, 21 arènes, format 4:3, portraits préservés.');
 console.log('Attention : contrôle visuel, audio et combat réel encore à effectuer.');
