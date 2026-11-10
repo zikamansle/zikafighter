@@ -2,7 +2,7 @@
 /* Chaque publication porte son numéro de version. Les réglages restent conservés,
    seuls les anciens fichiers/cache du jeu sont nettoyés. */
 (function(){
-  const BUILD='zf-20261110-guard-clean-v76';
+  const BUILD='zf-20261110-clean-fx-v77';
   window.ZikaFighterBuild=BUILD;
   try {
     const key='zikafighter-current-build';
@@ -205,10 +205,10 @@ function move(f,inp,dt,now){const enemy=f===p?e:p;f.dir=enemy.x>f.x?1:-1;const s
 if(inp.jump&&f.y>=floor&&!busy&&!f.guard){f.vy=-640;f.action='jump';}if(inp.special)attack(f,'special',now);else if(inp.kick)attack(f,'kick',now);else if(inp.punch)attack(f,'punch',now);if(now>=f.actionUntil)f.action=f.guard?'guard':f.y<floor?'jump':Math.abs(vx)>1?'walk':'idle';}
 f.x=Math.max(70,Math.min(W-70,f.x+f.vx*dt));f.y+=f.vy*dt;f.vy+=1520*dt;if(f.y>=floor){f.y=floor;f.vy=0;}
 }
-function strike(a,b,reach,damage,now,launch=0){if(Math.abs(a.x-b.x)>reach||Math.abs(a.y-b.y)>130||now<b.invulnerable)return false;const actual=b.guard?Math.round(damage*.18):damage;window.ZikaArcadeAudio?.playEffect('hit',(b.x/W)*2-1);b.health=Math.max(0,b.health-actual);b.stunUntil=now+(b.guard?80:210);b.vx=a.dir*(b.guard?60:175);b.vy=launch; a.energy=Math.min(100,a.energy+13);b.energy=Math.min(100,b.energy+6);effects.push({x:b.x,y:b.y-125,r:18,life:.3,kind:'spark',color:b.guard?'#70deff':'#ffda4b'});return true;}
+function strike(a,b,reach,damage,now,launch=0){if(Math.abs(a.x-b.x)>reach||Math.abs(a.y-b.y)>130||now<b.invulnerable)return false;const actual=b.guard?Math.round(damage*.18):damage;window.ZikaArcadeAudio?.playEffect('hit',(b.x/W)*2-1);b.health=Math.max(0,b.health-actual);b.stunUntil=now+(b.guard?80:210);b.vx=a.dir*(b.guard?60:175);b.vy=launch; a.energy=Math.min(100,a.energy+13);b.energy=Math.min(100,b.energy+6);effects.push({x:b.x,y:b.y-125,life:.17,kind:'impact',blocked:!!b.guard});return true;}
 function attack(f,kind,now){if(now<f.actionUntil||now<f.stunUntil||now<f.nextAttack)return;const foe=f===p?e:p;if(kind==='special'&&f.energy<40)return;
 f.action=kind;window.ZikaArcadeAudio?.playEffect(kind,(f.x/W)*2-1);const speed=1+Math.max(0,Math.min(4,gameSettings.turbo))*.06;f.nextAttack=now+(kind==='punch'?230:kind==='kick'?390:760)/speed;f.actionUntil=now+(kind==='punch'?260:kind==='kick'?380:650)/speed;
-if(kind==='special'){f.energy-=40;if(f.name==='pascal'){f.vx=f.dir*680;effects.push({x:f.x,y:f.y-110,r:47,life:.5,kind:'ring',color:'#e1f7ff'});strike(f,foe,190,24,now,-200)}else{effects.push({x:f.x+f.dir*85,y:f.y-120,r:26,life:1.1,kind:'ball',color:'#69eafa',vx:f.dir*680,owner:f})}}
+if(kind==='special'){f.energy-=40;if(f.name==='pascal'){f.vx=f.dir*680;strike(f,foe,190,24,now,-200)}else{effects.push({x:f.x+f.dir*85,y:f.y-120,life:1.1,kind:'projectile',vx:f.dir*680,owner:f})}}
 else strike(f,foe,kind==='punch'?120:150,kind==='punch'?9:14,now,kind==='kick'?-50:0);}
 function ai(now){
   const d=p.x-e.x,gap=Math.abs(d);
@@ -229,13 +229,65 @@ if(f.name==='pascal'){
   
   ctx.restore();return;
 }
-const elapsed=now/1000;const isMoving=f.action==='walk';const bob=isMoving?Math.sin(elapsed*13)*5:Math.sin(elapsed*3)*2;const kick=f.action==='kick';const punch=f.action==='punch';const special=f.action==='special';const tilt=kick?-.11:punch?.10:special?.08:0;const sx=special?1.15:1;ctx.translate(0,bob);ctx.rotate(tilt);ctx.scale(sx,1);
+const elapsed=now/1000;const isMoving=f.action==='walk';const bob=isMoving?Math.sin(elapsed*13)*5:Math.sin(elapsed*3)*2;const kick=f.action==='kick';const punch=f.action==='punch';const special=f.action==='special';const tilt=kick?-.11:punch?.10:special?.08:0;ctx.translate(0,bob);ctx.rotate(tilt);
 if(im.complete&&im.naturalWidth){const displayH=324;const displayW=im.naturalWidth/im.naturalHeight*displayH;ctx.imageSmoothingEnabled=false;ctx.drawImage(im,-displayW/2,-displayH,displayW,displayH);}else{ctx.fillStyle=f.name==='pascal'?'#aeabdb':'#6bdca7';ctx.fillRect(-45,-300,90,290)}
-if(special){ctx.save();ctx.globalAlpha=.35;ctx.strokeStyle=f.name==='pascal'?'#fded78':'#77dfff';ctx.lineWidth=13;ctx.beginPath();ctx.ellipse(0,-160,100+Math.sin(now*.02)*9,153,0,0,2*Math.PI);ctx.stroke();ctx.restore()}ctx.restore();}
+ctx.restore();}
+
+// Impacts et projectiles dessinés en pixels SNES nets : sans halo, cercle ou flou.
+// Dessiner uniquement des rectangles sur la grille du canvas évite les effets
+// lumineux vectoriels ajoutés au prototype.
+function drawImpactPixels(fx){
+ const elapsed=.17-fx.life;
+ const frame=elapsed<.052?0:elapsed<.11?1:2;
+ const pal=fx.blocked
+  ? ['#ebf4f7','#a0bfce','#536b82']
+  : ['#fff8d2','#fbd77b','#db7f3e'];
+ // Chaque élément est x, y, largeur, hauteur, nuance, numéro d'étape maximal.
+ const bits=[
+  [-8,-7,16,14,0,2],[-17,-4,7,8,1,1],[10,-4,7,8,1,1],
+  [-3,-17,6,8,1,1],[-3,10,6,8,1,1],
+  [-25,-11,5,5,2,0],[20,6,5,5,2,0],
+  [-20,12,5,5,2,0],[15,-18,5,5,2,0],
+  [-29,-4,4,4,2,1],[25,-6,4,4,2,1],
+  [-5,-26,4,4,2,1],[4,23,4,4,2,1]
+ ];
+ ctx.save();ctx.imageSmoothingEnabled=false;
+ const cx=Math.round(fx.x),cy=Math.round(fx.y);
+ for(const [x,y,w,h,shade,last] of bits){
+  if(frame>last)continue;
+  ctx.fillStyle=pal[shade];
+  const spread=frame*3;
+  ctx.fillRect(cx+x+Math.sign(x)*spread,cy+y+Math.sign(y)*spread,w,h);
+ }
+ ctx.restore();
+}
+function drawProjectilePixels(fx){
+ const right=fx.vx>=0?1:-1;
+ const tick=Math.floor(fx.life*23)%2;
+ ctx.save();
+ ctx.imageSmoothingEnabled=false;
+ ctx.translate(Math.round(fx.x),Math.round(fx.y));
+ ctx.scale(right,1);
+ // Projectile compact à silhouette en blocs : pas de boule lumineuse.
+ const shades=['#f6f0c8','#a9dadd','#558eaf','#244d78'];
+ const bits=[
+  [-27,-5,13,10,2],[-16,-9,17,18,1],[0,-13,15,26,2],
+  [12,-9,16,18,1],[25,-4,8,8,3],
+  [-25,-2,13,4,0],[-11,-5,13,10,0],[4,-6,11,12,0],
+  [14,-4,11,8,0],[-34,-1,6,3,3],[-40,5,5,4,2],
+  [-38,-9,6,4,2],[-44,tick?11:-13,5,4,3]
+ ];
+ for(const [x,y,w,h,shade] of bits){ctx.fillStyle=shades[shade];ctx.fillRect(x,y,w,h)}
+ ctx.restore();
+}
+function drawCombatEffect(fx){
+ if(fx.kind==='impact')drawImpactPixels(fx);
+ else if(fx.kind==='projectile')drawProjectilePixels(fx);
+}
 function draw(now){ctx.clearRect(0,0,W,H);const bg=images[config.stage];if(bg&&bg.complete&&bg.naturalWidth&&bg.naturalHeight){const sw=Math.min(bg.naturalWidth,bg.naturalHeight*W/H)/1.18;const sh=sw*H/W;
  const sx=(bg.naturalWidth-sw)*(0.5+0.42*stageCameraPan);
  const sy=(bg.naturalHeight-sh)/2;ctx.drawImage(bg,sx,sy,sw,sh,0,0,W,H)}else{ctx.fillStyle='#2870bd';ctx.fillRect(0,0,W,H)}ctx.fillStyle='#05091e36';ctx.fillRect(0,floor-4,W,H-floor+4);ctx.fillStyle='#a3b2d733';ctx.fillRect(0,floor,W,3);
-const duo=[p,e].sort((a,b)=>a.x-b.x);for(const f of duo)drawFigure(f,now);for(const fx of effects){ctx.save();ctx.globalAlpha=Math.min(1,fx.life*4);ctx.strokeStyle=fx.color;ctx.fillStyle=fx.color;ctx.shadowColor=fx.color;ctx.shadowBlur=24;if(fx.kind==='ball'){ctx.beginPath();ctx.arc(fx.x,fx.y,fx.r,0,2*Math.PI);ctx.fill();ctx.fillStyle='#f9ffff';ctx.beginPath();ctx.arc(fx.x,fx.y,fx.r*.45,0,2*Math.PI);ctx.fill()}else{ctx.lineWidth=9;ctx.beginPath();ctx.arc(fx.x,fx.y,fx.r+(1-fx.life)*25,0,2*Math.PI);ctx.stroke()}ctx.restore()}}
+const duo=[p,e].sort((a,b)=>a.x-b.x);for(const f of duo)drawFigure(f,now);for(const fx of effects)drawCombatEffect(fx);}
 function end(winner){
   if(status!=='fight')return;
   window.ZikaArcadeAudio?.playEffect('ko');
@@ -274,7 +326,7 @@ function end(winner){
 }
 function frame(now){const dt=Math.min(.035,(now-last)/1000||.016);last=now;if(!p||!e)return;if(status==='between'&&now>=koTime){roundNumber++;beginRound();}if(status==='ready'&&now>=started){status='fight';$('#round').style.display='none';window.ZikaArcadeAudio?.playVoice('fight')}if(status==='fight'){
 clock=gameSettings.timeLimit?Math.max(0,99-(now-started)/1000):99;move(p,controls(),dt,now);move(e,gameSettings.players===2?controls2():ai(now),dt,now);if(Math.abs(p.x-e.x)<90){const delta=(90-Math.abs(p.x-e.x))/2;const sgn=p.x<e.x?1:-1;p.x-=delta*sgn;e.x+=delta*sgn;}
-for(const fx of effects){if(fx.kind==='ball'){fx.x+=fx.vx*dt;const foe=fx.owner===p?e:p;if(Math.abs(fx.x-foe.x)<60&&Math.abs(fx.y-(foe.y-145))<90){foe.health=Math.max(0,foe.health-(foe.guard?5:21));foe.stunUntil=now+210;foe.vy=-120;fx.owner.energy=Math.min(100,fx.owner.energy+12);effects.push({x:foe.x,y:foe.y-120,r:35,life:.28,kind:'spark',color:'#80e7ff'});fx.life=0}}fx.life-=dt;}effects=effects.filter(fx=>fx.life>0);if(p.health<=0||e.health<=0||(gameSettings.timeLimit&&clock<=0))end(p.health===e.health?null:p.health>e.health);
+for(const fx of effects){if(fx.kind==='projectile'){fx.x+=fx.vx*dt;const foe=fx.owner===p?e:p;if(Math.abs(fx.x-foe.x)<60&&Math.abs(fx.y-(foe.y-120))<90){foe.health=Math.max(0,foe.health-(foe.guard?5:21));foe.stunUntil=now+210;foe.vy=-120;fx.owner.energy=Math.min(100,fx.owner.energy+12);effects.push({x:foe.x,y:foe.y-120,life:.17,kind:'impact',blocked:!!foe.guard});fx.life=0}}fx.life-=dt;}effects=effects.filter(fx=>fx.life>0);if(p.health<=0||e.health<=0||(gameSettings.timeLimit&&clock<=0))end(p.health===e.health?null:p.health>e.health);
 }updateStageCamera(dt);draw(now);$('#timer').textContent=gameSettings.timeLimit?Math.ceil(clock):'∞';$('#hp1').style.width=p.health+'%';$('#hp2').style.width=e.health+'%';$('#sp1').style.width=p.energy+'%';$('#sp2').style.width=e.energy+'%';if(status!=='menu'&&(status!=='done'||now<koTime))anim=requestAnimationFrame(frame)}
 const commonKeys={KeyA:'left',KeyQ:'left',KeyD:'right',KeyZ:'jump',KeyW:'jump',KeyS:'guard'};
 const singlePlayerArrows={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'jump',ArrowDown:'guard',Space:'jump'};
@@ -349,7 +401,7 @@ window.ZikaFighterBridge={
   getMatchState:()=>({status,roundNumber,roundWins:[...roundWins],player:p?.name||null,opponent:e?.name||null})
 };
 })();
-</script><script defer src="./pascal-animation.js?v=zf-20261110-guard-clean-v76"></script><script defer src="./arcade-audio.js?v=zf-20261109-pascal-v64"></script>
+</script><script defer src="./pascal-animation.js?v=zf-20261110-clean-fx-v77"></script><script defer src="./arcade-audio.js?v=zf-20261109-pascal-v64"></script>
 <script defer src="./screen-transitions.js?v=zf-20261109-pascal-v64"></script>
 <script defer src="./stage-audio.js?v=zf-20261109-pascal-v64"></script><script defer src="./stage-music.js?v=zf-20261108-stage-music-v1"></script>
 <script defer src="./data/approved-portrait-thumbs.js?v=zf-20261109-pascal-v64"></script>
