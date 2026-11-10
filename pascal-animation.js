@@ -25,7 +25,7 @@ const categoryLabels={
 const available=Object.create(null), objectUrls=[];
 const essentialPoses=Object.freeze([
  'attente','marche_avant','marche_arriere','saut_neutre','saut_avant','saut_arriere',
- 'garde_debout','garde_accroupie','jab','pied_moyen','charge_francaise','touche_moyen','ko'
+ 'garde_debout','garde_accroupie','descente_accroupie','retour_debout','releve','chute_arriere','jab','pied_moyen','charge_francaise','touche_moyen','ko'
 ]);
 const readyListeners=new Set(), animationReadyListeners=new Set();
 let essentialReady=false;
@@ -58,7 +58,7 @@ function install(pose,images){
  return true;
 }
 function poseFor(f,now){
- if(f.health<=0)return 'ko';
+ if(f.health<=0)return 'chute_arriere';
  if(now<f.stunUntil)return 'touche_moyen';
  if(now<f.actionUntil){
   if(f.action==='special')return 'charge_francaise';
@@ -267,7 +267,7 @@ let hostedStatus='pending';
 async function preloadHostedSprites(){
  if(hostedStatus==='loading'||hostedStatus==='done')return;
  hostedStatus='loading';
- const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-pascal-stable-v72');
+ const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-pascal-crouch-ko-v73');
  try{
   const res=await fetch('./assets/fighters/pascal/manifest.json?v='+version,{cache:'no-store'});
   if(!res.ok)throw Error('Manifeste Pascal non disponible : HTTP '+res.status);
@@ -290,6 +290,16 @@ async function preloadHostedSprites(){
   // Le jeu attend désormais toutes les animations de combat nécessaires.
   await Promise.all(essentialPoses.map(loadPose));
   if(!essentialReady)throw Error('Animations principales incomplètes.');
+  // Les sprites de garde accroupie issus du ZIP sont tronqués aux pieds.
+  // Les poses 6-8 du relevé sont entières et conservent Pascal et sa tenue.
+  const fullCrouch=available.releve;
+  if(!fullCrouch||fullCrouch.length<8)throw Error('Pose complète de Pascal introuvable.');
+  available.garde_accroupie=[fullCrouch[5]];
+  available.descente_accroupie=[fullCrouch[7],fullCrouch[6],fullCrouch[5]];
+  available.retour_debout=[fullCrouch[5],fullCrouch[6],fullCrouch[7]];
+  counts.garde_accroupie=1;
+  counts.descente_accroupie=3;
+  counts.retour_debout=3;
   hostedStatus='done';
   const zipInput=document.querySelector('#pascal-sprite-test input[type=file]');
   if(zipInput)zipInput.disabled=true;
