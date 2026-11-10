@@ -1,0 +1,58 @@
+name: Audit and correct Pascal size outliers v89
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/fix_pascal_size_v89.py"
+      - ".github/workflows/pascal-size-v89.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: pascal-size-v89
+  cancel-in-progress: false
+jobs:
+  calibrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install Pillow==11.3.0
+      - name: Preserve Pascal's face, fix size anomalies in two palettes
+        run: python tools/fix_pascal_size_v89.py
+      - name: Validate 632 individual source PNG
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from PIL import Image
+          root=Path('assets/fighters/pascal')
+          m=json.loads((root/'manifest.json').read_text())
+          a=json.loads((root/'size_audit_v89.json').read_text())
+          assert m['sizeCorrectionRevision']=='v89'
+          assert a['correctedFramesPerPalette']==m['sizeCorrectedFrames']
+          assert len(a['frames'])==38
+          assert len(m['counts'])==44 and sum(m['counts'].values())==316
+          for palette in ['original','bleu']:
+            assert len(list((root/palette).glob('*/*.png')))==316
+          for original in (root/'original').glob('*/*.png'):
+            alt=root/'bleu'/original.relative_to(root/'original')
+            with Image.open(original) as x,Image.open(alt) as y:
+              assert x.size==y.size==(256,256)
+              assert x.convert('RGBA').getchannel('A').tobytes()==y.convert('RGBA').getchannel('A').tobytes()
+          print('PASS: Pascal v89 sizes audited, all 632 PNG valid and palettes aligned')
+          PY
+      - name: Commit only targeted Pascal assets and report
+        run: |
+          git config user.name "Zika Fighter sprite QA"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/fighters/pascal
+          if ! git diff --cached --quiet; then
+            git commit -m "v89: harmonize Pascal profile widths and airborne centers"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
