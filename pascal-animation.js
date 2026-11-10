@@ -40,11 +40,15 @@ const oneShot=new Set(['descente_accroupie','retour_debout','reception','releve'
 const speedFor=pose=>/marche/.test(pose)?12:pose==='jab'?31:pose==='pied_moyen'?21:/jab|direct|crochet|pied_|poing_|uppercut|balayage/.test(pose)?14:/charge|vague|boule|bricoleur/.test(pose)?12:9;
 const counts=Object.create(null),fps=Object.create(null);
 Object.keys(categoryLabels).forEach(k=>{counts[k]=0;fps[k]=speedFor(k);});
-// Retour à l'animation précédente par défaut : v94 reste disponible uniquement en ?pascal=preview-v94 pour examen.
+// Stable partout sauf en mode test explicite ?pascal=bloc1 : seuls
+// attente et garde_debout utilisent les nouveaux PNG du sprite maître.
+const pascalParams=new URLSearchParams(window.location?.search||'');
+const previewBloc1=pascalParams.get('pascal')==='bloc1';
 const classicPack=new URLSearchParams(window.location?.search||'').get('pascal')!=='preview-v94';
 const spriteRoot='./assets/fighters/pascal/'+(classicPack?'original/':'v94/original/');
 const manifestUrl='./assets/fighters/pascal/'+(classicPack?'manifest.json':'v94/manifest.json');
-const url=(pose,i)=>spriteRoot+pose+'/'+String(i+1).padStart(2,'0')+'.png';
+const bloc1Root='./assets/fighters/pascal/bloc1/original/';
+const url=(pose,i)=>(previewBloc1&&(pose==='attente'||pose==='garde_debout')?bloc1Root:spriteRoot)+pose+'/'+String(i+1).padStart(2,'0')+'.png';
 function install(pose,images){
  if(!categoryLabels[pose]||!Array.isArray(images)||images.length<1||
     !images.every(im=>im&&im.complete&&im.naturalWidth>0))return false;
@@ -341,7 +345,8 @@ async function preloadHostedSprites(){
    groups++;frames+=n;
   }
   // Le jeu attend désormais toutes les animations de combat nécessaires.
-  await Promise.all(essentialPoses.map(loadPose));
+  const initialPoses=previewBloc1?[...essentialPoses,'garde_debout']:essentialPoses;
+  await Promise.all(initialPoses.map(loadPose));
   if(!essentialReady)throw Error('Animations principales incomplètes.');
   // Les sprites de garde accroupie issus du ZIP sont tronqués aux pieds.
   // Les poses 6-8 du relevé sont entières et conservent Pascal et sa tenue.
@@ -358,7 +363,7 @@ async function preloadHostedSprites(){
   if(zipInput)zipInput.disabled=true;
   window.dispatchEvent(new CustomEvent('zika:pascal-sprites-loaded',{detail:{accepted:groups,frames,source:'github',ready:true}}));
   // Charger les autres mouvements en parallèle sans bloquer le démarrage.
-  const queue=poses.filter(p=>!essentialPoses.includes(p));
+  const queue=poses.filter(p=>!initialPoses.includes(p));
   await Promise.all(Array.from({length:5},async()=>{
    while(queue.length){const pose=queue.shift();try{await loadPose(pose)}catch(err){console.warn('Pascal : pose secondaire',pose,err)}}
   }));
@@ -370,11 +375,68 @@ async function preloadHostedSprites(){
   console.error('Pascal : sprites non chargés',err);
  }
 }
+// Test du bloc 1 : deux animations complètes, affichées avec le même
+// moteur d'images individuelles. Ombre ancrée au sol, sans ombre collée
+// aux pieds du personnage pendant un saut.
+function mountBloc1Controls(){
+ if(!previewBloc1)return;
+ const panel=document.createElement('section');
+ panel.id='pascal-bloc1-preview';
+ panel.style.cssText='position:fixed;right:12px;bottom:12px;z-index:9999;width:220px;padding:10px;background:#0a1126f0;border:2px solid #b9c4dd;border-radius:8px;color:#fff;font:12px Arial,sans-serif;box-shadow:0 4px 20px #0009;text-align:center';
+ const heading=document.createElement('div');
+ heading.textContent='PASCAL — TEST BLOC 1';heading.style.cssText='font-weight:bold;font-size:13px;margin-bottom:8px;color:#ffe596';
+ panel.appendChild(heading);
+ const status=document.createElement('div');
+ status.textContent='Chargement des PNG…';status.style.cssText='margin-bottom:7px;color:#e5ddbc';
+ panel.appendChild(status);
+ const buttons=document.createElement('div');
+ buttons.style.cssText='display:flex;gap:5px;justify-content:center;margin:6px 0';
+ const choices=[['attente','Attente (8)'],['garde_debout','Garde (4)']];
+ let selected='attente',start=performance.now();
+ for(const [pose,name] of choices){
+  const button=document.createElement('button');
+  button.type='button';button.textContent=name;button.dataset.pose=pose;
+  button.style.cssText='padding:6px 5px;color:#fff;background:#273653;border:1px solid #7787aa;border-radius:4px;cursor:pointer';
+  button.onclick=()=>{selected=pose;start=performance.now();};
+  buttons.appendChild(button);
+ }
+ panel.appendChild(buttons);
+ const canvas=document.createElement('canvas');
+ canvas.width=210;canvas.height=220;
+ canvas.style.cssText='width:210px;height:220px;max-width:100%;image-rendering:pixelated;background:#151f37;border:1px solid #64739d';
+ panel.appendChild(canvas);
+ const note=document.createElement('div');
+ note.style.cssText='font-size:10px;margin-top:6px;color:#cfdaea;line-height:1.35';
+ note.textContent='Seulement le bloc 1 change. Les autres animations du combat restent inchangées.';
+ panel.appendChild(note);
+ document.body.appendChild(panel);
+ const ctx=canvas.getContext('2d');
+ function tick(now){
+  ctx.clearRect(0,0,210,220);
+  ctx.fillStyle='#151f37';ctx.fillRect(0,0,210,220);
+  ctx.strokeStyle='#8592ae';ctx.beginPath();ctx.moveTo(5,206);ctx.lineTo(205,206);ctx.stroke();
+  ctx.fillStyle='rgba(0,0,0,.42)';ctx.beginPath();ctx.ellipse(105,207,49,5,0,0,Math.PI*2);ctx.fill();
+  const seq=available[selected];
+  if(seq?.length){
+    status.textContent=selected==='attente'?'Attente — 8 PNG':'Garde debout — 4 PNG';
+    const frame=Math.floor((now-start)*speedFor(selected)/1000)%seq.length;
+    const img=seq[frame],scale=1.55;
+    ctx.imageSmoothingEnabled=false;
+    ctx.drawImage(img,105-128*scale,205-227*scale,256*scale,256*scale);
+  }else status.textContent='Chargement des PNG du bloc 1…';
+  for(const b of buttons.children)b.style.background=b.dataset.pose===selected?'#5a4165':'#273653';
+  requestAnimationFrame(tick);
+ }
+ requestAnimationFrame(tick);
+}
+
 if(document.readyState==='loading'){
  document.addEventListener('DOMContentLoaded',mountControls,{once:true});
+ document.addEventListener('DOMContentLoaded',mountBloc1Controls,{once:true});
  document.addEventListener('DOMContentLoaded',preloadHostedSprites,{once:true});
 }else{
  mountControls();
+ mountBloc1Controls();
  preloadHostedSprites();
 }
 window.ZikaPascalAnimation=Object.freeze({
