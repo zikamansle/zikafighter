@@ -73,20 +73,19 @@ function poseFor(f,now){
  if(Math.abs(f.vx||0)>8)return (f.vx||0)*(f.dir||1)>=0?'marche_avant':'marche_arriere';
  return 'attente';
 }
-// Les dimensions anatomiques sont déjà identiques d'une pose à l'autre.
-// Une préparation et une réception en sprites évitent les sauts visuels
-// entre les silhouettes debout (104 px) et basses (62–70 px).
+// Tous les PNG partagent le cadre et l'ancrage, mais certains dessins n'ont
+// pas encore exactement les mêmes proportions anatomiques (notamment la tête).
+// Conserver une échelle fixe ; ne pas la compenser en zoomant au hasard.
 function state(f,now){
  const target=poseFor(f,now);
  let current=lastPose.get(f);
  if(!current||current.target!==target){
   const previous=current?.target||null;
   let transition=null;
-  const upright=previous==='attente'||previous==='marche_avant'||previous==='marche_arriere';
   if(target==='garde_accroupie'&&previous!=='garde_accroupie'&&available.descente_accroupie)
    transition='descente_accroupie';
-  else if(upright&&(target==='charge_francaise'||target.startsWith('saut_'))&&available.descente_accroupie)
-   transition='descente_accroupie';
+  // Saut et charge utilisent immédiatement leur véritable animation.
+  // Ne pas afficher une fausse descente accroupie pendant que le personnage décolle.
   else if(target==='attente'&&f.y>=754&&
    (previous==='garde_accroupie'||previous==='charge_francaise'||previous?.startsWith('saut_'))&&
    available.retour_debout)
