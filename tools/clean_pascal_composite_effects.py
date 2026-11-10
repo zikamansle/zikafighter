@@ -8,7 +8,6 @@ projectile or impact must be drawn separately by the combat engine.
 from pathlib import Path
 import json
 import hashlib
-import numpy as np
 from PIL import Image
 
 ROOT=Path(__file__).resolve().parents[1]/'assets/fighters/pascal'
