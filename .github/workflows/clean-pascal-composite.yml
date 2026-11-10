@@ -58,6 +58,7 @@ jobs:
           print('QA PASS: 632 PNG aligned and free of baked opponents in active charge.')
           PY
           node --check pascal-animation.js
+          node tests/combat-v85.mjs
           node - <<'JS'
           const assert=require('node:assert/strict');
           const fs=require('node:fs');
