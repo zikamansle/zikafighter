@@ -1,0 +1,13 @@
+{
+  "component": "Pascal",
+  "preview": "bloc1",
+  "publicDefault": "stable",
+  "previewParameter": "pascal=bloc1",
+  "animations": {
+    "attente": 8,
+    "garde_debout": 4
+  },
+  "master": "assets/fighters/pascal/reference/maitre-valide-256.png",
+  "sprites": "assets/fighters/pascal/bloc1",
+  "description": "A valid user-testing preview; this is not a full Pascal replacement."
+}
