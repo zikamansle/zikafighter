@@ -1,6 +1,6 @@
 /* Pascal — lecteur d'animations 2D. Test local du pack PNG individuel.
    Ne modifie jamais les portraits validés et ne reconstruit pas les sprites.
-   Le pack de test est conservé dans IndexedDB sur le navigateur de l'utilisateur. */
+   Les 316 PNG du pack v94 sont chargés depuis GitHub, avec repli manuel facultatif. */
 (()=>{'use strict';
 if(window.ZikaPascalAnimation)return;
 const categoryLabels={
@@ -40,7 +40,11 @@ const oneShot=new Set(['descente_accroupie','retour_debout','reception','releve'
 const speedFor=pose=>/marche/.test(pose)?12:pose==='jab'?31:pose==='pied_moyen'?21:/jab|direct|crochet|pied_|poing_|uppercut|balayage/.test(pose)?14:/charge|vague|boule|bricoleur/.test(pose)?12:9;
 const counts=Object.create(null),fps=Object.create(null);
 Object.keys(categoryLabels).forEach(k=>{counts[k]=0;fps[k]=speedFor(k);});
-const url=(pose,i)=>'./assets/fighters/pascal/original/'+pose+'/'+String(i+1).padStart(2,'0')+'.png';
+// Pascal v94 par défaut. ?pascal=classic permet une comparaison sans supprimer v91.
+const classicPack=new URLSearchParams(window.location.search).get('pascal')==='classic';
+const spriteRoot='./assets/fighters/pascal/'+(classicPack?'original/':'v94/original/');
+const manifestUrl='./assets/fighters/pascal/'+(classicPack?'manifest.json':'v94/manifest.json');
+const url=(pose,i)=>spriteRoot+pose+'/'+String(i+1).padStart(2,'0')+'.png';
 function install(pose,images){
  if(!categoryLabels[pose]||!Array.isArray(images)||images.length<1||
     !images.every(im=>im&&im.complete&&im.naturalWidth>0))return false;
@@ -316,9 +320,9 @@ let hostedStatus='pending';
 async function preloadHostedSprites(){
  if(hostedStatus==='loading'||hostedStatus==='done')return;
  hostedStatus='loading';
- const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-pascal-size-v91');
+ const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-pascal-v94-full-frames');
  try{
-  const res=await fetch('./assets/fighters/pascal/manifest.json?v='+version,{cache:'no-store'});
+  const res=await fetch(manifestUrl+'?v='+version,{cache:'no-store'});
   if(!res.ok)throw Error('Manifeste Pascal non disponible : HTTP '+res.status);
   const manifest=await res.json();
   if(manifest.character!=='Pascal'||manifest.normalized!==true||!manifest.counts)throw Error('Manifeste Pascal invalide.');
