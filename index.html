@@ -2,7 +2,7 @@
 /* Chaque publication porte son numéro de version. Les réglages restent conservés,
    seuls les anciens fichiers/cache du jeu sont nettoyés. */
 (function(){
-  const BUILD='zf-20261110-pascal-pose-flow-v80';
+  const BUILD='zf-20261110-pascal-pose-flow-v81';
   window.ZikaFighterBuild=BUILD;
   try {
     const key='zikafighter-current-build';
@@ -226,7 +226,7 @@ function attack(f,kind,now){
  window.ZikaArcadeAudio?.playEffect(kind,(f.x/W)*2-1);
  const speed=1+Math.max(0,Math.min(4,gameSettings.turbo))*.06;
  const total={punch:300,kick:420,special:670}[kind]/speed;
- const contact={punch:115,kick:190,special:235}[kind]/speed;
+ const contact=(kind==='special'&&f.name==='pascal'?480:{punch:115,kick:190,special:235}[kind])/speed;
  f.actionUntil=now+total;
  f.nextAttack=now+total+32;
  f.hitKind=kind;f.hitAt=now+contact;f.hitDone=false;
@@ -447,7 +447,7 @@ window.ZikaFighterBridge={
   getMatchState:()=>({status,roundNumber,roundWins:[...roundWins],player:p?.name||null,opponent:e?.name||null})
 };
 })();
-</script><script defer src="./pascal-animation.js?v=zf-20261110-pascal-pose-flow-v80"></script><script defer src="./arcade-audio.js?v=zf-20261109-pascal-v64"></script>
+</script><script defer src="./pascal-animation.js?v=zf-20261110-pascal-pose-flow-v81"></script><script defer src="./arcade-audio.js?v=zf-20261109-pascal-v64"></script>
 <script defer src="./screen-transitions.js?v=zf-20261109-pascal-v64"></script>
 <script defer src="./stage-audio.js?v=zf-20261109-pascal-v64"></script><script defer src="./stage-music.js?v=zf-20261108-stage-music-v1"></script>
 <script defer src="./data/approved-portrait-thumbs.js?v=zf-20261109-pascal-v64"></script>
