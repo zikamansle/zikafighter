@@ -1,0 +1,25 @@
+{
+  "character": "Pascal",
+  "version": "bloc1-preview",
+  "masterSHA256": "44a01a47486b87bf12896b167ebcbc3f5a6ebe6defe1bddeda5db261c03b43e9",
+  "status": "ONLY ATTENTE/GARDE DEBOUT - USER TEST REQUIRED",
+  "canvas": [
+    256,
+    256
+  ],
+  "anchor": [
+    128,
+    227
+  ],
+  "counts": {
+    "attente": 8,
+    "garde_debout": 4
+  },
+  "palettes": [
+    "original",
+    "bleu"
+  ],
+  "spritesPerPalette": 12,
+  "shadows": "Separate transparent grounded shadow in ombre_sol.png; the game stage handles the world-space shadow",
+  "visualPerfection": "Not asserted: user review required"
+}

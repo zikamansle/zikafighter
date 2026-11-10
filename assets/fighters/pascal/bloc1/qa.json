@@ -1,0 +1,206 @@
+[
+  {
+    "pose": "attente",
+    "frame": 1,
+    "size": [
+      256,
+      256
+    ],
+    "inkBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true,
+    "sourceHash": "d58143099751088acd08233ea435564b7313a8524effc43d825853cd490b08b6"
+  },
+  {
+    "pose": "attente",
+    "frame": 2,
+    "size": [
+      256,
+      256
+    ],
+    "inkBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true,
+    "sourceHash": "12f33c94726500b5c6b210a38fb2efb6172d04df913b6e650802f0dc08d96602"
+  },
+  {
+    "pose": "attente",
+    "frame": 3,
+    "size": [
+      256,
+      256
+    ],
+    "inkBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true,
+    "sourceHash": "10d70f38b443337f867fd663b417144fa3f0b14a7b06c8beca0eae1298f3f53c"
+  },
+  {
+    "pose": "attente",
+    "frame": 4,
+    "size": [
+      256,
+      256
+    ],
+    "inkBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true,
+    "sourceHash": "4939119a82fb56dc1dbd1245c35f193b5e671c521189c6f21a2357604e87cba4"
+  },
+  {
+    "pose": "attente",
+    "frame": 5,
+    "size": [
+      256,
+      256
+    ],
+    "inkBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true,
+    "sourceHash": "2a322ea8b246694bb6d7f47ee14048b0b1fe23c9b749174f7eeae60e33016058"
+  },
+  {
+    "pose": "attente",
+    "frame": 6,
+    "size": [
+      256,
+      256
+    ],
+    "inkBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true,
+    "sourceHash": "31a5165295b075f9068f12f51ea9a5bd9c5fe3e8cbb4f9f64a787b6103cc6097"
+  },
+  {
+    "pose": "attente",
+    "frame": 7,
+    "size": [
+      256,
+      256
+    ],
+    "inkBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true,
+    "sourceHash": "5c900c6f52092ddc88fcdf4a2a5d4333b9b5347dd3332926fb1ec38c8fff844b"
+  },
+  {
+    "pose": "attente",
+    "frame": 8,
+    "size": [
+      256,
+      256
+    ],
+    "inkBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true,
+    "sourceHash": "693afa91ed367b25985cf9430c13f9f91b54776de9bf2bc06c34e33e54c19139"
+  },
+  {
+    "pose": "garde_debout",
+    "frame": 1,
+    "size": [
+      256,
+      256
+    ],
+    "inkBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true,
+    "sourceHash": "a718daf26a46a5b47eff41f8f2dcea3a22f998a0aa9476fdc651b8d08bd67834"
+  },
+  {
+    "pose": "garde_debout",
+    "frame": 2,
+    "size": [
+      256,
+      256
+    ],
+    "inkBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true,
+    "sourceHash": "7cf3b8c0bfcc4d748d1649f18be3f4b5072a5b8c274bfa389875fd841bb69e45"
+  },
+  {
+    "pose": "garde_debout",
+    "frame": 3,
+    "size": [
+      256,
+      256
+    ],
+    "inkBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true,
+    "sourceHash": "0d72f23b40db719d58a004a4ec5e8cb002cea7bb6c874e4ad8de6c8b529a6850"
+  },
+  {
+    "pose": "garde_debout",
+    "frame": 4,
+    "size": [
+      256,
+      256
+    ],
+    "inkBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true,
+    "sourceHash": "9d86bddb81ac7f8b1a2d0afd32a74389ff7e9f74ac307f61d96802d4975a994a"
+  }
+]
