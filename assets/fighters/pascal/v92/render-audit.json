@@ -1,0 +1,4121 @@
+{
+  "revision": "v92",
+  "origin": "approved individual v91 PNGs, not sheets",
+  "method": "individual 256x256 transparent pixel rendering, one fixed scale, source-driven poses",
+  "reference": "attente/01.png",
+  "referenceTop": 122,
+  "referenceFloor": 227,
+  "allFramesIndependent": true,
+  "paletteAlphaIdentical": true,
+  "frames": [
+    {
+      "pose": "attente",
+      "file": "01.png",
+      "bounds": [
+        96,
+        122,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/attente/01.png"
+    },
+    {
+      "pose": "attente",
+      "file": "02.png",
+      "bounds": [
+        97,
+        122,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/attente/02.png"
+    },
+    {
+      "pose": "attente",
+      "file": "03.png",
+      "bounds": [
+        98,
+        122,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/attente/03.png"
+    },
+    {
+      "pose": "attente",
+      "file": "04.png",
+      "bounds": [
+        98,
+        122,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/attente/04.png"
+    },
+    {
+      "pose": "attente",
+      "file": "05.png",
+      "bounds": [
+        98,
+        122,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/attente/05.png"
+    },
+    {
+      "pose": "attente",
+      "file": "06.png",
+      "bounds": [
+        98,
+        122,
+        159,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/attente/06.png"
+    },
+    {
+      "pose": "attente",
+      "file": "07.png",
+      "bounds": [
+        97,
+        122,
+        159,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/attente/07.png"
+    },
+    {
+      "pose": "attente",
+      "file": "08.png",
+      "bounds": [
+        98,
+        122,
+        159,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/attente/08.png"
+    },
+    {
+      "pose": "balayage",
+      "file": "01.png",
+      "bounds": [
+        95,
+        122,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/balayage/01.png"
+    },
+    {
+      "pose": "balayage",
+      "file": "02.png",
+      "bounds": [
+        90,
+        137,
+        165,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/balayage/02.png"
+    },
+    {
+      "pose": "balayage",
+      "file": "03.png",
+      "bounds": [
+        83,
+        145,
+        173,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/balayage/03.png"
+    },
+    {
+      "pose": "balayage",
+      "file": "04.png",
+      "bounds": [
+        67,
+        157,
+        191,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/balayage/04.png"
+    },
+    {
+      "pose": "balayage",
+      "file": "05.png",
+      "bounds": [
+        66,
+        156,
+        192,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/balayage/05.png"
+    },
+    {
+      "pose": "balayage",
+      "file": "06.png",
+      "bounds": [
+        82,
+        149,
+        174,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/balayage/06.png"
+    },
+    {
+      "pose": "balayage",
+      "file": "07.png",
+      "bounds": [
+        91,
+        139,
+        165,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/balayage/07.png"
+    },
+    {
+      "pose": "balayage",
+      "file": "08.png",
+      "bounds": [
+        94,
+        122,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/balayage/08.png"
+    },
+    {
+      "pose": "charge_francaise",
+      "file": "01.png",
+      "bounds": [
+        92,
+        156,
+        164,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/charge_francaise/01.png"
+    },
+    {
+      "pose": "charge_francaise",
+      "file": "02.png",
+      "bounds": [
+        79,
+        156,
+        177,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/charge_francaise/02.png"
+    },
+    {
+      "pose": "charge_francaise",
+      "file": "03.png",
+      "bounds": [
+        76,
+        156,
+        180,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/charge_francaise/03.png"
+    },
+    {
+      "pose": "charge_francaise",
+      "file": "04.png",
+      "bounds": [
+        70,
+        152,
+        186,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/charge_francaise/04.png"
+    },
+    {
+      "pose": "charge_francaise",
+      "file": "05.png",
+      "bounds": [
+        69,
+        151,
+        187,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/charge_francaise/05.png"
+    },
+    {
+      "pose": "charge_francaise",
+      "file": "06.png",
+      "bounds": [
+        76,
+        156,
+        180,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/charge_francaise/06.png"
+    },
+    {
+      "pose": "charge_francaise",
+      "file": "07.png",
+      "bounds": [
+        79,
+        156,
+        177,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/charge_francaise/07.png"
+    },
+    {
+      "pose": "chute_arriere",
+      "file": "01.png",
+      "bounds": [
+        95,
+        122,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/chute_arriere/01.png"
+    },
+    {
+      "pose": "chute_arriere",
+      "file": "02.png",
+      "bounds": [
+        89,
+        133,
+        167,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/chute_arriere/02.png"
+    },
+    {
+      "pose": "chute_arriere",
+      "file": "03.png",
+      "bounds": [
+        75,
+        139,
+        181,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/chute_arriere/03.png"
+    },
+    {
+      "pose": "chute_arriere",
+      "file": "04.png",
+      "bounds": [
+        68,
+        159,
+        188,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/chute_arriere/04.png"
+    },
+    {
+      "pose": "chute_arriere",
+      "file": "05.png",
+      "bounds": [
+        67,
+        167,
+        189,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/chute_arriere/05.png"
+    },
+    {
+      "pose": "chute_arriere",
+      "file": "06.png",
+      "bounds": [
+        66,
+        171,
+        192,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/chute_arriere/06.png"
+    },
+    {
+      "pose": "chute_arriere",
+      "file": "07.png",
+      "bounds": [
+        64,
+        190,
+        193,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/chute_arriere/07.png"
+    },
+    {
+      "pose": "chute_avant",
+      "file": "01.png",
+      "bounds": [
+        89,
+        122,
+        168,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/chute_avant/01.png"
+    },
+    {
+      "pose": "chute_avant",
+      "file": "02.png",
+      "bounds": [
+        80,
+        138,
+        177,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/chute_avant/02.png"
+    },
+    {
+      "pose": "chute_avant",
+      "file": "03.png",
+      "bounds": [
+        63,
+        138,
+        192,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/chute_avant/03.png"
+    },
+    {
+      "pose": "chute_avant",
+      "file": "04.png",
+      "bounds": [
+        59,
+        156,
+        198,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/chute_avant/04.png"
+    },
+    {
+      "pose": "chute_avant",
+      "file": "05.png",
+      "bounds": [
+        62,
+        173,
+        194,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/chute_avant/05.png"
+    },
+    {
+      "pose": "chute_avant",
+      "file": "06.png",
+      "bounds": [
+        65,
+        184,
+        193,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/chute_avant/06.png"
+    },
+    {
+      "pose": "coup_de_boule",
+      "file": "01.png",
+      "bounds": [
+        88,
+        155,
+        168,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/coup_de_boule/01.png"
+    },
+    {
+      "pose": "coup_de_boule",
+      "file": "02.png",
+      "bounds": [
+        88,
+        151,
+        168,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/coup_de_boule/02.png"
+    },
+    {
+      "pose": "coup_de_boule",
+      "file": "03.png",
+      "bounds": [
+        82,
+        151,
+        175,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/coup_de_boule/03.png"
+    },
+    {
+      "pose": "coup_de_boule",
+      "file": "04.png",
+      "bounds": [
+        54,
+        139,
+        203,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/coup_de_boule/04.png"
+    },
+    {
+      "pose": "coup_de_boule",
+      "file": "05.png",
+      "bounds": [
+        92,
+        153,
+        166,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/coup_de_boule/05.png"
+    },
+    {
+      "pose": "coup_de_boule",
+      "file": "06.png",
+      "bounds": [
+        90,
+        153,
+        165,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/coup_de_boule/06.png"
+    },
+    {
+      "pose": "crochet",
+      "file": "01.png",
+      "bounds": [
+        93,
+        122,
+        162,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/crochet/01.png"
+    },
+    {
+      "pose": "crochet",
+      "file": "02.png",
+      "bounds": [
+        89,
+        122,
+        167,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/crochet/02.png"
+    },
+    {
+      "pose": "crochet",
+      "file": "03.png",
+      "bounds": [
+        87,
+        122,
+        168,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/crochet/03.png"
+    },
+    {
+      "pose": "crochet",
+      "file": "04.png",
+      "bounds": [
+        84,
+        122,
+        171,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/crochet/04.png"
+    },
+    {
+      "pose": "crochet",
+      "file": "05.png",
+      "bounds": [
+        86,
+        122,
+        169,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/crochet/05.png"
+    },
+    {
+      "pose": "crochet",
+      "file": "06.png",
+      "bounds": [
+        91,
+        122,
+        165,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/crochet/06.png"
+    },
+    {
+      "pose": "crochet",
+      "file": "07.png",
+      "bounds": [
+        91,
+        122,
+        164,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/crochet/07.png"
+    },
+    {
+      "pose": "crochet",
+      "file": "08.png",
+      "bounds": [
+        93,
+        122,
+        162,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/crochet/08.png"
+    },
+    {
+      "pose": "descente_accroupie",
+      "file": "01.png",
+      "bounds": [
+        96,
+        123,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/descente_accroupie/01.png"
+    },
+    {
+      "pose": "descente_accroupie",
+      "file": "02.png",
+      "bounds": [
+        94,
+        139,
+        163,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/descente_accroupie/02.png"
+    },
+    {
+      "pose": "descente_accroupie",
+      "file": "03.png",
+      "bounds": [
+        99,
+        170,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/descente_accroupie/03.png"
+    },
+    {
+      "pose": "descente_accroupie",
+      "file": "04.png",
+      "bounds": [
+        99,
+        170,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/descente_accroupie/04.png"
+    },
+    {
+      "pose": "direct",
+      "file": "01.png",
+      "bounds": [
+        93,
+        122,
+        162,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/direct/01.png"
+    },
+    {
+      "pose": "direct",
+      "file": "02.png",
+      "bounds": [
+        90,
+        122,
+        165,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/direct/02.png"
+    },
+    {
+      "pose": "direct",
+      "file": "03.png",
+      "bounds": [
+        83,
+        122,
+        173,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/direct/03.png"
+    },
+    {
+      "pose": "direct",
+      "file": "04.png",
+      "bounds": [
+        74,
+        122,
+        183,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/direct/04.png"
+    },
+    {
+      "pose": "direct",
+      "file": "05.png",
+      "bounds": [
+        87,
+        122,
+        169,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/direct/05.png"
+    },
+    {
+      "pose": "direct",
+      "file": "06.png",
+      "bounds": [
+        88,
+        122,
+        168,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/direct/06.png"
+    },
+    {
+      "pose": "direct",
+      "file": "07.png",
+      "bounds": [
+        91,
+        122,
+        164,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/direct/07.png"
+    },
+    {
+      "pose": "direct",
+      "file": "08.png",
+      "bounds": [
+        93,
+        122,
+        162,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/direct/08.png"
+    },
+    {
+      "pose": "etat_au_sol",
+      "file": "01.png",
+      "bounds": [
+        67,
+        197,
+        189,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/etat_au_sol/01.png"
+    },
+    {
+      "pose": "etat_au_sol",
+      "file": "02.png",
+      "bounds": [
+        66,
+        198,
+        191,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/etat_au_sol/02.png"
+    },
+    {
+      "pose": "etat_au_sol",
+      "file": "03.png",
+      "bounds": [
+        67,
+        196,
+        190,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/etat_au_sol/03.png"
+    },
+    {
+      "pose": "etat_au_sol",
+      "file": "04.png",
+      "bounds": [
+        64,
+        198,
+        192,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/etat_au_sol/04.png"
+    },
+    {
+      "pose": "etourdi",
+      "file": "01.png",
+      "bounds": [
+        94,
+        141,
+        163,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/etourdi/01.png"
+    },
+    {
+      "pose": "etourdi",
+      "file": "02.png",
+      "bounds": [
+        89,
+        141,
+        167,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/etourdi/02.png"
+    },
+    {
+      "pose": "etourdi",
+      "file": "03.png",
+      "bounds": [
+        90,
+        123,
+        165,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/etourdi/03.png"
+    },
+    {
+      "pose": "etourdi",
+      "file": "04.png",
+      "bounds": [
+        89,
+        123,
+        166,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/etourdi/04.png"
+    },
+    {
+      "pose": "etourdi",
+      "file": "05.png",
+      "bounds": [
+        89,
+        122,
+        166,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/etourdi/05.png"
+    },
+    {
+      "pose": "etourdi",
+      "file": "06.png",
+      "bounds": [
+        89,
+        131,
+        167,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/etourdi/06.png"
+    },
+    {
+      "pose": "etourdi",
+      "file": "07.png",
+      "bounds": [
+        93,
+        135,
+        164,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/etourdi/07.png"
+    },
+    {
+      "pose": "etourdi",
+      "file": "08.png",
+      "bounds": [
+        95,
+        139,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/etourdi/08.png"
+    },
+    {
+      "pose": "garde_accroupie",
+      "file": "01.png",
+      "bounds": [
+        99,
+        170,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/garde_accroupie/01.png"
+    },
+    {
+      "pose": "garde_accroupie",
+      "file": "02.png",
+      "bounds": [
+        99,
+        170,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/garde_accroupie/02.png"
+    },
+    {
+      "pose": "garde_accroupie",
+      "file": "03.png",
+      "bounds": [
+        99,
+        170,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/garde_accroupie/03.png"
+    },
+    {
+      "pose": "garde_accroupie",
+      "file": "04.png",
+      "bounds": [
+        99,
+        170,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/garde_accroupie/04.png"
+    },
+    {
+      "pose": "garde_debout",
+      "file": "01.png",
+      "bounds": [
+        96,
+        122,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/garde_debout/01.png"
+    },
+    {
+      "pose": "garde_debout",
+      "file": "02.png",
+      "bounds": [
+        97,
+        122,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/garde_debout/02.png"
+    },
+    {
+      "pose": "garde_debout",
+      "file": "03.png",
+      "bounds": [
+        98,
+        122,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/garde_debout/03.png"
+    },
+    {
+      "pose": "garde_debout",
+      "file": "04.png",
+      "bounds": [
+        98,
+        122,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/garde_debout/04.png"
+    },
+    {
+      "pose": "jab",
+      "file": "01.png",
+      "bounds": [
+        95,
+        122,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/jab/01.png"
+    },
+    {
+      "pose": "jab",
+      "file": "02.png",
+      "bounds": [
+        91,
+        122,
+        164,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/jab/02.png"
+    },
+    {
+      "pose": "jab",
+      "file": "03.png",
+      "bounds": [
+        79,
+        122,
+        176,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/jab/03.png"
+    },
+    {
+      "pose": "jab",
+      "file": "04.png",
+      "bounds": [
+        75,
+        122,
+        183,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/jab/04.png"
+    },
+    {
+      "pose": "jab",
+      "file": "05.png",
+      "bounds": [
+        88,
+        122,
+        168,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/jab/05.png"
+    },
+    {
+      "pose": "jab",
+      "file": "06.png",
+      "bounds": [
+        88,
+        122,
+        167,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/jab/06.png"
+    },
+    {
+      "pose": "jab",
+      "file": "07.png",
+      "bounds": [
+        92,
+        122,
+        164,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/jab/07.png"
+    },
+    {
+      "pose": "jab",
+      "file": "08.png",
+      "bounds": [
+        95,
+        122,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/jab/08.png"
+    },
+    {
+      "pose": "ko",
+      "file": "01.png",
+      "bounds": [
+        95,
+        122,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/ko/01.png"
+    },
+    {
+      "pose": "ko",
+      "file": "02.png",
+      "bounds": [
+        89,
+        133,
+        167,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/ko/02.png"
+    },
+    {
+      "pose": "ko",
+      "file": "03.png",
+      "bounds": [
+        75,
+        139,
+        181,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/ko/03.png"
+    },
+    {
+      "pose": "ko",
+      "file": "04.png",
+      "bounds": [
+        68,
+        159,
+        188,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/ko/04.png"
+    },
+    {
+      "pose": "ko",
+      "file": "05.png",
+      "bounds": [
+        67,
+        167,
+        189,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/ko/05.png"
+    },
+    {
+      "pose": "ko",
+      "file": "06.png",
+      "bounds": [
+        66,
+        171,
+        192,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/ko/06.png"
+    },
+    {
+      "pose": "ko",
+      "file": "07.png",
+      "bounds": [
+        64,
+        190,
+        193,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/ko/07.png"
+    },
+    {
+      "pose": "marche_arriere",
+      "file": "01.png",
+      "bounds": [
+        91,
+        122,
+        166,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/marche_arriere/01.png"
+    },
+    {
+      "pose": "marche_arriere",
+      "file": "02.png",
+      "bounds": [
+        95,
+        122,
+        162,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/marche_arriere/02.png"
+    },
+    {
+      "pose": "marche_arriere",
+      "file": "03.png",
+      "bounds": [
+        99,
+        122,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 0.9411,
+      "newFile": "v92/original/marche_arriere/03.png"
+    },
+    {
+      "pose": "marche_arriere",
+      "file": "04.png",
+      "bounds": [
+        95,
+        122,
+        162,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/marche_arriere/04.png"
+    },
+    {
+      "pose": "marche_arriere",
+      "file": "05.png",
+      "bounds": [
+        99,
+        122,
+        159,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/marche_arriere/05.png"
+    },
+    {
+      "pose": "marche_arriere",
+      "file": "06.png",
+      "bounds": [
+        94,
+        122,
+        164,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/marche_arriere/06.png"
+    },
+    {
+      "pose": "marche_arriere",
+      "file": "07.png",
+      "bounds": [
+        98,
+        122,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/marche_arriere/07.png"
+    },
+    {
+      "pose": "marche_arriere",
+      "file": "08.png",
+      "bounds": [
+        95,
+        122,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/marche_arriere/08.png"
+    },
+    {
+      "pose": "marche_avant",
+      "file": "01.png",
+      "bounds": [
+        83,
+        122,
+        171,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/marche_avant/01.png"
+    },
+    {
+      "pose": "marche_avant",
+      "file": "02.png",
+      "bounds": [
+        77,
+        122,
+        176,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/marche_avant/02.png"
+    },
+    {
+      "pose": "marche_avant",
+      "file": "03.png",
+      "bounds": [
+        77,
+        122,
+        174,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/marche_avant/03.png"
+    },
+    {
+      "pose": "marche_avant",
+      "file": "04.png",
+      "bounds": [
+        81,
+        122,
+        170,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/marche_avant/04.png"
+    },
+    {
+      "pose": "marche_avant",
+      "file": "05.png",
+      "bounds": [
+        88,
+        122,
+        167,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/marche_avant/05.png"
+    },
+    {
+      "pose": "marche_avant",
+      "file": "06.png",
+      "bounds": [
+        91,
+        122,
+        164,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/marche_avant/06.png"
+    },
+    {
+      "pose": "pied_bas",
+      "file": "01.png",
+      "bounds": [
+        94,
+        122,
+        162,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_bas/01.png"
+    },
+    {
+      "pose": "pied_bas",
+      "file": "02.png",
+      "bounds": [
+        98,
+        122,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_bas/02.png"
+    },
+    {
+      "pose": "pied_bas",
+      "file": "03.png",
+      "bounds": [
+        94,
+        122,
+        162,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_bas/03.png"
+    },
+    {
+      "pose": "pied_bas",
+      "file": "04.png",
+      "bounds": [
+        83,
+        122,
+        174,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_bas/04.png"
+    },
+    {
+      "pose": "pied_bas",
+      "file": "05.png",
+      "bounds": [
+        86,
+        122,
+        172,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_bas/05.png"
+    },
+    {
+      "pose": "pied_bas",
+      "file": "06.png",
+      "bounds": [
+        93,
+        122,
+        163,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_bas/06.png"
+    },
+    {
+      "pose": "pied_bas",
+      "file": "07.png",
+      "bounds": [
+        91,
+        122,
+        165,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_bas/07.png"
+    },
+    {
+      "pose": "pied_bas",
+      "file": "08.png",
+      "bounds": [
+        90,
+        122,
+        167,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_bas/08.png"
+    },
+    {
+      "pose": "pied_fort_accroupi",
+      "file": "01.png",
+      "bounds": [
+        98,
+        165,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_fort_accroupi/01.png"
+    },
+    {
+      "pose": "pied_fort_accroupi",
+      "file": "02.png",
+      "bounds": [
+        98,
+        163,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_fort_accroupi/02.png"
+    },
+    {
+      "pose": "pied_fort_accroupi",
+      "file": "03.png",
+      "bounds": [
+        86,
+        161,
+        170,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_fort_accroupi/03.png"
+    },
+    {
+      "pose": "pied_fort_accroupi",
+      "file": "04.png",
+      "bounds": [
+        77,
+        163,
+        181,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_fort_accroupi/04.png"
+    },
+    {
+      "pose": "pied_fort_accroupi",
+      "file": "05.png",
+      "bounds": [
+        77,
+        165,
+        180,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_fort_accroupi/05.png"
+    },
+    {
+      "pose": "pied_fort_accroupi",
+      "file": "06.png",
+      "bounds": [
+        97,
+        162,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_fort_accroupi/06.png"
+    },
+    {
+      "pose": "pied_fort_accroupi",
+      "file": "07.png",
+      "bounds": [
+        97,
+        164,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_fort_accroupi/07.png"
+    },
+    {
+      "pose": "pied_fort_accroupi",
+      "file": "08.png",
+      "bounds": [
+        98,
+        165,
+        159,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_fort_accroupi/08.png"
+    },
+    {
+      "pose": "pied_haut",
+      "file": "01.png",
+      "bounds": [
+        96,
+        122,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_haut/01.png"
+    },
+    {
+      "pose": "pied_haut",
+      "file": "02.png",
+      "bounds": [
+        99,
+        122,
+        156,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_haut/02.png"
+    },
+    {
+      "pose": "pied_haut",
+      "file": "03.png",
+      "bounds": [
+        97,
+        122,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_haut/03.png"
+    },
+    {
+      "pose": "pied_haut",
+      "file": "04.png",
+      "bounds": [
+        92,
+        122,
+        164,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_haut/04.png"
+    },
+    {
+      "pose": "pied_haut",
+      "file": "05.png",
+      "bounds": [
+        85,
+        122,
+        171,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_haut/05.png"
+    },
+    {
+      "pose": "pied_haut",
+      "file": "06.png",
+      "bounds": [
+        87,
+        122,
+        168,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_haut/06.png"
+    },
+    {
+      "pose": "pied_haut",
+      "file": "07.png",
+      "bounds": [
+        99,
+        122,
+        156,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_haut/07.png"
+    },
+    {
+      "pose": "pied_haut",
+      "file": "08.png",
+      "bounds": [
+        96,
+        122,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_haut/08.png"
+    },
+    {
+      "pose": "pied_leger_accroupi",
+      "file": "01.png",
+      "bounds": [
+        98,
+        163,
+        157,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_leger_accroupi/01.png"
+    },
+    {
+      "pose": "pied_leger_accroupi",
+      "file": "02.png",
+      "bounds": [
+        97,
+        163,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_leger_accroupi/02.png"
+    },
+    {
+      "pose": "pied_leger_accroupi",
+      "file": "03.png",
+      "bounds": [
+        93,
+        161,
+        163,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_leger_accroupi/03.png"
+    },
+    {
+      "pose": "pied_leger_accroupi",
+      "file": "04.png",
+      "bounds": [
+        83,
+        162,
+        174,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_leger_accroupi/04.png"
+    },
+    {
+      "pose": "pied_leger_accroupi",
+      "file": "05.png",
+      "bounds": [
+        81,
+        163,
+        176,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_leger_accroupi/05.png"
+    },
+    {
+      "pose": "pied_leger_accroupi",
+      "file": "06.png",
+      "bounds": [
+        93,
+        161,
+        163,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_leger_accroupi/06.png"
+    },
+    {
+      "pose": "pied_leger_accroupi",
+      "file": "07.png",
+      "bounds": [
+        99,
+        163,
+        157,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_leger_accroupi/07.png"
+    },
+    {
+      "pose": "pied_leger_accroupi",
+      "file": "08.png",
+      "bounds": [
+        98,
+        163,
+        159,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_leger_accroupi/08.png"
+    },
+    {
+      "pose": "pied_moyen",
+      "file": "01.png",
+      "bounds": [
+        94,
+        122,
+        163,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_moyen/01.png"
+    },
+    {
+      "pose": "pied_moyen",
+      "file": "02.png",
+      "bounds": [
+        96,
+        122,
+        162,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_moyen/02.png"
+    },
+    {
+      "pose": "pied_moyen",
+      "file": "03.png",
+      "bounds": [
+        97,
+        122,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_moyen/03.png"
+    },
+    {
+      "pose": "pied_moyen",
+      "file": "04.png",
+      "bounds": [
+        80,
+        122,
+        178,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_moyen/04.png"
+    },
+    {
+      "pose": "pied_moyen",
+      "file": "05.png",
+      "bounds": [
+        81,
+        122,
+        176,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_moyen/05.png"
+    },
+    {
+      "pose": "pied_moyen",
+      "file": "06.png",
+      "bounds": [
+        98,
+        122,
+        159,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_moyen/06.png"
+    },
+    {
+      "pose": "pied_moyen",
+      "file": "07.png",
+      "bounds": [
+        96,
+        122,
+        162,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_moyen/07.png"
+    },
+    {
+      "pose": "pied_moyen",
+      "file": "08.png",
+      "bounds": [
+        93,
+        122,
+        165,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_moyen/08.png"
+    },
+    {
+      "pose": "pied_moyen_accroupi",
+      "file": "01.png",
+      "bounds": [
+        97,
+        164,
+        159,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_moyen_accroupi/01.png"
+    },
+    {
+      "pose": "pied_moyen_accroupi",
+      "file": "02.png",
+      "bounds": [
+        95,
+        163,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_moyen_accroupi/02.png"
+    },
+    {
+      "pose": "pied_moyen_accroupi",
+      "file": "03.png",
+      "bounds": [
+        90,
+        161,
+        168,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_moyen_accroupi/03.png"
+    },
+    {
+      "pose": "pied_moyen_accroupi",
+      "file": "04.png",
+      "bounds": [
+        82,
+        163,
+        176,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_moyen_accroupi/04.png"
+    },
+    {
+      "pose": "pied_moyen_accroupi",
+      "file": "05.png",
+      "bounds": [
+        78,
+        164,
+        178,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_moyen_accroupi/05.png"
+    },
+    {
+      "pose": "pied_moyen_accroupi",
+      "file": "06.png",
+      "bounds": [
+        94,
+        162,
+        163,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_moyen_accroupi/06.png"
+    },
+    {
+      "pose": "pied_moyen_accroupi",
+      "file": "07.png",
+      "bounds": [
+        96,
+        164,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_moyen_accroupi/07.png"
+    },
+    {
+      "pose": "pied_moyen_accroupi",
+      "file": "08.png",
+      "bounds": [
+        96,
+        164,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pied_moyen_accroupi/08.png"
+    },
+    {
+      "pose": "pieds_aeriens",
+      "file": "01.png",
+      "bounds": [
+        96,
+        142,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pieds_aeriens/01.png"
+    },
+    {
+      "pose": "pieds_aeriens",
+      "file": "02.png",
+      "bounds": [
+        93,
+        154,
+        162,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pieds_aeriens/02.png"
+    },
+    {
+      "pose": "pieds_aeriens",
+      "file": "03.png",
+      "bounds": [
+        87,
+        147,
+        168,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pieds_aeriens/03.png"
+    },
+    {
+      "pose": "pieds_aeriens",
+      "file": "04.png",
+      "bounds": [
+        77,
+        147,
+        181,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pieds_aeriens/04.png"
+    },
+    {
+      "pose": "pieds_aeriens",
+      "file": "05.png",
+      "bounds": [
+        81,
+        148,
+        176,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pieds_aeriens/05.png"
+    },
+    {
+      "pose": "pieds_aeriens",
+      "file": "06.png",
+      "bounds": [
+        86,
+        148,
+        170,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pieds_aeriens/06.png"
+    },
+    {
+      "pose": "pieds_aeriens",
+      "file": "07.png",
+      "bounds": [
+        94,
+        148,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pieds_aeriens/07.png"
+    },
+    {
+      "pose": "pieds_aeriens",
+      "file": "08.png",
+      "bounds": [
+        99,
+        147,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/pieds_aeriens/08.png"
+    },
+    {
+      "pose": "poing_fort_accroupi",
+      "file": "01.png",
+      "bounds": [
+        97,
+        164,
+        159,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_fort_accroupi/01.png"
+    },
+    {
+      "pose": "poing_fort_accroupi",
+      "file": "02.png",
+      "bounds": [
+        91,
+        164,
+        166,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_fort_accroupi/02.png"
+    },
+    {
+      "pose": "poing_fort_accroupi",
+      "file": "03.png",
+      "bounds": [
+        81,
+        163,
+        177,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_fort_accroupi/03.png"
+    },
+    {
+      "pose": "poing_fort_accroupi",
+      "file": "04.png",
+      "bounds": [
+        75,
+        161,
+        182,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_fort_accroupi/04.png"
+    },
+    {
+      "pose": "poing_fort_accroupi",
+      "file": "05.png",
+      "bounds": [
+        84,
+        163,
+        173,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_fort_accroupi/05.png"
+    },
+    {
+      "pose": "poing_fort_accroupi",
+      "file": "06.png",
+      "bounds": [
+        91,
+        163,
+        166,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_fort_accroupi/06.png"
+    },
+    {
+      "pose": "poing_fort_accroupi",
+      "file": "07.png",
+      "bounds": [
+        95,
+        162,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_fort_accroupi/07.png"
+    },
+    {
+      "pose": "poing_fort_accroupi",
+      "file": "08.png",
+      "bounds": [
+        96,
+        163,
+        159,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_fort_accroupi/08.png"
+    },
+    {
+      "pose": "poing_leger_accroupi",
+      "file": "01.png",
+      "bounds": [
+        100,
+        165,
+        156,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_leger_accroupi/01.png"
+    },
+    {
+      "pose": "poing_leger_accroupi",
+      "file": "02.png",
+      "bounds": [
+        100,
+        164,
+        156,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_leger_accroupi/02.png"
+    },
+    {
+      "pose": "poing_leger_accroupi",
+      "file": "03.png",
+      "bounds": [
+        93,
+        163,
+        163,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_leger_accroupi/03.png"
+    },
+    {
+      "pose": "poing_leger_accroupi",
+      "file": "04.png",
+      "bounds": [
+        87,
+        162,
+        170,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_leger_accroupi/04.png"
+    },
+    {
+      "pose": "poing_leger_accroupi",
+      "file": "05.png",
+      "bounds": [
+        95,
+        162,
+        162,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_leger_accroupi/05.png"
+    },
+    {
+      "pose": "poing_leger_accroupi",
+      "file": "06.png",
+      "bounds": [
+        98,
+        161,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_leger_accroupi/06.png"
+    },
+    {
+      "pose": "poing_leger_accroupi",
+      "file": "07.png",
+      "bounds": [
+        99,
+        161,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_leger_accroupi/07.png"
+    },
+    {
+      "pose": "poing_leger_accroupi",
+      "file": "08.png",
+      "bounds": [
+        102,
+        163,
+        155,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_leger_accroupi/08.png"
+    },
+    {
+      "pose": "poing_moyen_accroupi",
+      "file": "01.png",
+      "bounds": [
+        98,
+        165,
+        159,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_moyen_accroupi/01.png"
+    },
+    {
+      "pose": "poing_moyen_accroupi",
+      "file": "02.png",
+      "bounds": [
+        95,
+        166,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_moyen_accroupi/02.png"
+    },
+    {
+      "pose": "poing_moyen_accroupi",
+      "file": "03.png",
+      "bounds": [
+        88,
+        163,
+        169,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_moyen_accroupi/03.png"
+    },
+    {
+      "pose": "poing_moyen_accroupi",
+      "file": "04.png",
+      "bounds": [
+        80,
+        161,
+        177,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_moyen_accroupi/04.png"
+    },
+    {
+      "pose": "poing_moyen_accroupi",
+      "file": "05.png",
+      "bounds": [
+        92,
+        164,
+        165,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_moyen_accroupi/05.png"
+    },
+    {
+      "pose": "poing_moyen_accroupi",
+      "file": "06.png",
+      "bounds": [
+        95,
+        163,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_moyen_accroupi/06.png"
+    },
+    {
+      "pose": "poing_moyen_accroupi",
+      "file": "07.png",
+      "bounds": [
+        96,
+        163,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_moyen_accroupi/07.png"
+    },
+    {
+      "pose": "poing_moyen_accroupi",
+      "file": "08.png",
+      "bounds": [
+        98,
+        165,
+        159,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poing_moyen_accroupi/08.png"
+    },
+    {
+      "pose": "poings_aeriens",
+      "file": "01.png",
+      "bounds": [
+        94,
+        143,
+        162,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poings_aeriens/01.png"
+    },
+    {
+      "pose": "poings_aeriens",
+      "file": "02.png",
+      "bounds": [
+        93,
+        142,
+        163,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poings_aeriens/02.png"
+    },
+    {
+      "pose": "poings_aeriens",
+      "file": "03.png",
+      "bounds": [
+        91,
+        142,
+        166,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poings_aeriens/03.png"
+    },
+    {
+      "pose": "poings_aeriens",
+      "file": "04.png",
+      "bounds": [
+        87,
+        144,
+        169,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poings_aeriens/04.png"
+    },
+    {
+      "pose": "poings_aeriens",
+      "file": "05.png",
+      "bounds": [
+        87,
+        144,
+        169,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poings_aeriens/05.png"
+    },
+    {
+      "pose": "poings_aeriens",
+      "file": "06.png",
+      "bounds": [
+        95,
+        150,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poings_aeriens/06.png"
+    },
+    {
+      "pose": "poings_aeriens",
+      "file": "07.png",
+      "bounds": [
+        97,
+        152,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poings_aeriens/07.png"
+    },
+    {
+      "pose": "poings_aeriens",
+      "file": "08.png",
+      "bounds": [
+        97,
+        150,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/poings_aeriens/08.png"
+    },
+    {
+      "pose": "prise_du_bricoleur",
+      "file": "01.png",
+      "bounds": [
+        90,
+        122,
+        165,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/prise_du_bricoleur/01.png"
+    },
+    {
+      "pose": "prise_du_bricoleur",
+      "file": "02.png",
+      "bounds": [
+        83,
+        122,
+        173,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/prise_du_bricoleur/02.png"
+    },
+    {
+      "pose": "prise_du_bricoleur",
+      "file": "03.png",
+      "bounds": [
+        87,
+        122,
+        168,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/prise_du_bricoleur/03.png"
+    },
+    {
+      "pose": "prise_du_bricoleur",
+      "file": "04.png",
+      "bounds": [
+        90,
+        135,
+        165,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/prise_du_bricoleur/04.png"
+    },
+    {
+      "pose": "prise_du_bricoleur",
+      "file": "05.png",
+      "bounds": [
+        86,
+        127,
+        169,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/prise_du_bricoleur/05.png"
+    },
+    {
+      "pose": "prise_du_bricoleur",
+      "file": "06.png",
+      "bounds": [
+        91,
+        122,
+        165,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/prise_du_bricoleur/06.png"
+    },
+    {
+      "pose": "prise_du_bricoleur",
+      "file": "07.png",
+      "bounds": [
+        95,
+        122,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/prise_du_bricoleur/07.png"
+    },
+    {
+      "pose": "prise_du_bricoleur",
+      "file": "08.png",
+      "bounds": [
+        91,
+        132,
+        165,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/prise_du_bricoleur/08.png"
+    },
+    {
+      "pose": "reception",
+      "file": "01.png",
+      "bounds": [
+        103,
+        161,
+        152,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/reception/01.png"
+    },
+    {
+      "pose": "reception",
+      "file": "02.png",
+      "bounds": [
+        100,
+        177,
+        155,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/reception/02.png"
+    },
+    {
+      "pose": "reception",
+      "file": "03.png",
+      "bounds": [
+        101,
+        183,
+        156,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/reception/03.png"
+    },
+    {
+      "pose": "reception",
+      "file": "04.png",
+      "bounds": [
+        100,
+        169,
+        157,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/reception/04.png"
+    },
+    {
+      "pose": "releve",
+      "file": "01.png",
+      "bounds": [
+        63,
+        194,
+        195,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/releve/01.png"
+    },
+    {
+      "pose": "releve",
+      "file": "02.png",
+      "bounds": [
+        72,
+        182,
+        183,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/releve/02.png"
+    },
+    {
+      "pose": "releve",
+      "file": "03.png",
+      "bounds": [
+        84,
+        167,
+        173,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/releve/03.png"
+    },
+    {
+      "pose": "releve",
+      "file": "04.png",
+      "bounds": [
+        88,
+        162,
+        168,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/releve/04.png"
+    },
+    {
+      "pose": "releve",
+      "file": "05.png",
+      "bounds": [
+        88,
+        150,
+        167,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/releve/05.png"
+    },
+    {
+      "pose": "releve",
+      "file": "06.png",
+      "bounds": [
+        94,
+        139,
+        163,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/releve/06.png"
+    },
+    {
+      "pose": "releve",
+      "file": "07.png",
+      "bounds": [
+        94,
+        122,
+        163,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/releve/07.png"
+    },
+    {
+      "pose": "releve",
+      "file": "08.png",
+      "bounds": [
+        95,
+        122,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/releve/08.png"
+    },
+    {
+      "pose": "releve_apres_ko",
+      "file": "01.png",
+      "bounds": [
+        71,
+        184,
+        185,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/releve_apres_ko/01.png"
+    },
+    {
+      "pose": "releve_apres_ko",
+      "file": "02.png",
+      "bounds": [
+        82,
+        165,
+        175,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/releve_apres_ko/02.png"
+    },
+    {
+      "pose": "releve_apres_ko",
+      "file": "03.png",
+      "bounds": [
+        82,
+        150,
+        174,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/releve_apres_ko/03.png"
+    },
+    {
+      "pose": "releve_apres_ko",
+      "file": "04.png",
+      "bounds": [
+        82,
+        150,
+        174,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/releve_apres_ko/04.png"
+    },
+    {
+      "pose": "releve_apres_ko",
+      "file": "05.png",
+      "bounds": [
+        89,
+        144,
+        168,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/releve_apres_ko/05.png"
+    },
+    {
+      "pose": "releve_apres_ko",
+      "file": "06.png",
+      "bounds": [
+        88,
+        126,
+        169,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/releve_apres_ko/06.png"
+    },
+    {
+      "pose": "releve_apres_ko",
+      "file": "07.png",
+      "bounds": [
+        90,
+        122,
+        167,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/releve_apres_ko/07.png"
+    },
+    {
+      "pose": "retour_debout",
+      "file": "01.png",
+      "bounds": [
+        99,
+        170,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/retour_debout/01.png"
+    },
+    {
+      "pose": "retour_debout",
+      "file": "02.png",
+      "bounds": [
+        94,
+        139,
+        163,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/retour_debout/02.png"
+    },
+    {
+      "pose": "retour_debout",
+      "file": "03.png",
+      "bounds": [
+        94,
+        139,
+        163,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/retour_debout/03.png"
+    },
+    {
+      "pose": "retour_debout",
+      "file": "04.png",
+      "bounds": [
+        96,
+        123,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/retour_debout/04.png"
+    },
+    {
+      "pose": "saut_arriere",
+      "file": "01.png",
+      "bounds": [
+        96,
+        162,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_arriere/01.png"
+    },
+    {
+      "pose": "saut_arriere",
+      "file": "02.png",
+      "bounds": [
+        91,
+        142,
+        164,
+        223
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_arriere/02.png"
+    },
+    {
+      "pose": "saut_arriere",
+      "file": "03.png",
+      "bounds": [
+        90,
+        142,
+        166,
+        221
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_arriere/03.png"
+    },
+    {
+      "pose": "saut_arriere",
+      "file": "04.png",
+      "bounds": [
+        93,
+        142,
+        164,
+        220
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_arriere/04.png"
+    },
+    {
+      "pose": "saut_arriere",
+      "file": "05.png",
+      "bounds": [
+        93,
+        142,
+        164,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_arriere/05.png"
+    },
+    {
+      "pose": "saut_arriere",
+      "file": "06.png",
+      "bounds": [
+        95,
+        154,
+        162,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_arriere/06.png"
+    },
+    {
+      "pose": "saut_arriere",
+      "file": "07.png",
+      "bounds": [
+        97,
+        164,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_arriere/07.png"
+    },
+    {
+      "pose": "saut_arriere",
+      "file": "08.png",
+      "bounds": [
+        96,
+        163,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_arriere/08.png"
+    },
+    {
+      "pose": "saut_avant",
+      "file": "01.png",
+      "bounds": [
+        95,
+        167,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_avant/01.png"
+    },
+    {
+      "pose": "saut_avant",
+      "file": "02.png",
+      "bounds": [
+        89,
+        142,
+        167,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_avant/02.png"
+    },
+    {
+      "pose": "saut_avant",
+      "file": "03.png",
+      "bounds": [
+        87,
+        142,
+        170,
+        226
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_avant/03.png"
+    },
+    {
+      "pose": "saut_avant",
+      "file": "04.png",
+      "bounds": [
+        87,
+        142,
+        170,
+        219
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_avant/04.png"
+    },
+    {
+      "pose": "saut_avant",
+      "file": "05.png",
+      "bounds": [
+        87,
+        142,
+        171,
+        210
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_avant/05.png"
+    },
+    {
+      "pose": "saut_avant",
+      "file": "06.png",
+      "bounds": [
+        91,
+        154,
+        164,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_avant/06.png"
+    },
+    {
+      "pose": "saut_avant",
+      "file": "07.png",
+      "bounds": [
+        89,
+        163,
+        167,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_avant/07.png"
+    },
+    {
+      "pose": "saut_avant",
+      "file": "08.png",
+      "bounds": [
+        97,
+        163,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_avant/08.png"
+    },
+    {
+      "pose": "saut_neutre",
+      "file": "01.png",
+      "bounds": [
+        99,
+        170,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_neutre/01.png"
+    },
+    {
+      "pose": "saut_neutre",
+      "file": "02.png",
+      "bounds": [
+        96,
+        142,
+        161,
+        216
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_neutre/02.png"
+    },
+    {
+      "pose": "saut_neutre",
+      "file": "03.png",
+      "bounds": [
+        100,
+        142,
+        157,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_neutre/03.png"
+    },
+    {
+      "pose": "saut_neutre",
+      "file": "04.png",
+      "bounds": [
+        102,
+        142,
+        154,
+        222
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_neutre/04.png"
+    },
+    {
+      "pose": "saut_neutre",
+      "file": "05.png",
+      "bounds": [
+        102,
+        142,
+        154,
+        221
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_neutre/05.png"
+    },
+    {
+      "pose": "saut_neutre",
+      "file": "06.png",
+      "bounds": [
+        100,
+        156,
+        157,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_neutre/06.png"
+    },
+    {
+      "pose": "saut_neutre",
+      "file": "07.png",
+      "bounds": [
+        99,
+        169,
+        157,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_neutre/07.png"
+    },
+    {
+      "pose": "saut_neutre",
+      "file": "08.png",
+      "bounds": [
+        100,
+        168,
+        157,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/saut_neutre/08.png"
+    },
+    {
+      "pose": "touche_accroupi",
+      "file": "01.png",
+      "bounds": [
+        98,
+        162,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_accroupi/01.png"
+    },
+    {
+      "pose": "touche_accroupi",
+      "file": "02.png",
+      "bounds": [
+        100,
+        162,
+        155,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_accroupi/02.png"
+    },
+    {
+      "pose": "touche_accroupi",
+      "file": "03.png",
+      "bounds": [
+        100,
+        161,
+        156,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_accroupi/03.png"
+    },
+    {
+      "pose": "touche_accroupi",
+      "file": "04.png",
+      "bounds": [
+        102,
+        166,
+        157,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_accroupi/04.png"
+    },
+    {
+      "pose": "touche_accroupi",
+      "file": "05.png",
+      "bounds": [
+        100,
+        171,
+        156,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_accroupi/05.png"
+    },
+    {
+      "pose": "touche_accroupi",
+      "file": "06.png",
+      "bounds": [
+        97,
+        171,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_accroupi/06.png"
+    },
+    {
+      "pose": "touche_accroupi",
+      "file": "07.png",
+      "bounds": [
+        97,
+        170,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_accroupi/07.png"
+    },
+    {
+      "pose": "touche_accroupi",
+      "file": "08.png",
+      "bounds": [
+        100,
+        168,
+        156,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_accroupi/08.png"
+    },
+    {
+      "pose": "touche_fort",
+      "file": "01.png",
+      "bounds": [
+        90,
+        122,
+        165,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_fort/01.png"
+    },
+    {
+      "pose": "touche_fort",
+      "file": "02.png",
+      "bounds": [
+        88,
+        122,
+        168,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_fort/02.png"
+    },
+    {
+      "pose": "touche_fort",
+      "file": "03.png",
+      "bounds": [
+        79,
+        122,
+        178,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_fort/03.png"
+    },
+    {
+      "pose": "touche_fort",
+      "file": "04.png",
+      "bounds": [
+        72,
+        125,
+        186,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_fort/04.png"
+    },
+    {
+      "pose": "touche_fort",
+      "file": "05.png",
+      "bounds": [
+        78,
+        138,
+        179,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_fort/05.png"
+    },
+    {
+      "pose": "touche_fort",
+      "file": "06.png",
+      "bounds": [
+        86,
+        149,
+        172,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_fort/06.png"
+    },
+    {
+      "pose": "touche_fort",
+      "file": "07.png",
+      "bounds": [
+        87,
+        153,
+        170,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_fort/07.png"
+    },
+    {
+      "pose": "touche_fort",
+      "file": "08.png",
+      "bounds": [
+        89,
+        152,
+        167,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_fort/08.png"
+    },
+    {
+      "pose": "touche_leger",
+      "file": "01.png",
+      "bounds": [
+        89,
+        122,
+        168,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_leger/01.png"
+    },
+    {
+      "pose": "touche_leger",
+      "file": "02.png",
+      "bounds": [
+        88,
+        122,
+        168,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_leger/02.png"
+    },
+    {
+      "pose": "touche_leger",
+      "file": "03.png",
+      "bounds": [
+        82,
+        124,
+        176,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_leger/03.png"
+    },
+    {
+      "pose": "touche_leger",
+      "file": "04.png",
+      "bounds": [
+        79,
+        131,
+        179,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_leger/04.png"
+    },
+    {
+      "pose": "touche_leger",
+      "file": "05.png",
+      "bounds": [
+        82,
+        127,
+        175,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_leger/05.png"
+    },
+    {
+      "pose": "touche_leger",
+      "file": "06.png",
+      "bounds": [
+        83,
+        130,
+        173,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_leger/06.png"
+    },
+    {
+      "pose": "touche_leger",
+      "file": "07.png",
+      "bounds": [
+        86,
+        128,
+        169,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_leger/07.png"
+    },
+    {
+      "pose": "touche_leger",
+      "file": "08.png",
+      "bounds": [
+        88,
+        127,
+        168,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_leger/08.png"
+    },
+    {
+      "pose": "touche_moyen",
+      "file": "01.png",
+      "bounds": [
+        92,
+        122,
+        166,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_moyen/01.png"
+    },
+    {
+      "pose": "touche_moyen",
+      "file": "02.png",
+      "bounds": [
+        87,
+        122,
+        170,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_moyen/02.png"
+    },
+    {
+      "pose": "touche_moyen",
+      "file": "03.png",
+      "bounds": [
+        81,
+        125,
+        175,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_moyen/03.png"
+    },
+    {
+      "pose": "touche_moyen",
+      "file": "04.png",
+      "bounds": [
+        74,
+        128,
+        182,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_moyen/04.png"
+    },
+    {
+      "pose": "touche_moyen",
+      "file": "05.png",
+      "bounds": [
+        78,
+        129,
+        179,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_moyen/05.png"
+    },
+    {
+      "pose": "touche_moyen",
+      "file": "06.png",
+      "bounds": [
+        85,
+        130,
+        172,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_moyen/06.png"
+    },
+    {
+      "pose": "touche_moyen",
+      "file": "07.png",
+      "bounds": [
+        90,
+        133,
+        167,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_moyen/07.png"
+    },
+    {
+      "pose": "touche_moyen",
+      "file": "08.png",
+      "bounds": [
+        92,
+        132,
+        166,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/touche_moyen/08.png"
+    },
+    {
+      "pose": "uppercut",
+      "file": "01.png",
+      "bounds": [
+        94,
+        122,
+        161,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/uppercut/01.png"
+    },
+    {
+      "pose": "uppercut",
+      "file": "02.png",
+      "bounds": [
+        90,
+        133,
+        166,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/uppercut/02.png"
+    },
+    {
+      "pose": "uppercut",
+      "file": "03.png",
+      "bounds": [
+        90,
+        135,
+        165,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/uppercut/03.png"
+    },
+    {
+      "pose": "uppercut",
+      "file": "04.png",
+      "bounds": [
+        86,
+        127,
+        169,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/uppercut/04.png"
+    },
+    {
+      "pose": "uppercut",
+      "file": "05.png",
+      "bounds": [
+        97,
+        122,
+        159,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/uppercut/05.png"
+    },
+    {
+      "pose": "uppercut",
+      "file": "06.png",
+      "bounds": [
+        99,
+        122,
+        156,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/uppercut/06.png"
+    },
+    {
+      "pose": "uppercut",
+      "file": "07.png",
+      "bounds": [
+        91,
+        122,
+        164,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/uppercut/07.png"
+    },
+    {
+      "pose": "uppercut",
+      "file": "08.png",
+      "bounds": [
+        93,
+        122,
+        162,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/uppercut/08.png"
+    },
+    {
+      "pose": "vague_de_paume",
+      "file": "01.png",
+      "bounds": [
+        78,
+        124,
+        178,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/vague_de_paume/01.png"
+    },
+    {
+      "pose": "vague_de_paume",
+      "file": "02.png",
+      "bounds": [
+        66,
+        123,
+        190,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/vague_de_paume/02.png"
+    },
+    {
+      "pose": "vague_de_paume",
+      "file": "03.png",
+      "bounds": [
+        67,
+        126,
+        189,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/vague_de_paume/03.png"
+    },
+    {
+      "pose": "vague_de_paume",
+      "file": "04.png",
+      "bounds": [
+        67,
+        123,
+        190,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/vague_de_paume/04.png"
+    },
+    {
+      "pose": "vague_de_paume",
+      "file": "05.png",
+      "bounds": [
+        67,
+        123,
+        190,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/vague_de_paume/05.png"
+    },
+    {
+      "pose": "vague_de_paume",
+      "file": "06.png",
+      "bounds": [
+        66,
+        127,
+        190,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/vague_de_paume/06.png"
+    },
+    {
+      "pose": "victoire",
+      "file": "01.png",
+      "bounds": [
+        103,
+        131,
+        153,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/victoire/01.png"
+    },
+    {
+      "pose": "victoire",
+      "file": "02.png",
+      "bounds": [
+        100,
+        134,
+        156,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/victoire/02.png"
+    },
+    {
+      "pose": "victoire",
+      "file": "03.png",
+      "bounds": [
+        98,
+        132,
+        159,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/victoire/03.png"
+    },
+    {
+      "pose": "victoire",
+      "file": "04.png",
+      "bounds": [
+        100,
+        122,
+        157,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/victoire/04.png"
+    },
+    {
+      "pose": "victoire",
+      "file": "05.png",
+      "bounds": [
+        100,
+        123,
+        156,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/victoire/05.png"
+    },
+    {
+      "pose": "victoire",
+      "file": "06.png",
+      "bounds": [
+        96,
+        122,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/victoire/06.png"
+    },
+    {
+      "pose": "victoire",
+      "file": "07.png",
+      "bounds": [
+        92,
+        125,
+        164,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/victoire/07.png"
+    },
+    {
+      "pose": "victoire",
+      "file": "08.png",
+      "bounds": [
+        99,
+        130,
+        157,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/victoire/08.png"
+    },
+    {
+      "pose": "victoire_alternative",
+      "file": "01.png",
+      "bounds": [
+        100,
+        128,
+        157,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/victoire_alternative/01.png"
+    },
+    {
+      "pose": "victoire_alternative",
+      "file": "02.png",
+      "bounds": [
+        99,
+        128,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/victoire_alternative/02.png"
+    },
+    {
+      "pose": "victoire_alternative",
+      "file": "03.png",
+      "bounds": [
+        99,
+        128,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/victoire_alternative/03.png"
+    },
+    {
+      "pose": "victoire_alternative",
+      "file": "04.png",
+      "bounds": [
+        97,
+        128,
+        160,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/victoire_alternative/04.png"
+    },
+    {
+      "pose": "victoire_alternative",
+      "file": "05.png",
+      "bounds": [
+        98,
+        126,
+        159,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/victoire_alternative/05.png"
+    },
+    {
+      "pose": "victoire_alternative",
+      "file": "06.png",
+      "bounds": [
+        99,
+        124,
+        158,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/victoire_alternative/06.png"
+    },
+    {
+      "pose": "victoire_alternative",
+      "file": "07.png",
+      "bounds": [
+        101,
+        123,
+        156,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/victoire_alternative/07.png"
+    },
+    {
+      "pose": "victoire_alternative",
+      "file": "08.png",
+      "bounds": [
+        101,
+        122,
+        157,
+        227
+      ],
+      "verticalCorrection": 0,
+      "torsoCorrection": 1.0,
+      "newFile": "v92/original/victoire_alternative/08.png"
+    }
+  ],
+  "modifiedSourceToNew": 1
+}

@@ -86,5 +86,9 @@
   "uprightSizeRevision": "v91",
   "uprightReferenceTop": 122,
   "uprightCorrectedFrames": 29,
-  "uprightSizeCorrection": "Align head position on all upright frames without resizing face, hands, feet or horizontal body"
+  "uprightSizeCorrection": "Align head position on all upright frames without resizing face, hands, feet or horizontal body",
+  "individualSpriteRevision": "v92",
+  "individualSpritePath": "v92",
+  "individualSpriteFramesPerPalette": 316,
+  "individualSpriteMethod": "Regenerated each PNG independently on fixed 256px transparent canvas from approved per-pose source; no sheet extraction"
 }
