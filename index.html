@@ -256,7 +256,7 @@ function strike(a,b,reach,damage,now,launch=0){
 }
 function attack(f,kind,now){
  if(now<f.actionUntil||now<f.stunUntil||now<f.nextAttack)return;
- if(kind==='special'&&f.energy<40)return;
+ if(kind==='special'&&(f.energy<40||f.y<floor))return;
  f.action=kind;
  window.ZikaArcadeAudio?.playEffect(kind,(f.x/W)*2-1);
  const speed=1+Math.max(0,Math.min(4,gameSettings.turbo))*.06;
