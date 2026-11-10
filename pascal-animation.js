@@ -73,21 +73,46 @@ function poseFor(f,now){
  if(Math.abs(f.vx||0)>8)return (f.vx||0)*(f.dir||1)>=0?'marche_avant':'marche_arriere';
  return 'attente';
 }
+// Les dimensions anatomiques sont déjà identiques d'une pose à l'autre.
+// Une préparation et une réception en sprites évitent les sauts visuels
+// entre les silhouettes debout (104 px) et basses (62–70 px).
 function state(f,now){
  const target=poseFor(f,now);
  let current=lastPose.get(f);
  if(!current||current.target!==target){
-  const previous=current?.target;
+  const previous=current?.target||null;
   let transition=null;
-  if(target==='garde_accroupie'&&previous&&previous!=='garde_accroupie'&&available.descente_accroupie)transition='descente_accroupie';
-  else if(previous==='garde_accroupie'&&target==='attente'&&available.retour_debout)transition='retour_debout';
-  current={target,pose:transition||target,start:now};lastPose.set(f,current);
+  const upright=previous==='attente'||previous==='marche_avant'||previous==='marche_arriere';
+  if(target==='garde_accroupie'&&previous!=='garde_accroupie'&&available.descente_accroupie)
+   transition='descente_accroupie';
+  else if(upright&&(target==='charge_francaise'||target.startsWith('saut_'))&&available.descente_accroupie)
+   transition='descente_accroupie';
+  else if(target==='attente'&&f.y>=754&&
+   (previous==='garde_accroupie'||previous==='charge_francaise'||previous?.startsWith('saut_'))&&
+   available.retour_debout)
+   transition='retour_debout';
+  current={target,pose:transition||target,start:now};
+  lastPose.set(f,current);
  }
- let pose=current.pose,count=available[pose]?.length||1;
- let index=Math.floor(Math.max(0,now-current.start)*speedFor(pose)/1000);
- if((pose==='descente_accroupie'||pose==='retour_debout')&&index>=count){
-  pose=target;current.pose=target;current.start=now;count=available[pose]?.length||1;index=0;
+ // Courtes transitions explicites : jamais de mise à l'échelle dynamique
+ // ni d'agrandissement artificiel des sprites accroupis.
+ if(current.pose==='descente_accroupie'){
+  const ms=Math.max(0,now-current.start);
+  if(ms<135){
+   const frame=ms<45?1:ms<90?2:3;
+   return {pose:current.pose,frame:Math.min(frame,(available.descente_accroupie?.length||1)-1)};
+  }
+  current.pose=target;current.start=now;
+ }else if(current.pose==='retour_debout'){
+  const ms=Math.max(0,now-current.start);
+  if(ms<135){
+   const frame=ms<45?0:ms<90?2:3;
+   return {pose:current.pose,frame:Math.min(frame,(available.retour_debout?.length||1)-1)};
+  }
+  current.pose=target;current.start=now;
  }
+ const pose=current.pose,count=available[pose]?.length||1;
+ const index=Math.floor(Math.max(0,now-current.start)*speedFor(pose)/1000);
  return {pose,frame:oneShot.has(pose)?Math.min(count-1,index):index%count};
 }
 function waitForIdle(timeoutMs=14000){
@@ -267,7 +292,7 @@ let hostedStatus='pending';
 async function preloadHostedSprites(){
  if(hostedStatus==='loading'||hostedStatus==='done')return;
  hostedStatus='loading';
- const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-pascal-assets-v75');
+ const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-pascal-pose-flow-v80');
  try{
   const res=await fetch('./assets/fighters/pascal/manifest.json?v='+version,{cache:'no-store'});
   if(!res.ok)throw Error('Manifeste Pascal non disponible : HTTP '+res.status);
