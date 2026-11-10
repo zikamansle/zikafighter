@@ -9,6 +9,10 @@
     227
   ],
   "palette": "original",
+  "palettes": [
+    "original",
+    "bleu"
+  ],
   "counts": {
     "attente": 8,
     "balayage": 8,
@@ -56,7 +60,11 @@
     "victoire_alternative": 8
   },
   "total_frames": 316,
-  "source": "ZikaFighter_Pascal_TAILLE_UNIFORME_JEU.zip",
   "normalized": true,
-  "status": "échelle de combat harmonisée, contrôle visuel restant"
+  "verifiedCrouch": true,
+  "koFullFall": true,
+  "upright_base_height_pixels": 104,
+  "game_upright_display_height_pixels": 324,
+  "source": "Approved Pascal sprite art regenerated at a fixed shared foot anchor",
+  "status": "316 original PNG + 316 blue palette PNG; shared geometry"
 }
