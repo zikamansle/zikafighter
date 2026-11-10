@@ -70,5 +70,8 @@
   "anatomyRevision": "v83",
   "anatomyCorrection": "local head and walking body proportions, nearest-neighbor",
   "anatomyCorrectedFrames": 106,
-  "anatomyPaletteFrames": 106
+  "anatomyPaletteFrames": 106,
+  "profileRevision": "v84",
+  "profileRetouchedFrames": 14,
+  "profileRetouch": "walking torso narrowed locally 10.5 percent at maximum; face and feet unchanged"
 }
