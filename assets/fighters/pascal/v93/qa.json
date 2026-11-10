@@ -1,0 +1,146 @@
+[
+  {
+    "pose": "attente",
+    "frame": 1,
+    "alphaBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true
+  },
+  {
+    "pose": "attente",
+    "frame": 2,
+    "alphaBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true
+  },
+  {
+    "pose": "attente",
+    "frame": 3,
+    "alphaBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true
+  },
+  {
+    "pose": "attente",
+    "frame": 4,
+    "alphaBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true
+  },
+  {
+    "pose": "attente",
+    "frame": 5,
+    "alphaBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true
+  },
+  {
+    "pose": "attente",
+    "frame": 6,
+    "alphaBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true
+  },
+  {
+    "pose": "attente",
+    "frame": 7,
+    "alphaBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true
+  },
+  {
+    "pose": "attente",
+    "frame": 8,
+    "alphaBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true
+  },
+  {
+    "pose": "garde_debout",
+    "frame": 1,
+    "alphaBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true
+  },
+  {
+    "pose": "garde_debout",
+    "frame": 2,
+    "alphaBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true
+  },
+  {
+    "pose": "garde_debout",
+    "frame": 3,
+    "alphaBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true
+  },
+  {
+    "pose": "garde_debout",
+    "frame": 4,
+    "alphaBounds": [
+      95,
+      122,
+      161,
+      227
+    ],
+    "headUnchanged": true,
+    "feetUnchanged": true
+  }
+]

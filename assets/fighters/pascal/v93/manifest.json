@@ -1,0 +1,23 @@
+{
+  "character": "Pascal",
+  "revision": "v93-partial",
+  "source": "reference/maitre-valide-256.png",
+  "counts": {
+    "attente": 8,
+    "garde_debout": 4
+  },
+  "framesPerPalette": 12,
+  "totalPNG": 24,
+  "canvas": [
+    256,
+    256
+  ],
+  "anchor": [
+    128,
+    227
+  ],
+  "status": "STAGING - NOT COMPLETE; DO NOT REPLACE FULL GAME ASSETS",
+  "characterScale": 1,
+  "preserveCharacterShadows": true,
+  "note": "Ground shadow remains rendered by game engine to stay on stage when jumping."
+}
