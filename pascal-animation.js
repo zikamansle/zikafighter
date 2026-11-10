@@ -77,11 +77,8 @@ function poseFor(f,now){
  if(Math.abs(f.vx||0)>8)return (f.vx||0)*(f.dir||1)>=0?'marche_avant':'marche_arriere';
  return 'attente';
 }
-// Le cadre de 256 px n'est pas une mesure du corps. Les dessins de marche
-// ont un buste plus grand et des genoux plus fléchis que la référence d'attente.
-// Calibration constante par séquence, identique en avant/arrière : aucun
-// redimensionnement selon la boîte englobante ou selon la frame du mouvement.
-const poseScale=Object.freeze({marche_avant:0.88,marche_arriere:0.88});
+// Les proportions sont corrigées dans les PNG source (v88).
+// Une seule échelle pour tous les mouvements ; aucun zoom par pose.
 const spriteAnchor=Object.freeze({x:128,y:227});
 function state(f,now){
  const target=poseFor(f,now);
@@ -169,7 +166,7 @@ function draw(ctx,f,now){
  ctx.imageSmoothingEnabled=false;
  // Échelle uniforme sur les deux axes : aucune déformation du visage ou du
  // corps. Le bas des pixels (y=227) reste sur f.y, quelle que soit la pose.
- const scale=(324/105)*(poseScale[pose]||1);
+ const scale=324/105;
  ctx.drawImage(sprite,-spriteAnchor.x*scale,-spriteAnchor.y*scale,256*scale,256*scale);
  ctx.restore();
  return true;
@@ -315,7 +312,7 @@ let hostedStatus='pending';
 async function preloadHostedSprites(){
  if(hostedStatus==='loading'||hostedStatus==='done')return;
  hostedStatus='loading';
- const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-pascal-scale-v87b');
+ const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-pascal-geometry-v88');
  try{
   const res=await fetch('./assets/fighters/pascal/manifest.json?v='+version,{cache:'no-store'});
   if(!res.ok)throw Error('Manifeste Pascal non disponible : HTTP '+res.status);

@@ -1,0 +1,220 @@
+{
+  "revision": "v88",
+  "changedOriginal": 33,
+  "changedBlue": 33,
+  "unrelatedSpritesUnchanged": true,
+  "changed": [
+    {
+      "file": "marche_avant/01.png",
+      "operation": "local torso width calibration",
+      "dy": 0,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "marche_avant/02.png",
+      "operation": "local torso width calibration",
+      "dy": 0,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "marche_avant/03.png",
+      "operation": "local torso width calibration",
+      "dy": 0,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "marche_avant/04.png",
+      "operation": "local torso width calibration",
+      "dy": 0,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "marche_avant/05.png",
+      "operation": "local torso width calibration",
+      "dy": 0,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "marche_avant/06.png",
+      "operation": "local torso width calibration",
+      "dy": 0,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "marche_arriere/01.png",
+      "operation": "local torso width calibration",
+      "dy": 0,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "marche_arriere/02.png",
+      "operation": "local torso width calibration",
+      "dy": 0,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "marche_arriere/03.png",
+      "operation": "local torso width calibration",
+      "dy": 0,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "marche_arriere/04.png",
+      "operation": "local torso width calibration",
+      "dy": 0,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "marche_arriere/05.png",
+      "operation": "local torso width calibration",
+      "dy": 0,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "marche_arriere/06.png",
+      "operation": "local torso width calibration",
+      "dy": 0,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "marche_arriere/07.png",
+      "operation": "local torso width calibration",
+      "dy": 0,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "marche_arriere/08.png",
+      "operation": "local torso width calibration",
+      "dy": 0,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "saut_neutre/02.png",
+      "operation": "airborne vertical alignment",
+      "dy": -11,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "saut_neutre/04.png",
+      "operation": "airborne vertical alignment",
+      "dy": -5,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "saut_neutre/05.png",
+      "operation": "airborne vertical alignment",
+      "dy": -6,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "saut_avant/03.png",
+      "operation": "airborne vertical alignment",
+      "dy": -1,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "saut_avant/04.png",
+      "operation": "airborne vertical alignment",
+      "dy": -8,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "saut_avant/05.png",
+      "operation": "airborne vertical alignment",
+      "dy": -17,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "saut_arriere/02.png",
+      "operation": "airborne vertical alignment",
+      "dy": -4,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "saut_arriere/03.png",
+      "operation": "airborne vertical alignment",
+      "dy": -6,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "saut_arriere/04.png",
+      "operation": "airborne vertical alignment",
+      "dy": -7,
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "garde_accroupie/01.png",
+      "source": "saut_neutre/01.png",
+      "operation": "existing full-body crouch and consistent transitions",
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "garde_accroupie/02.png",
+      "source": "saut_neutre/01.png",
+      "operation": "existing full-body crouch and consistent transitions",
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "garde_accroupie/03.png",
+      "source": "saut_neutre/01.png",
+      "operation": "existing full-body crouch and consistent transitions",
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "garde_accroupie/04.png",
+      "source": "saut_neutre/01.png",
+      "operation": "existing full-body crouch and consistent transitions",
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "descente_accroupie/01.png",
+      "source": "attente/01.png",
+      "operation": "existing full-body crouch and consistent transitions",
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "descente_accroupie/02.png",
+      "source": "garde_accroupie/01.png",
+      "operation": "existing full-body crouch and consistent transitions",
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "descente_accroupie/03.png",
+      "source": "saut_neutre/01.png",
+      "operation": "existing full-body crouch and consistent transitions",
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "descente_accroupie/04.png",
+      "source": "saut_neutre/01.png",
+      "operation": "existing full-body crouch and consistent transitions",
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "retour_debout/01.png",
+      "source": "saut_neutre/01.png",
+      "operation": "existing full-body crouch and consistent transitions",
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "retour_debout/02.png",
+      "source": "garde_accroupie/01.png",
+      "operation": "existing full-body crouch and consistent transitions",
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "retour_debout/03.png",
+      "source": "garde_accroupie/01.png",
+      "operation": "existing full-body crouch and consistent transitions",
+      "headPixelsPreserved": true
+    },
+    {
+      "file": "retour_debout/04.png",
+      "source": "attente/01.png",
+      "operation": "existing full-body crouch and consistent transitions",
+      "headPixelsPreserved": true
+    }
+  ],
+  "targetedOriginal": 35,
+  "targetedBlue": 35
+}

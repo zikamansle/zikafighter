@@ -76,5 +76,8 @@
   "profileRetouch": "walking torso narrowed locally 10.5 percent at maximum; face and feet unchanged",
   "cleanCompositeRevision": "v85",
   "ghostFramesCleaned": 10,
-  "ghostFramesCleanedPerPalette": 10
+  "ghostFramesCleanedPerPalette": 10,
+  "geometryRevision": "v88",
+  "geometryCorrection": "Local walking torso narrowing with untouched face and feet; airborne frames aligned without rescaling or redrawing; complete low guard from existing Pascal art with matching transitions",
+  "crouchRevision": "v88"
 }
