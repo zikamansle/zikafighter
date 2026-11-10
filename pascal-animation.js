@@ -40,8 +40,8 @@ const oneShot=new Set(['descente_accroupie','retour_debout','reception','releve'
 const speedFor=pose=>/marche/.test(pose)?12:pose==='jab'?31:pose==='pied_moyen'?21:/jab|direct|crochet|pied_|poing_|uppercut|balayage/.test(pose)?14:/charge|vague|boule|bricoleur/.test(pose)?12:9;
 const counts=Object.create(null),fps=Object.create(null);
 Object.keys(categoryLabels).forEach(k=>{counts[k]=0;fps[k]=speedFor(k);});
-// Pascal v94 par défaut. ?pascal=classic permet une comparaison sans supprimer v91.
-const classicPack=new URLSearchParams(window.location?.search||'').get('pascal')==='classic';
+// Retour à l'animation précédente par défaut : v94 reste disponible uniquement en ?pascal=preview-v94 pour examen.
+const classicPack=new URLSearchParams(window.location?.search||'').get('pascal')!=='preview-v94';
 const spriteRoot='./assets/fighters/pascal/'+(classicPack?'original/':'v94/original/');
 const manifestUrl='./assets/fighters/pascal/'+(classicPack?'manifest.json':'v94/manifest.json');
 const url=(pose,i)=>spriteRoot+pose+'/'+String(i+1).padStart(2,'0')+'.png';
