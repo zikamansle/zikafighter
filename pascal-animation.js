@@ -59,11 +59,11 @@ function install(pose,images){
 }
 function poseFor(f,now){
  if(f.health<=0)return 'chute_arriere';
- if(now<f.stunUntil)return 'touche_moyen';
+ if(now<f.stunUntil)return f.guard?'touche_accroupi':'touche_moyen';
  if(now<f.actionUntil){
-  if(f.action==='special')return 'charge_francaise';
-  if(f.action==='kick')return 'pied_moyen';
-  if(f.action==='punch')return 'jab';
+  if(f.action==='special')return f.y<754?(f.jumpPose||'saut_neutre'):'charge_francaise';
+  if(f.action==='kick')return f.y<754?'pieds_aeriens':'pied_moyen';
+  if(f.action==='punch')return f.y<754?'poings_aeriens':'jab';
  }
  if(f.y<754){
   // La direction du saut est choisie au décollage et ne change pas en vol.
@@ -116,11 +116,12 @@ function state(f,now){
  }
  const pose=current.pose,count=available[pose]?.length||1;
  if(pose.startsWith('saut_')){
-  // Les images 01 et 08 montrent des postures basses de préparation/réception.
-  // Ne pas les boucler en plein vol : n'utiliser que les images de vol 02 à 07.
+  // N'afficher aucune préparation accroupie pendant la trajectoire.
+  // Index 1 à count-2 : uniquement les véritables poses aériennes.
   const elapsed=Math.max(0,now-(f.jumpStartedAt||current.start));
-  const progress=Math.min(1,elapsed/842); // -640 puis gravité 1520 : vol ~842 ms.
-  const index=Math.min(count-2,Math.max(1,1+Math.floor(progress*(count-2))));
+  const g=1520,initial=640,duration=2*initial/g*1000;
+  const progress=Math.max(0,Math.min(1,elapsed/duration));
+  const index=Math.max(1,Math.min(count-2,1+Math.floor(progress*(count-2))));
   return {pose,frame:index};
  }
  if(pose==='reception'){
@@ -160,7 +161,7 @@ function draw(ctx,f,now){
  if(!sprite)return false;
  ctx.save();
  ctx.imageSmoothingEnabled=false;
- // Même échelle visuelle et même ancrage sur toute l'animation.
+ // Échelle et ancrage uniques pour toutes les poses : sans zoom automatique.
  const scale=324/105;
  ctx.drawImage(sprite,-128*scale,-226*scale,256*scale,256*scale);
  ctx.restore();
