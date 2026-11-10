@@ -58,7 +58,7 @@ function install(pose,images){
  return true;
 }
 function poseFor(f,now){
- if(f.health<=0)return 'chute_arriere';
+ if(f.health<=0)return f.y<754?(f.jumpPose?.startsWith('saut_')?f.jumpPose:'saut_neutre'):'chute_arriere';
  if(now<f.stunUntil)return f.guard?'touche_accroupi':'touche_moyen';
  if(now<f.actionUntil){
   if(f.action==='special')return f.y<754?(f.jumpPose||'saut_neutre'):'charge_francaise';
@@ -77,7 +77,7 @@ function poseFor(f,now){
  if(Math.abs(f.vx||0)>8)return (f.vx||0)*(f.dir||1)>=0?'marche_avant':'marche_arriere';
  return 'attente';
 }
-// Les proportions sont corrigées dans les PNG source (v90), sans zoom par pose.
+// Les proportions sont corrigées dans les PNG source (v91), sans zoom par pose.
 // Une seule échelle pour tous les mouvements ; aucun zoom par pose.
 const spriteAnchor=Object.freeze({x:128,y:227});
 function state(f,now){
@@ -121,11 +121,15 @@ function state(f,now){
   const elapsed=Math.max(0,now-(f.jumpStartedAt||current.start));
   const g=1520,initial=640,duration=2*initial/g*1000;
   const progress=Math.max(0,Math.min(1,elapsed/duration));
-  // Les images 6-8 sont des poses au sol : ne jamais les jouer en vol.
-  // Garder la dernière pose aérienne jusqu'au vrai contact avec le sol.
-  const first=1,last=Math.max(first,count-4);
-  const index=first+Math.floor(progress*(last-first+1));
-  return {pose,frame:Math.min(count-1,last,index)};
+  // Les images de décollage / atterrissage et les poses fortement tassées
+  // ne doivent pas provoquer une variation de stature en plein saut.
+  // Indexation 0-based : uniquement les poses aériennes au gabarit continu.
+  const stable=pose==='saut_neutre'?[2,3,4]:
+               pose==='saut_avant'?[1,2,3]:
+               pose==='saut_arriere'?[1,2,3,4]:[2];
+  const aerial=stable.filter(i=>i<count);
+  const frame=aerial[Math.min(aerial.length-1,Math.floor(progress*aerial.length))]??0;
+  return {pose,frame};
  }
  if(pose==='reception'){
   const elapsed=Math.max(0,now-(f.landingStartedAt||current.start));
