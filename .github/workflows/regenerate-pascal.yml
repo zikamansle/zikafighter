@@ -1,0 +1,57 @@
+name: Regenerate and deploy Pascal complete sprite pack
+on:
+  push:
+    paths:
+      - "tools/rebuild_pascal.py"
+      - ".github/workflows/regenerate-pascal.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: regenerate-pascal-sprites
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install PNG processing library
+        run: python -m pip install Pillow==11.3.0
+      - name: Rebuild 316 Pascal sprites and secondary color
+        run: python tools/rebuild_pascal.py
+      - name: Validate frames, animations and loader
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          import json
+          root=Path('assets/fighters/pascal')
+          m=json.loads((root/'manifest.json').read_text())
+          assert m['normalized'] and m['verifiedCrouch'] and m['koFullFall']
+          assert sum(m['counts'].values())==316 and len(m['counts'])==44
+          for palette in ('original','bleu'):
+            images=list((root/palette).glob('*/*.png'))
+            assert len(images)==316, (palette,len(images))
+            for file in images:
+              im=Image.open(file)
+              assert im.size==(256,256) and im.getchannel('A').getbbox()[3]==227, file
+          print('Validated Pascal 632 PNG, two palettes, same sprite size/anchor.')
+          PY
+          node --check pascal-animation.js
+      - name: Commit rebuilt sprite package and manifest
+        run: |
+          git config user.name "Zika Fighter Pascal builder"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/fighters/pascal
+          if ! git diff --cached --quiet; then
+            git commit -m "Rebuild all 316 Pascal sprites at common anchor in two palettes"
+            git push origin HEAD:main
+          fi
