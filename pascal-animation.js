@@ -77,7 +77,7 @@ function poseFor(f,now){
  if(Math.abs(f.vx||0)>8)return (f.vx||0)*(f.dir||1)>=0?'marche_avant':'marche_arriere';
  return 'attente';
 }
-// Les proportions sont corrigées dans les PNG source (v88).
+// Les proportions sont corrigées dans les PNG source (v90), sans zoom par pose.
 // Une seule échelle pour tous les mouvements ; aucun zoom par pose.
 const spriteAnchor=Object.freeze({x:128,y:227});
 function state(f,now){
@@ -312,7 +312,7 @@ let hostedStatus='pending';
 async function preloadHostedSprites(){
  if(hostedStatus==='loading'||hostedStatus==='done')return;
  hostedStatus='loading';
- const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-pascal-geometry-v88');
+ const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-pascal-size-v90');
  try{
   const res=await fetch('./assets/fighters/pascal/manifest.json?v='+version,{cache:'no-store'});
   if(!res.ok)throw Error('Manifeste Pascal non disponible : HTTP '+res.status);
