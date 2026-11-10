@@ -2,7 +2,7 @@
 /* Chaque publication porte son numéro de version. Les réglages restent conservés,
    seuls les anciens fichiers/cache du jeu sont nettoyés. */
 (function(){
-  const BUILD='zf-20261110-pascal-anatomy-v83';
+  const BUILD='zf-20261110-profile-jump-v84';
   window.ZikaFighterBuild=BUILD;
   try {
     const key='zikafighter-current-build';
@@ -102,7 +102,7 @@ function updateStageCamera(dt){
   stageCameraPan+=(target-stageCameraPan)*Math.min(1,dt*3.2);
 }
 let roundNumber=1,roundWins=[0,0];
-function create(name,x,dir){return {name,x,y:floor,vx:0,vy:0,dir,health:100,energy:0,guard:false,action:'idle',actionUntil:0,nextAttack:0,stunUntil:0,hitDone:false,invulnerable:0,hitKind:null,hitAt:0};}
+function create(name,x,dir){return {name,x,y:floor,vx:0,vy:0,dir,health:100,energy:0,guard:false,action:'idle',actionUntil:0,nextAttack:0,stunUntil:0,hitDone:false,invulnerable:0,hitKind:null,hitAt:0,jumpPose:null,jumpStartedAt:0,landUntil:0,landingStartedAt:0};}
 function updateRoundScore(){
   $('#name1').textContent=names[p.name]+' ●'.repeat(roundWins[0]);
   $('#name2').textContent=names[e.name]+' ●'.repeat(roundWins[1])+(gameSettings.players===2?' · JOUEUR 2':' · CPU');
@@ -204,8 +204,23 @@ function controls2(){return mergeControls(p2keys,padControls(1))}
 function move(f,inp,dt,now){const enemy=f===p?e:p;f.dir=enemy.x>f.x?1:-1;const stunned=now<f.stunUntil;if(stunned){f.vx*=.92}else{f.guard=!!inp.guard && f.y>=floor && now>=f.actionUntil;let vx=((inp.right?1:0)-(inp.left?1:0))*(f.name==='micka'?288:236)*(1+Math.max(0,Math.min(4,gameSettings.turbo))*0.06);if(f.guard)vx=0;const busy=now<f.actionUntil;
  // Les charges conservent leur impulsion au lieu de ralentir immédiatement.
  f.vx=busy?(f.action==='special'&&f.name==='pascal'?f.vx*.965:f.vx*.88):vx;
-if(inp.jump&&f.y>=floor&&!busy&&!f.guard){f.vy=-640;f.action='jump';}if(inp.special)attack(f,'special',now);else if(inp.kick)attack(f,'kick',now);else if(inp.punch)attack(f,'punch',now);if(now>=f.actionUntil)f.action=f.guard?'guard':f.y<floor?'jump':Math.abs(vx)>1?'walk':'idle';}
-f.x=Math.max(70,Math.min(W-70,f.x+f.vx*dt));f.y+=f.vy*dt;f.vy+=1520*dt;if(f.y>=floor){f.y=floor;f.vy=0;}
+if(inp.jump&&f.y>=floor&&!busy&&!f.guard){
+ const motion=(inp.right?1:0)-(inp.left?1:0);
+ const relative=motion*f.dir;
+ f.jumpPose=motion===0?'saut_neutre':relative>0?'saut_avant':'saut_arriere';
+ f.jumpStartedAt=now;f.landUntil=0;
+ f.vy=-640;f.action='jump';
+}if(inp.special)attack(f,'special',now);else if(inp.kick)attack(f,'kick',now);else if(inp.punch)attack(f,'punch',now);if(now>=f.actionUntil)f.action=f.guard?'guard':f.y<floor?'jump':Math.abs(vx)>1?'walk':'idle';}
+f.x=Math.max(70,Math.min(W-70,f.x+f.vx*dt));
+const wasAirborne=f.y<floor;
+f.y+=f.vy*dt;f.vy+=1520*dt;
+if(f.y>=floor){
+ if(wasAirborne && f.jumpStartedAt>0){
+  f.landingStartedAt=now;f.landUntil=now+150;
+  f.jumpPose=null;f.jumpStartedAt=0;
+ }
+ f.y=floor;f.vy=0;
+}
 }
 function strike(a,b,reach,damage,now,launch=0){
  if(Math.abs(a.x-b.x)>reach||Math.abs(a.y-b.y)>130||now<b.invulnerable)return false;
@@ -447,7 +462,7 @@ window.ZikaFighterBridge={
   getMatchState:()=>({status,roundNumber,roundWins:[...roundWins],player:p?.name||null,opponent:e?.name||null})
 };
 })();
-</script><script defer src="./pascal-animation.js?v=zf-20261110-pascal-anatomy-v83"></script><script defer src="./arcade-audio.js?v=zf-20261109-pascal-v64"></script>
+</script><script defer src="./pascal-animation.js?v=zf-20261110-profile-jump-v84"></script><script defer src="./arcade-audio.js?v=zf-20261109-pascal-v64"></script>
 <script defer src="./screen-transitions.js?v=zf-20261109-pascal-v64"></script>
 <script defer src="./stage-audio.js?v=zf-20261109-pascal-v64"></script><script defer src="./stage-music.js?v=zf-20261108-stage-music-v1"></script>
 <script defer src="./data/approved-portrait-thumbs.js?v=zf-20261109-pascal-v64"></script>
