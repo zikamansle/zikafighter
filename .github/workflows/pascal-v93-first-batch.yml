@@ -1,0 +1,59 @@
+name: Build Pascal verified master-based animation v93
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/build_pascal_v93_idle.py"
+      - ".github/workflows/pascal-v93-first-batch.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: pascal-v93-first-batch
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install Pillow==11.3.0
+      - name: Create each Pascal frame individually using the approved master
+        run: python tools/build_pascal_v93_idle.py
+      - name: Validate scale, alpha and palettes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          import json
+          root=Path('assets/fighters/pascal/v93')
+          m=json.loads((root/'manifest.json').read_text())
+          assert m['status'].startswith('STAGING') and m['totalPNG']==24
+          a=sorted((root/'original').glob('*/*.png'))
+          assert len(a)==12
+          master=Image.open('assets/fighters/pascal/reference/maitre-valide-256.png').convert('RGBA')
+          for file in a:
+            blue=root/'bleu'/file.relative_to(root/'original')
+            with Image.open(file) as x,Image.open(blue) as y:
+              x=x.convert('RGBA');y=y.convert('RGBA')
+              assert x.size==y.size==(256,256)
+              assert x.getbbox()==master.getbbox()
+              assert x.crop((0,0,256,148)).tobytes()==master.crop((0,0,256,148)).tobytes()
+              assert x.crop((0,199,256,256)).tobytes()==master.crop((0,199,256,256)).tobytes()
+              assert x.getchannel('A').tobytes()==y.getchannel('A').tobytes()
+          print('PASS: master reference, 12 poses x 2 palettes, identical body scale')
+          PY
+      - name: Save staged PNGs without replacing normal combat
+        run: |
+          git config user.name "Zika Fighter sprite QA"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/fighters/pascal/v93
+          if ! git diff --cached --quiet; then
+            git commit -m "Stage Pascal v93 master-based idle and guard (24 checked PNG)"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
