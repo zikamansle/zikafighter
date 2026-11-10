@@ -1,0 +1,106 @@
+name: Pascal full sprite cleanup and combat validation
+on:
+  push:
+    paths:
+      - "tools/clean_pascal_composite_effects.py"
+      - ".github/workflows/clean-pascal-composite.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pascal-composite-cleanup
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install image processing
+        run: python -m pip install Pillow==11.3.0
+      - name: Remove baked opponents and stale projectiles
+        run: python tools/clean_pascal_composite_effects.py
+      - name: Verify all sprite assets and standalone combat code
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          import json
+          root=Path('assets/fighters/pascal')
+          manifest=json.loads((root/'manifest.json').read_text())
+          assert manifest['cleanCompositeRevision']=='v85'
+          assert manifest['ghostFramesCleaned']==10
+          assert len(manifest['counts'])==44 and sum(manifest['counts'].values())==316
+          for pal in ('original','bleu'):
+              pngs=sorted((root/pal).glob('*/*.png'))
+              assert len(pngs)==316,(pal,len(pngs))
+              for path in pngs:
+                  with Image.open(path) as im:
+                      assert im.size==(256,256),path
+                      assert im.convert('RGBA').getchannel('A').getbbox()[3]==227,path
+          for original in (root/'original').glob('*/*.png'):
+              other=root/'bleu'/original.relative_to(root/'original')
+              with Image.open(original) as a,Image.open(other) as b:
+                  assert a.convert('RGBA').getchannel('A').tobytes()==b.convert('RGBA').getchannel('A').tobytes(),original
+          for a,b in {
+            'charge_francaise/06.png':'charge_francaise/03.png',
+            'charge_francaise/07.png':'charge_francaise/02.png',
+            'vague_de_paume/05.png':'vague_de_paume/04.png'
+          }.items():
+              assert (root/'original'/a).read_bytes()==(root/'original'/b).read_bytes(),(a,b)
+          print('QA PASS: 632 PNG aligned and free of baked opponents in active charge.')
+          PY
+          node --check pascal-animation.js
+          node - <<'JS'
+          const assert=require('node:assert/strict');
+          const fs=require('node:fs');
+          const h=fs.readFileSync('index.html','utf8');
+          const i=h.lastIndexOf('<script>const ASSETS='),e=h.indexOf('</script>',i);
+          assert.ok(i>0&&e>i);
+          new Function(h.slice(i+8,e));
+          assert.ok(h.includes('function drawFloorShadow(f)'),'Grounded shadow needed');
+          assert.ok(h.includes("f.y<floor)f.vx=f.vx*.88+desired*.12"),'Airborne inertia needed');
+          assert.ok(!h.includes('ctx.ellipse(0,0,57,11'),'Floating oval shadow forbidden');
+          assert.ok(!h.includes("ctx.fillRect(0,floor,W,3)"),'Stage line forbidden');
+          const p=fs.readFileSync('pascal-animation.js','utf8');
+          assert.ok(p.includes("return f.y<754?'pieds_aeriens':'pied_moyen'"),'Aerial kick sprite needed');
+          console.log('QA PASS: combat syntax, grounded shadow, aerial sprite state, no stage line.');
+          JS
+      - name: Commit repaired PNG assets
+        run: |
+          git config user.name "Zika Fighter visual QA"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/fighters/pascal
+          if ! git diff --cached --quiet; then
+            git commit -m "Remove baked opponent sprites and old embedded effects from Pascal"
+            git push origin HEAD:main
+          fi
+      - name: Package exact cleaned sprites
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+          root=Path('assets/fighters/pascal')
+          with zipfile.ZipFile('Pascal_ZikaFighter_SPRITES_NETTOYES_V85.zip','w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+              for pal in ('original','bleu'):
+                  for p in sorted((root/pal).glob('*/*.png')):
+                      z.write(p,'Pascal_V85/'+str(p.relative_to(root)))
+              for p in ('manifest.json','anatomy_audit.json','profile_audit.json','composite_cleanup_audit.json'):
+                  z.write(root/p,'Pascal_V85/'+p)
+          with zipfile.ZipFile('Pascal_ZikaFighter_SPRITES_NETTOYES_V85.zip') as z:
+              assert z.testzip() is None
+              assert len(z.namelist())==636
+          print('PASS: full V85 sprites ZIP, 632 PNG + 4 manifest/audit files.')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Pascal-ZikaFighter-SPRITES-NETTOYES-V85
+          path: Pascal_ZikaFighter_SPRITES_NETTOYES_V85.zip
+          retention-days: 90
