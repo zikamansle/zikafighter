@@ -62,3 +62,29 @@ jobs:
             git commit -m "Apply anatomical retouches to Pascal sprites in both palettes"
             git push origin HEAD:main
           fi
+
+      - name: Package published Pascal sprites
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile,json
+          root=Path('assets/fighters/pascal')
+          manifest=json.loads((root/'manifest.json').read_text(encoding='utf-8'))
+          assert manifest['anatomyRevision']=='v83'
+          output=Path('Pascal_ZikaFighter_632_PNG_ANATOMIE_V83.zip')
+          with zipfile.ZipFile(output,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+            for sub in ['original','bleu']:
+              for p in sorted((root/sub).glob('*/*.png')):
+                z.write(p,'Pascal_V83/'+str(p.relative_to(root)))
+            for name in ['manifest.json','anatomy_audit.json']:
+              z.write(root/name,'Pascal_V83/'+name)
+          with zipfile.ZipFile(output) as z:
+            assert z.testzip() is None
+            assert len(z.namelist())==634
+          print(str(output),output.stat().st_size,'bytes')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Pascal-ZikaFighter-PNG-V83
+          path: Pascal_ZikaFighter_632_PNG_ANATOMIE_V83.zip
+          retention-days: 90
