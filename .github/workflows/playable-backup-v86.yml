@@ -1,0 +1,56 @@
+name: Downloadable playable Zika Fighter v86 (without Pages)
+on:
+  push:
+    branches:
+      - offline-v86
+    paths:
+      - ".github/workflows/playable-backup-v86.yml"
+      - "Serveur-ZikaFighter.ps1"
+      - "Lancer-ZikaFighter-V86-LOCAL.bat"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate game and launcher
+        shell: bash
+        run: |
+          node tests/combat-v85.mjs
+          test -f assets/fighters/pascal/manifest.json
+          test -f assets/audio/stages/ats.mp3
+          test -f Lancer-ZikaFighter-V86-LOCAL.bat
+          test -f Serveur-ZikaFighter.ps1
+          if command -v pwsh >/dev/null 2>&1; then
+            pwsh -NoProfile -Command '$t=$null;$e=$null;[System.Management.Automation.Language.Parser]::ParseFile("./Serveur-ZikaFighter.ps1",[ref]$t,[ref]$e)|Out-Null;if($e.Count -gt 0){$e | Out-String | Write-Output;exit 1}'
+          fi
+      - name: Build fully playable archive with all original assets
+        shell: bash
+        run: |
+          mkdir -p ZikaFighter_v86
+          cp -a assets data ZikaFighter_v86/
+          cp -a ./*.js ./*.css index.html Serveur-ZikaFighter.ps1 Lancer-ZikaFighter-V86-LOCAL.bat ZikaFighter_v86/
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path('ZikaFighter_v86')
+          m=json.loads((p/'assets/fighters/pascal/manifest.json').read_text())
+          assert m['cleanCompositeRevision']=='v85'
+          assert (p/'assets/audio/stages/ats.mp3').stat().st_size>1000000
+          assert (p/'index.html').is_file()
+          assert 'zf-20261110-combat-clean-v86' in (p/'index.html').read_text()
+          assert len(list((p/'assets/fighters/pascal/original').glob('*/*.png')))==316
+          assert len(list((p/'assets/fighters/pascal/bleu').glob('*/*.png')))==316
+          print('PLAYABLE PACKAGE VERIFIED: v86; all 632 sprites and stage audio.')
+          print('Files:',len(list(p.rglob('*'))),'Size MB:',round(sum(f.stat().st_size for f in p.rglob('*') if f.is_file())/1048576,1))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ZikaFighter-V86-Windows-Jouable
+          path: ZikaFighter_v86/
+          retention-days: 30
+          compression-level: 2
