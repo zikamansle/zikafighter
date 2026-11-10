@@ -1,0 +1,64 @@
+name: Normalize Pascal anatomical proportions
+on:
+  push:
+    paths:
+      - "tools/normalize_pascal_anatomy.py"
+      - ".github/workflows/normalize-pascal-anatomy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: normalize-pascal-anatomy-v83
+  cancel-in-progress: false
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install image libraries
+        run: python -m pip install Pillow==11.3.0 numpy==2.3.4
+      - name: Correct pixel art in 316 images and preserve both palettes
+        run: python tools/normalize_pascal_anatomy.py
+      - name: Validate the 632 PNG and feet alignment
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from PIL import Image
+          root=Path('assets/fighters/pascal')
+          manifest=json.loads((root/'manifest.json').read_text(encoding='utf-8'))
+          audit=json.loads((root/'anatomy_audit.json').read_text(encoding='utf-8'))
+          assert manifest['anatomyRevision']=='v83'
+          assert audit['changed_original_frames']==manifest['anatomyCorrectedFrames']
+          assert len(audit['frames'])==316 and len(manifest['counts'])==44
+          assert sum(manifest['counts'].values())==316
+          for mode in ('original','bleu'):
+            pngs=list((root/mode).glob('*/*.png'))
+            assert len(pngs)==316
+            for path in pngs:
+              with Image.open(path) as im:
+                assert im.size==(256,256),path
+                assert im.getchannel('A').getbbox()[3]==227,path
+          for original in (root/'original').glob('*/*.png'):
+            alt=root/'bleu'/original.relative_to(root/'original')
+            with Image.open(original) as a,Image.open(alt) as b:
+              assert a.getchannel('A').tobytes()==b.getchannel('A').tobytes(),original
+          print('VALIDATED 316 frames x 2 palettes, identical alpha, feet aligned.')
+          PY
+      - name: Commit normalized sprite PNGs
+        run: |
+          git config user.name "Zika Fighter sprite QA"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/fighters/pascal
+          if ! git diff --cached --quiet; then
+            git commit -m "Apply anatomical retouches to Pascal sprites in both palettes"
+            git push origin HEAD:main
+          fi
