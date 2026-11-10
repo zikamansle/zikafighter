@@ -1,0 +1,55 @@
+{
+  "revision": "v90",
+  "reference": "size_audit_v89.json",
+  "method": "row-local torso width nearest-neighbor, without changing face or shoes",
+  "corrected": [
+    {
+      "file": "marche_avant/02.png",
+      "beforeTorsoWidth": 45.0,
+      "afterTorsoWidth": 38.0,
+      "localFactor": 0.83,
+      "faceUnchanged": true,
+      "feetUnchanged": true
+    },
+    {
+      "file": "marche_avant/03.png",
+      "beforeTorsoWidth": 45.0,
+      "afterTorsoWidth": 37.0,
+      "localFactor": 0.83,
+      "faceUnchanged": true,
+      "feetUnchanged": true
+    },
+    {
+      "file": "marche_avant/04.png",
+      "beforeTorsoWidth": 44.0,
+      "afterTorsoWidth": 37.0,
+      "localFactor": 0.84,
+      "faceUnchanged": true,
+      "feetUnchanged": true
+    },
+    {
+      "file": "marche_avant/06.png",
+      "beforeTorsoWidth": 41.0,
+      "afterTorsoWidth": 35.0,
+      "localFactor": 0.87,
+      "faceUnchanged": true,
+      "feetUnchanged": true
+    },
+    {
+      "file": "saut_neutre/02.png",
+      "beforeTorsoWidth": 38.0,
+      "afterTorsoWidth": 33.0,
+      "localFactor": 0.87,
+      "faceUnchanged": true,
+      "feetUnchanged": true
+    },
+    {
+      "file": "saut_avant/05.png",
+      "beforeTorsoWidth": 53.0,
+      "afterTorsoWidth": 44.0,
+      "localFactor": 0.82,
+      "faceUnchanged": true,
+      "feetUnchanged": true
+    }
+  ]
+}
