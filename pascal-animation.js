@@ -77,9 +77,12 @@ function poseFor(f,now){
  if(Math.abs(f.vx||0)>8)return (f.vx||0)*(f.dir||1)>=0?'marche_avant':'marche_arriere';
  return 'attente';
 }
-// Tous les PNG partagent le cadre et l'ancrage, mais certains dessins n'ont
-// pas encore exactement les mêmes proportions anatomiques (notamment la tête).
-// Conserver une échelle fixe ; ne pas la compenser en zoomant au hasard.
+// Le cadre de 256 px n'est pas une mesure du corps. Les dessins de marche
+// ont un buste plus grand et des genoux plus fléchis que la référence d'attente.
+// Calibration constante par séquence, identique en avant/arrière : aucun
+// redimensionnement selon la boîte englobante ou selon la frame du mouvement.
+const poseScale=Object.freeze({marche_avant:0.88,marche_arriere:0.88});
+const spriteAnchor=Object.freeze({x:128,y:227});
 function state(f,now){
  const target=poseFor(f,now);
  let current=lastPose.get(f);
@@ -91,7 +94,7 @@ function state(f,now){
   // Saut et charge utilisent immédiatement leur véritable animation.
   // Ne pas afficher une fausse descente accroupie pendant que le personnage décolle.
   else if(target==='attente'&&f.y>=754&&
-   (previous==='garde_accroupie'||previous==='charge_francaise'||previous?.startsWith('saut_'))&&
+   (previous==='garde_accroupie'||previous==='charge_francaise'||previous==='reception'||previous?.startsWith('saut_'))&&
    available.retour_debout)
    transition='retour_debout';
   current={target,pose:transition||target,start:now};
@@ -121,12 +124,11 @@ function state(f,now){
   const elapsed=Math.max(0,now-(f.jumpStartedAt||current.start));
   const g=1520,initial=640,duration=2*initial/g*1000;
   const progress=Math.max(0,Math.min(1,elapsed/duration));
-  // Les dernières images montrent une réception accroupie. Ne pas les afficher
-  // à mi-hauteur : garder les vraies poses aériennes jusqu'à la descente finale.
-  const index=progress<.88
-   ? Math.min(count-4,1+Math.floor(progress/.88*(count-5)))
-   : progress<.965?count-3:count-2;
-  return {pose,frame:Math.max(1,index)};
+  // Les images 6-8 sont des poses au sol : ne jamais les jouer en vol.
+  // Garder la dernière pose aérienne jusqu'au vrai contact avec le sol.
+  const first=1,last=Math.max(first,count-4);
+  const index=first+Math.floor(progress*(last-first+1));
+  return {pose,frame:Math.min(count-1,last,index)};
  }
  if(pose==='reception'){
   const elapsed=Math.max(0,now-(f.landingStartedAt||current.start));
@@ -158,16 +160,17 @@ function waitForReady(timeoutMs=45000){
  });
 }
 function draw(ctx,f,now){
- // Un seul atlas de personnage : jamais d'ancien portrait, jamais de changement d'échelle.
+ // Un seul atlas de personnage ; calibration stable pour chaque séquence.
  const {pose,frame}=state(f,now);
  const seq=available[pose]||available.attente;
  const sprite=seq?.[Math.min(frame,seq.length-1)]||available.attente?.[0];
  if(!sprite)return false;
  ctx.save();
  ctx.imageSmoothingEnabled=false;
- // Échelle et ancrage uniques pour toutes les poses : sans zoom automatique.
- const scale=324/105;
- ctx.drawImage(sprite,-128*scale,-226*scale,256*scale,256*scale);
+ // Échelle uniforme sur les deux axes : aucune déformation du visage ou du
+ // corps. Le bas des pixels (y=227) reste sur f.y, quelle que soit la pose.
+ const scale=(324/105)*(poseScale[pose]||1);
+ ctx.drawImage(sprite,-spriteAnchor.x*scale,-spriteAnchor.y*scale,256*scale,256*scale);
  ctx.restore();
  return true;
 }
@@ -312,7 +315,7 @@ let hostedStatus='pending';
 async function preloadHostedSprites(){
  if(hostedStatus==='loading'||hostedStatus==='done')return;
  hostedStatus='loading';
- const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-combat-clean-v86');
+ const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-pascal-scale-v87');
  try{
   const res=await fetch('./assets/fighters/pascal/manifest.json?v='+version,{cache:'no-store'});
   if(!res.ok)throw Error('Manifeste Pascal non disponible : HTTP '+res.status);
