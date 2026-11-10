@@ -156,6 +156,11 @@ assert.equal(Number(canvas[1])/Number(canvas[2]),4/3,
   'Combat : résolution strictement 4:3');
 assert.match(html,/\.scene\{position:relative;aspect-ratio:4 \/ 3;/,
   'Combat : affichage CSS strictement 4:3');
+// Le décor ne doit jamais être recouvert d'une bande ou d'une ligne de sol artificielle.
+assert.ok(!html.includes("ctx.fillRect(0,floor-4,W,H-floor+4)"),
+  'Ancienne bande sombre ajoutée sur le bas des arènes');
+assert.ok(!html.includes("ctx.fillRect(0,floor,W,3)"),
+  'Ligne horizontale artificielle sur le stage interdite');
 assert.match(html,/const W=1152,H=864, floor=754;/,
   'Le moteur doit utiliser les dimensions du canvas');
 assert.match(html,/const sw=Math\.min\(bg\.naturalWidth,bg\.naturalHeight\*W\/H\)/,
