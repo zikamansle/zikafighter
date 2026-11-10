@@ -43,7 +43,8 @@ jobs:
           const next=JSON.parse(fs.readFileSync('assets/fighters/pascal/v94/manifest.json'));
           assert.equal(next.revision,'v94');
           assert.equal(Object.values(next.counts).reduce((sum,n)=>sum+n,0),316);
-          assert(src.includes("const spriteRoot="),'Missing v94 renderer path');
+          assert(src.includes("const spriteRoot="),'Missing Pascal renderer path');
+          assert(src.includes("get('pascal')!=='preview-v94'"),'Incomplete v94 must not be the default Pascal pack');
           assert(src.includes("if(f.health<=0)return f.y<754?"),'KO pop during flight must be prevented');
           assert(src.includes("const stable=pose==='saut_neutre'"),'stable airborne frames required');
           JS
