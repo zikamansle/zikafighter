@@ -30,6 +30,7 @@ jobs:
         run: |
           node tests/combat-v85.mjs
           node tests/pascal-scale-v87.mjs
+          node tests/pascal-v94.mjs
           node - <<'JS'
           const fs=require('node:fs'),assert=require('node:assert/strict');
           const src=fs.readFileSync('pascal-animation.js','utf8');
@@ -39,6 +40,10 @@ jobs:
           assert.equal(m.crouchRevision,'v88');
           assert.equal(m.uprightSizeRevision,'v91');
           assert.equal(m.uprightCorrectedFrames,29);
+          const next=JSON.parse(fs.readFileSync('assets/fighters/pascal/v94/manifest.json'));
+          assert.equal(next.revision,'v94');
+          assert.equal(Object.values(next.counts).reduce((sum,n)=>sum+n,0),316);
+          assert(src.includes("const spriteRoot="),'Missing v94 renderer path');
           assert(src.includes("if(f.health<=0)return f.y<754?"),'KO pop during flight must be prevented');
           assert(src.includes("const stable=pose==='saut_neutre'"),'stable airborne frames required');
           JS
@@ -79,11 +84,13 @@ jobs:
             curl -fsSL "$base/pascal-animation.js?verify=$GITHUB_SHA-$attempt" -o /tmp/public-pascal.js || true
             if cmp -s pascal-animation.js /tmp/public-pascal.js; then
               curl -fsSL "$base/index.html?verify=$GITHUB_SHA-$attempt" -o /tmp/public-index.html
-              curl -fsSL "$base/assets/fighters/pascal/original/marche_avant/01.png?verify=$GITHUB_SHA-$attempt" -o /tmp/public-walk.png
-              curl -fsSL "$base/assets/fighters/pascal/original/garde_accroupie/01.png?verify=$GITHUB_SHA-$attempt" -o /tmp/public-crouch.png
+              curl -fsSL "$base/assets/fighters/pascal/v94/manifest.json?verify=$GITHUB_SHA-$attempt" -o /tmp/public-manifest.json
+              curl -fsSL "$base/assets/fighters/pascal/v94/original/marche_avant/01.png?verify=$GITHUB_SHA-$attempt" -o /tmp/public-walk.png
+              curl -fsSL "$base/assets/fighters/pascal/v94/original/garde_accroupie/01.png?verify=$GITHUB_SHA-$attempt" -o /tmp/public-crouch.png
               cmp index.html /tmp/public-index.html
-              cmp assets/fighters/pascal/original/marche_avant/01.png /tmp/public-walk.png
-              cmp assets/fighters/pascal/original/garde_accroupie/01.png /tmp/public-crouch.png
+              cmp assets/fighters/pascal/v94/manifest.json /tmp/public-manifest.json
+              cmp assets/fighters/pascal/v94/original/marche_avant/01.png /tmp/public-walk.png
+              cmp assets/fighters/pascal/v94/original/garde_accroupie/01.png /tmp/public-crouch.png
               exit 0
             fi
             sleep 5
