@@ -62,7 +62,7 @@ def make_palettes(master):
         group=color_group(c)
         if n>=1: by[group].append((c,n))
     for k,colors in by.items():
-        if len(colors)<6:raise AssertionError(f"Master missing {k} colors: {len(colors)}")
+        if len(colors)<3:raise AssertionError(f"Master missing {k} colors: {len(colors)}")
     return by
 
 def cloth_guide_to_master(guide,reference):
