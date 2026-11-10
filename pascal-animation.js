@@ -41,7 +41,7 @@ const speedFor=pose=>/marche/.test(pose)?12:pose==='jab'?31:pose==='pied_moyen'?
 const counts=Object.create(null),fps=Object.create(null);
 Object.keys(categoryLabels).forEach(k=>{counts[k]=0;fps[k]=speedFor(k);});
 // Pascal v94 par défaut. ?pascal=classic permet une comparaison sans supprimer v91.
-const classicPack=new URLSearchParams(window.location.search).get('pascal')==='classic';
+const classicPack=new URLSearchParams(window.location?.search||'').get('pascal')==='classic';
 const spriteRoot='./assets/fighters/pascal/'+(classicPack?'original/':'v94/original/');
 const manifestUrl='./assets/fighters/pascal/'+(classicPack?'manifest.json':'v94/manifest.json');
 const url=(pose,i)=>spriteRoot+pose+'/'+String(i+1).padStart(2,'0')+'.png';
