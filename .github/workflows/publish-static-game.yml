@@ -37,6 +37,10 @@ jobs:
           const m=JSON.parse(fs.readFileSync('assets/fighters/pascal/manifest.json'));
           assert.equal(m.geometryRevision,'v88');
           assert.equal(m.crouchRevision,'v88');
+          assert.equal(m.uprightSizeRevision,'v91');
+          assert.equal(m.uprightCorrectedFrames,29);
+          assert(src.includes("if(f.health<=0)return f.y<754?"),'KO pop during flight must be prevented');
+          assert(src.includes("const stable=pose==='saut_neutre'"),'stable airborne frames required');
           JS
       - name: Package game files without transforming intros or images
         run: |
@@ -74,7 +78,11 @@ jobs:
           for attempt in $(seq 1 12); do
             curl -fsSL "$base/pascal-animation.js?verify=$GITHUB_SHA-$attempt" -o /tmp/public-pascal.js || true
             if cmp -s pascal-animation.js /tmp/public-pascal.js; then
+              curl -fsSL "$base/index.html?verify=$GITHUB_SHA-$attempt" -o /tmp/public-index.html
+              curl -fsSL "$base/assets/fighters/pascal/original/marche_avant/01.png?verify=$GITHUB_SHA-$attempt" -o /tmp/public-walk.png
               curl -fsSL "$base/assets/fighters/pascal/original/garde_accroupie/01.png?verify=$GITHUB_SHA-$attempt" -o /tmp/public-crouch.png
+              cmp index.html /tmp/public-index.html
+              cmp assets/fighters/pascal/original/marche_avant/01.png /tmp/public-walk.png
               cmp assets/fighters/pascal/original/garde_accroupie/01.png /tmp/public-crouch.png
               exit 0
             fi
