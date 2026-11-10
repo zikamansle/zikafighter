@@ -21,3 +21,12 @@ for(const vx of [-100,0,100]){
  for(const [,x,y,w,h] of calls){assert.equal(w,h,'Nonuniform sprite stretch');assert(Math.abs(y+227/256*h)<1e-8,'Feet drift off floor');assert(Math.abs(x+128/256*w)<1e-8,'Anchor drifts');}
 }
 console.log('PASS — stable walk scale, foot anchor, airborne frames, landing transition');
+// Simulate requestAnimationFrame being suspended until all timers have fired.
+// Revealing a background tab must never reapply an old opaque curtain.
+const timers=[],animationFrames=[],curtain={style:{},setAttribute(){}};
+const screens=new Function('window','document','setTimeout','requestAnimationFrame',fs.readFileSync('screen-transitions.js','utf8')+';return window.ZikaFighterScreens;')({}, {createElement:()=>curtain,body:{appendChild(){}}},cb=>timers.push(cb),cb=>animationFrames.push(cb));
+let changed=false;screens.change(()=>{changed=true;});
+while(timers.length)timers.shift()();
+while(animationFrames.length)animationFrames.shift()();
+assert(changed);assert.equal(curtain.style.opacity,'0');assert.equal(screens.busy,false);
+console.log('PASS — background-tab transition reveals the game');

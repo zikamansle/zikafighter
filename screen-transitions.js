@@ -28,10 +28,9 @@
     const hold=Math.max(0,config.hold??45);
     const fadeIn=Math.max(0,config.in??185);
     curtain.style.transition='opacity '+fadeOut+'ms linear';
-    requestAnimationFrame(()=>{
-      // Double frame: ensure the browser paints opacity=0 before transitioning.
-      requestAnimationFrame(()=>{curtain.style.opacity='1';});
-    });
+    // Apply the dark state before starting the timers. A deferred animation
+    // frame can run AFTER reveal when a tab is throttled, leaving it black.
+    curtain.style.opacity='1';
     setTimeout(()=>{
       try{action();}catch(err){console.error('Zika Fighter : transition',err);}
       setTimeout(()=>{
