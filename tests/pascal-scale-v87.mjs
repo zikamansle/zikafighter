@@ -20,6 +20,17 @@ for(const vx of [-100,0,100]){
  const widths=new Set(calls.map(c=>c[3]));assert.equal(widths.size,1,'Scale changes within walking cycle');
  for(const [,x,y,w,h] of calls){assert.equal(w,h,'Nonuniform sprite stretch');assert(Math.abs(y+227/256*h)<1e-8,'Feet drift off floor');assert(Math.abs(x+128/256*w)<1e-8,'Anchor drifts');}
 }
+// The fatal hit must not suddenly replace a compact airborne sprite by
+// an upright 105px fall sprite while Pascal is still above the ground.
+for(const pose of ['saut_neutre','saut_avant','saut_arriere']){
+ const dead={...f(),health:0,y:650,jumpPose:pose,jumpStartedAt:100};
+ const airborne=api.state(dead,250);
+ assert.equal(airborne.pose,pose,'Do not switch to upright fall midair');
+ const legal=pose==='saut_neutre'?[2,3,4]:pose==='saut_avant'?[1,2,3]:[1,2,3,4];
+ assert(legal.includes(airborne.frame),'Jump frame changes apparent body size');
+ dead.y=754;
+ assert.equal(api.state(dead,900).pose,'chute_arriere','KO fall starts at ground contact');
+}
 console.log('PASS — stable walk scale, foot anchor, airborne frames, landing transition');
 // Simulate requestAnimationFrame being suspended until all timers have fired.
 // Revealing a background tab must never reapply an old opaque curtain.
