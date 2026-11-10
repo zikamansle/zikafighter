@@ -1,0 +1,59 @@
+{
+  "revision": "v85",
+  "purpose": "Remove second fighters and baked hit effects from single-character sprites",
+  "changedPerPalette": 10,
+  "changedTotal": 20,
+  "replacements": {
+    "charge_francaise/06.png": {
+      "originalFrame": "charge_francaise/06.png",
+      "PascalOnlyReference": "charge_francaise/03.png",
+      "previousSha256": "0ef96f0193f4b118"
+    },
+    "charge_francaise/07.png": {
+      "originalFrame": "charge_francaise/07.png",
+      "PascalOnlyReference": "charge_francaise/02.png",
+      "previousSha256": "1550d841695f11d5"
+    },
+    "vague_de_paume/05.png": {
+      "originalFrame": "vague_de_paume/05.png",
+      "PascalOnlyReference": "vague_de_paume/04.png",
+      "previousSha256": "fac46724cc9bd0a6"
+    },
+    "prise_du_bricoleur/01.png": {
+      "originalFrame": "prise_du_bricoleur/01.png",
+      "PascalOnlyReference": "direct/02.png",
+      "previousSha256": "7ce7405953b44559"
+    },
+    "prise_du_bricoleur/02.png": {
+      "originalFrame": "prise_du_bricoleur/02.png",
+      "PascalOnlyReference": "direct/03.png",
+      "previousSha256": "501f49b949e12610"
+    },
+    "prise_du_bricoleur/03.png": {
+      "originalFrame": "prise_du_bricoleur/03.png",
+      "PascalOnlyReference": "crochet/03.png",
+      "previousSha256": "b848b4fe33220206"
+    },
+    "prise_du_bricoleur/04.png": {
+      "originalFrame": "prise_du_bricoleur/04.png",
+      "PascalOnlyReference": "uppercut/03.png",
+      "previousSha256": "988be6676fac8df5"
+    },
+    "prise_du_bricoleur/05.png": {
+      "originalFrame": "prise_du_bricoleur/05.png",
+      "PascalOnlyReference": "uppercut/04.png",
+      "previousSha256": "4abcec88754c9426"
+    },
+    "prise_du_bricoleur/06.png": {
+      "originalFrame": "prise_du_bricoleur/06.png",
+      "PascalOnlyReference": "crochet/06.png",
+      "previousSha256": "7b87838717d87efe"
+    },
+    "prise_du_bricoleur/07.png": {
+      "originalFrame": "prise_du_bricoleur/07.png",
+      "PascalOnlyReference": "retour_debout/03.png",
+      "previousSha256": "d288f6ff5f538d7f"
+    }
+  },
+  "note": "The throw is now Pascal-only placeholder poses until a real two-body throw engine exists."
+}

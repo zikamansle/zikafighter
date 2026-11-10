@@ -73,5 +73,8 @@
   "anatomyPaletteFrames": 106,
   "profileRevision": "v84",
   "profileRetouchedFrames": 14,
-  "profileRetouch": "walking torso narrowed locally 10.5 percent at maximum; face and feet unchanged"
+  "profileRetouch": "walking torso narrowed locally 10.5 percent at maximum; face and feet unchanged",
+  "cleanCompositeRevision": "v85",
+  "ghostFramesCleaned": 10,
+  "ghostFramesCleanedPerPalette": 10
 }
