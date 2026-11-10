@@ -11,7 +11,7 @@ import json
 ROOT=Path(__file__).resolve().parents[1]/'assets/fighters/pascal'
 UPRIGHT=(
  'attente','marche_avant','marche_arriere','garde_debout','jab','direct','crochet',
- 'pied_bas','pied_moyen','pied_haut','vague_de_paume'
+ 'pied_bas','pied_moyen','pied_haut'
 )
 DESIRED_TOP=122
 FLOOR=227
