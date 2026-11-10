@@ -121,8 +121,12 @@ function state(f,now){
   const elapsed=Math.max(0,now-(f.jumpStartedAt||current.start));
   const g=1520,initial=640,duration=2*initial/g*1000;
   const progress=Math.max(0,Math.min(1,elapsed/duration));
-  const index=Math.max(1,Math.min(count-2,1+Math.floor(progress*(count-2))));
-  return {pose,frame:index};
+  // Les dernières images montrent une réception accroupie. Ne pas les afficher
+  // à mi-hauteur : garder les vraies poses aériennes jusqu'à la descente finale.
+  const index=progress<.88
+   ? Math.min(count-4,1+Math.floor(progress/.88*(count-5)))
+   : progress<.965?count-3:count-2;
+  return {pose,frame:Math.max(1,index)};
  }
  if(pose==='reception'){
   const elapsed=Math.max(0,now-(f.landingStartedAt||current.start));
