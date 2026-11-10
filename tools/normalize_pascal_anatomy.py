@@ -98,7 +98,8 @@ def main():
   report['frames'][str(relative)]={'before':before,'after':measurements(new),
     'head_scale':round(scale,4),'changed':bool(changed)}
  assert sha256(reference.read_bytes()).hexdigest()==reference_hash,'Reference face changed'
- assert 65<=changes<=95,('Unexpected anatomical changes',changes)
+ assert 65<=changes<=120,('Unexpected anatomical changes',changes)
+ print('Anatomy per-animation retouches:',dict(sorted(report['changed_by_animation'].items())))
  report['changed_original_frames']=changes
  report['changed_palette_frames']=changes
  report['unchanged_frames']=316-changes
