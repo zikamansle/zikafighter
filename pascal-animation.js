@@ -324,7 +324,7 @@ let hostedStatus='pending';
 async function preloadHostedSprites(){
  if(hostedStatus==='loading'||hostedStatus==='done')return;
  hostedStatus='loading';
- const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-pascal-v94-full-frames');
+ const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-pascal-bloc1-preview');
  try{
   const res=await fetch(manifestUrl+'?v='+version,{cache:'no-store'});
   if(!res.ok)throw Error('Manifeste Pascal non disponible : HTTP '+res.status);
