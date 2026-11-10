@@ -2,7 +2,7 @@
 /* Chaque publication porte son numéro de version. Les réglages restent conservés,
    seuls les anciens fichiers/cache du jeu sont nettoyés. */
 (function(){
-  const BUILD='zf-20261110-profile-jump-v84';
+  const BUILD='zf-20261110-combat-repair-v85';
   window.ZikaFighterBuild=BUILD;
   try {
     const key='zikafighter-current-build';
@@ -201,26 +201,46 @@ function mergeControls(k,pad){
 }
 function controls(){return mergeControls(keys,padControls(0))}
 function controls2(){return mergeControls(p2keys,padControls(1))}
-function move(f,inp,dt,now){const enemy=f===p?e:p;f.dir=enemy.x>f.x?1:-1;const stunned=now<f.stunUntil;if(stunned){f.vx*=.92}else{f.guard=!!inp.guard && f.y>=floor && now>=f.actionUntil;let vx=((inp.right?1:0)-(inp.left?1:0))*(f.name==='micka'?288:236)*(1+Math.max(0,Math.min(4,gameSettings.turbo))*0.06);if(f.guard)vx=0;const busy=now<f.actionUntil;
- // Les charges conservent leur impulsion au lieu de ralentir immédiatement.
- f.vx=busy?(f.action==='special'&&f.name==='pascal'?f.vx*.965:f.vx*.88):vx;
-if(inp.jump&&f.y>=floor&&!busy&&!f.guard){
+function move(f,inp,dt,now){
+ const enemy=f===p?e:p;
+ f.dir=enemy.x>f.x?1:-1;
+ const stunned=now<f.stunUntil;
+ const busy=now<f.actionUntil;
  const motion=(inp.right?1:0)-(inp.left?1:0);
- const relative=motion*f.dir;
- f.jumpPose=motion===0?'saut_neutre':relative>0?'saut_avant':'saut_arriere';
- f.jumpStartedAt=now;f.landUntil=0;
- f.vy=-640;f.action='jump';
-}if(inp.special)attack(f,'special',now);else if(inp.kick)attack(f,'kick',now);else if(inp.punch)attack(f,'punch',now);if(now>=f.actionUntil)f.action=f.guard?'guard':f.y<floor?'jump':Math.abs(vx)>1?'walk':'idle';}
-f.x=Math.max(70,Math.min(W-70,f.x+f.vx*dt));
-const wasAirborne=f.y<floor;
-f.y+=f.vy*dt;f.vy+=1520*dt;
-if(f.y>=floor){
- if(wasAirborne && f.jumpStartedAt>0){
-  f.landingStartedAt=now;f.landUntil=now+150;
-  f.jumpPose=null;f.jumpStartedAt=0;
+ const speed=(f.name==='micka'?288:236)*(1+Math.max(0,Math.min(4,gameSettings.turbo))*.06);
+ const desired=motion*speed;
+ if(stunned){
+  f.guard=false;f.vx*=.93;
+ }else{
+  f.guard=!!inp.guard && f.y>=floor && !busy;
+  if(f.guard)f.vx=0;
+  else if(busy)f.vx*=f.action==='special'&&f.name==='pascal'?.965:.88;
+  else if(f.y<floor)f.vx=f.vx*.88+desired*.12;
+  else f.vx=desired;
+  // Le saut est déclenché une seule fois et conserve sa direction pendant le vol.
+  if(inp.jump&&f.y>=floor&&!busy&&!f.guard&&now>=(f.landUntil||0)){
+   const relative=motion*f.dir;
+   f.jumpPose=motion===0?'saut_neutre':relative>0?'saut_avant':'saut_arriere';
+   f.jumpStartedAt=now;
+   f.landUntil=0;
+   f.vy=-640;
+   f.vx=desired*.72;
+   f.action='jump';
+  }else if(inp.special)attack(f,'special',now);
+  else if(inp.kick)attack(f,'kick',now);
+  else if(inp.punch)attack(f,'punch',now);
+  if(now>=f.actionUntil)f.action=f.guard?'guard':f.y<floor?'jump':Math.abs(f.vx)>1?'walk':'idle';
  }
- f.y=floor;f.vy=0;
-}
+ f.x=Math.max(76,Math.min(W-76,f.x+f.vx*dt));
+ const wasAirborne=f.y<floor;
+ f.y+=f.vy*dt;f.vy+=1520*dt;
+ if(f.y>=floor){
+  if(wasAirborne&&f.jumpStartedAt>0){
+   f.landingStartedAt=now;f.landUntil=now+150;
+   f.jumpPose=null;f.jumpStartedAt=0;
+  }
+  f.y=floor;f.vy=0;
+ }
 }
 function strike(a,b,reach,damage,now,launch=0){
  if(Math.abs(a.x-b.x)>reach||Math.abs(a.y-b.y)>130||now<b.invulnerable)return false;
@@ -274,17 +294,42 @@ function ai(now){
     special:e.energy>=40&&gap<330&&Math.random()<.009*strength
   };
 }
-function drawFigure(f,now){const im=images[f.name];ctx.save();ctx.translate(f.x,f.y);ctx.scale(f.dir,1);ctx.fillStyle='#010918a3';ctx.beginPath();ctx.ellipse(0,0,57,11,0,0,Math.PI*2);ctx.fill();// Pascal : sprites indépendants si présents, sinon illustration d'origine immobile.
-if(f.name==='pascal'){
-  // Ne jamais afficher l'ancien WebP (fond rose/noir et visage tronqué).
-  window.ZikaPascalAnimation?.draw?.(ctx,f,now);
-  
-  ctx.restore();return;
+// L'ombre reste sur le sol de l'arène, même quand le combattant saute.
+// Deux niveaux de rectangles pixelisés, sans ellipse, contour ni halo.
+function drawFloorShadow(f){
+ const airborne=Math.max(0,floor-f.y);
+ const width=Math.max(26,58-airborne*.10);
+ const cx=Math.round(f.x), cy=Math.round(floor+2);
+ ctx.save();
+ ctx.fillStyle='#03081666';
+ ctx.fillRect(cx-Math.round(width),cy,Math.round(width*2),5);
+ ctx.fillStyle='#07112542';
+ ctx.fillRect(cx-Math.round(width*.72),cy-2,Math.round(width*1.44),3);
+ ctx.restore();
 }
-const elapsed=now/1000;const isMoving=f.action==='walk';const bob=isMoving?Math.sin(elapsed*13)*5:Math.sin(elapsed*3)*2;const kick=f.action==='kick';const punch=f.action==='punch';const special=f.action==='special';const tilt=kick?-.11:punch?.10:special?.08:0;ctx.translate(0,bob);ctx.rotate(tilt);
-if(im.complete&&im.naturalWidth){const displayH=324;const displayW=im.naturalWidth/im.naturalHeight*displayH;ctx.imageSmoothingEnabled=false;ctx.drawImage(im,-displayW/2,-displayH,displayW,displayH);}else{ctx.fillStyle=f.name==='pascal'?'#aeabdb':'#6bdca7';ctx.fillRect(-45,-300,90,290)}
-ctx.restore();}
-
+function drawFigure(f,now){
+ drawFloorShadow(f);
+ const im=images[f.name];
+ ctx.save();
+ ctx.translate(Math.round(f.x),Math.round(f.y));
+ ctx.scale(f.dir,1);
+ ctx.imageSmoothingEnabled=false;
+ if(f.name==='pascal'){
+  window.ZikaPascalAnimation?.draw?.(ctx,f,now);
+  ctx.restore();
+  return;
+ }
+ // Les autres personnages ne disposent pas encore de leurs sprites animés.
+ // Ne pas faire tourner, agrandir ni décoller artificiellement leurs illustrations.
+ if(im&&im.complete&&im.naturalWidth){
+  const height=324,width=height*im.naturalWidth/im.naturalHeight;
+  ctx.drawImage(im,-Math.round(width/2),-height,Math.round(width),height);
+ }else{
+  ctx.fillStyle='#857e9e';
+  ctx.fillRect(-44,-294,88,294);
+ }
+ ctx.restore();
+}
 // Impacts et projectiles dessinés en pixels SNES nets : sans halo, cercle ou flou.
 // Dessiner uniquement des rectangles sur la grille du canvas évite les effets
 // lumineux vectoriels ajoutés au prototype.
@@ -337,7 +382,7 @@ function drawCombatEffect(fx){
  else if(fx.kind==='projectile')drawProjectilePixels(fx);
 }
 function draw(now){ctx.clearRect(0,0,W,H);const bg=images[config.stage];if(bg&&bg.complete&&bg.naturalWidth&&bg.naturalHeight){const sw=Math.min(bg.naturalWidth,bg.naturalHeight*W/H)/1.18;const sh=sw*H/W;
- const sx=(bg.naturalWidth-sw)*(0.5+0.42*stageCameraPan);
+ const sx=Math.round((bg.naturalWidth-sw)*(0.5+0.42*stageCameraPan));
  const sy=(bg.naturalHeight-sh)/2;ctx.drawImage(bg,sx,sy,sw,sh,0,0,W,H)}else{ctx.fillStyle='#2870bd';ctx.fillRect(0,0,W,H)}
 const duo=[p,e].sort((a,b)=>a.x-b.x);for(const f of duo)drawFigure(f,now);for(const fx of effects)drawCombatEffect(fx);}
 function end(winner){
@@ -462,7 +507,7 @@ window.ZikaFighterBridge={
   getMatchState:()=>({status,roundNumber,roundWins:[...roundWins],player:p?.name||null,opponent:e?.name||null})
 };
 })();
-</script><script defer src="./pascal-animation.js?v=zf-20261110-profile-jump-v84"></script><script defer src="./arcade-audio.js?v=zf-20261109-pascal-v64"></script>
+</script><script defer src="./pascal-animation.js?v=zf-20261110-combat-repair-v85"></script><script defer src="./arcade-audio.js?v=zf-20261109-pascal-v64"></script>
 <script defer src="./screen-transitions.js?v=zf-20261109-pascal-v64"></script>
 <script defer src="./stage-audio.js?v=zf-20261109-pascal-v64"></script><script defer src="./stage-music.js?v=zf-20261108-stage-music-v1"></script>
 <script defer src="./data/approved-portrait-thumbs.js?v=zf-20261109-pascal-v64"></script>
