@@ -1,0 +1,88 @@
+name: Polish Pascal side profile sprite art
+on:
+  push:
+    paths:
+      - "tools/correct_pascal_profile.py"
+      - ".github/workflows/polish-pascal-profile.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: polish-pascal-profile-v84
+  cancel-in-progress: false
+
+jobs:
+  profile-and-jump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pixel-art dependencies
+        run: python -m pip install Pillow==11.3.0 numpy==2.3.4
+      - name: Narrow side profile torso without touching Pascal's face
+        run: python tools/correct_pascal_profile.py
+      - name: Validate both palettes and all 44 animations
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from PIL import Image
+          root=Path('assets/fighters/pascal')
+          m=json.loads((root/'manifest.json').read_text(encoding='utf8'))
+          audit=json.loads((root/'profile_audit.json').read_text(encoding='utf8'))
+          assert m['anatomyRevision']=='v83' and m['profileRevision']=='v84'
+          assert m['profileRetouchedFrames']==14
+          assert audit['retouchedOriginal']==14 and audit['retouchedBlue']==14
+          assert len(m['counts'])==44 and sum(m['counts'].values())==316
+          for palette in ('original','bleu'):
+            pngs=list((root/palette).glob('*/*.png'))
+            assert len(pngs)==316,(palette,len(pngs))
+            for file in pngs:
+              with Image.open(file) as im:
+                assert im.size==(256,256)
+                assert im.getchannel('A').getbbox()[3]==227,file
+          for path in (root/'original').glob('*/*.png'):
+            other=root/'bleu'/path.relative_to(root/'original')
+            with Image.open(path) as a,Image.open(other) as b:
+              assert a.getchannel('A').tobytes()==b.getchannel('A').tobytes(),path
+          print('VALIDATED 632 PNG, 14 slim profile originals + 14 blue matching sprites')
+          PY
+          node --check pascal-animation.js
+          node tests/smoke-static.mjs
+      - name: Commit corrected source sprites
+        run: |
+          git config user.name "Zika Fighter pixel art QA"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/fighters/pascal
+          if ! git diff --cached --quiet; then
+            git commit -m "Correct Pascal side-profile torso proportions in both palettes"
+            git push origin HEAD:main
+          fi
+      - name: Package exact published Pascal assets
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+          root=Path('assets/fighters/pascal')
+          with zipfile.ZipFile('Pascal_ZikaFighter_PROFIL_SAUT_V84.zip','w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+            for palette in ('original','bleu'):
+              for path in sorted((root/palette).glob('*/*.png')):
+                z.write(path,'Pascal_V84/'+str(path.relative_to(root)))
+            for name in ('manifest.json','anatomy_audit.json','profile_audit.json'):
+              z.write(root/name,'Pascal_V84/'+name)
+          with zipfile.ZipFile('Pascal_ZikaFighter_PROFIL_SAUT_V84.zip') as z:
+            assert z.testzip() is None
+            assert len(z.namelist())==635
+          print('Validated complete Pascal v84 sprite ZIP.')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Pascal-ZikaFighter-PROFIL-V84
+          path: Pascal_ZikaFighter_PROFIL_SAUT_V84.zip
+          retention-days: 90
