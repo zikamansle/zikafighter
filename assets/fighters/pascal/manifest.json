@@ -66,5 +66,9 @@
   "upright_base_height_pixels": 104,
   "game_upright_display_height_pixels": 324,
   "source": "Approved Pascal sprite art regenerated at a fixed shared foot anchor",
-  "status": "316 original PNG + 316 blue palette PNG; shared geometry"
+  "status": "316 original PNG + 316 blue palette PNG; shared geometry",
+  "anatomyRevision": "v83",
+  "anatomyCorrection": "local head and walking body proportions, nearest-neighbor",
+  "anatomyCorrectedFrames": 106,
+  "anatomyPaletteFrames": 106
 }
