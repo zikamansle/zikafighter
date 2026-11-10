@@ -267,7 +267,7 @@ let hostedStatus='pending';
 async function preloadHostedSprites(){
  if(hostedStatus==='loading'||hostedStatus==='done')return;
  hostedStatus='loading';
- const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-pascal-camera-v74');
+ const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-pascal-assets-v75');
  try{
   const res=await fetch('./assets/fighters/pascal/manifest.json?v='+version,{cache:'no-store'});
   if(!res.ok)throw Error('Manifeste Pascal non disponible : HTTP '+res.status);
