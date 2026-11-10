@@ -13,7 +13,7 @@ assert.equal(Object.keys(manifest.counts).length,44);
 assert.equal(Object.values(manifest.counts).reduce((a,b)=>a+b,0),316);
 assert(loader.includes("v94/original/"),'Must load the new Pascal pack in real combat');
 assert(loader.includes("v94/manifest.json"),'Must check the new pack manifest');
-assert(loader.includes("get('pascal')==='classic'"),'Old pack must remain available for comparison');
+assert(loader.includes("get('pascal')!=='preview-v94'"),'Unapproved v94 must not load by default');
 assert(main.includes('zf-20261110-pascal-v94-full-frames'),'Browser build cache bust is missing');
 assert(fs.existsSync(master),'Approved Pascal master not present');
 let total=0;
