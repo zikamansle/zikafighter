@@ -12,7 +12,9 @@ img=Image.open(SOURCE).convert("RGBA")
 assert img.size==(256,256) and img.getbbox()==(95,122,161,227),("Incorrect approved master",img.getbbox())
 
 def render(frame):
-    phase=2*math.pi*frame/8
+    right_offsets=[0,1,2,1,0,-1,-2,-1]
+    left_offsets=[0,-1,-1,0,1,1,0,-1]
+    fold_offsets=[0,0,1,1,0,-1,-1,0]
     out=Image.new("RGBA",(256,256),(0,0,0,0))
     src=img.load();dst=out.load()
     for y in range(256):
@@ -21,9 +23,11 @@ def render(frame):
         sx=x
         if 149<=y<=178:
             t=max(0.,min(1.,(y-149)/8.,(178-y)/12.))
-            s=math.sin(phase)
-            if x>=143:sx=x-round(1.3*s*t)
-            elif x<=113:sx=x-round(-1.1*s*t)
+            if x>=143:sx=x-round(right_offsets[frame]*t)
+            elif x<=113:sx=x-round(left_offsets[frame]*t)
+        elif 180<=y<=194 and 121<=x<=140:
+            t=max(0.,min(1.,(y-180)/4.,(194-y)/4.))
+            sx=x-round(fold_offsets[frame]*t)
         if 0<=sx<256:
             c=src[sx,y]
             if c[3]:dst[x,y]=c
@@ -60,6 +64,10 @@ manifest={"character":"Pascal","revision":"v93-partial","source":"reference/mait
           "note":"Ground shadow remains rendered by game engine to stay on stage when jumping."}
 (OUT/"manifest.json").write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+"\n",encoding="utf8")
 (OUT/"qa.json").write_text(json.dumps(audit,indent=2,ensure_ascii=False)+"\n",encoding="utf8")
+from hashlib import sha256
+for pose,n in (("attente",8),("garde_debout",4)):
+    hashes=[sha256((OUT/"original"/pose/f"{i+1:02}.png").read_bytes()).hexdigest() for i in range(n)]
+    assert len(set(hashes))==n,("Repeated sprite frame",pose)
 assert len(list((OUT/"original").glob("*/*.png")))==12
 assert len(list((OUT/"bleu").glob("*/*.png")))==12
 print("PASS: v93 staging with 24 separately rendered PNG, uniform head/feet/scale; 2 animations of 44")
