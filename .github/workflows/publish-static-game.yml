@@ -1,0 +1,84 @@
+name: Publish verified static game
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/publish-static-game.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: static-game-recovery
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check game and sprite renderer
+        run: |
+          node tests/combat-v85.mjs
+          node tests/pascal-scale-v87.mjs
+          node - <<'JS'
+          const fs=require('node:fs'),assert=require('node:assert/strict');
+          const src=fs.readFileSync('pascal-animation.js','utf8');
+          assert(!src.includes('poseScale'),'Per-pose zoom must not return');
+          const m=JSON.parse(fs.readFileSync('assets/fighters/pascal/manifest.json'));
+          assert.equal(m.geometryRevision,'v88');
+          assert.equal(m.crouchRevision,'v88');
+          JS
+      - name: Package game files without transforming intros or images
+        run: |
+          mkdir _site
+          cp *.html *.js *.css _site/
+          cp -a assets data _site/
+          touch _site/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Stop competing legacy Pages publications on main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for attempt in $(seq 1 12); do
+            ids=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?branch=main&per_page=100" --jq '.workflow_runs[] | select(.path == "dynamic/pages/pages-build-deployment" and .status != "completed") | .id')
+            if [ -z "$ids" ]; then break; fi
+            for id in $ids; do
+              gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$id/cancel" || true
+            done
+            sleep 5
+          done
+          remaining=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?branch=main&per_page=100" --jq '[.workflow_runs[] | select(.path == "dynamic/pages/pages-build-deployment" and .status != "completed")] | length')
+          test "$remaining" = 0
+          latest=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')
+          test "$latest" = "$GITHUB_SHA"
+      - name: Deploy static game
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          timeout: 1200000
+      - name: Verify public renderer and corrected sprite
+        run: |
+          base="https://zikamansle.github.io/zikafighter"
+          for attempt in $(seq 1 12); do
+            curl -fsSL "$base/pascal-animation.js?verify=$GITHUB_SHA-$attempt" -o /tmp/public-pascal.js || true
+            if cmp -s pascal-animation.js /tmp/public-pascal.js; then
+              curl -fsSL "$base/assets/fighters/pascal/original/garde_accroupie/01.png?verify=$GITHUB_SHA-$attempt" -o /tmp/public-crouch.png
+              cmp assets/fighters/pascal/original/garde_accroupie/01.png /tmp/public-crouch.png
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Public files do not match deployed game"
+          exit 1
