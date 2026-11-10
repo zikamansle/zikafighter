@@ -2,7 +2,7 @@
 /* Chaque publication porte son numéro de version. Les réglages restent conservés,
    seuls les anciens fichiers/cache du jeu sont nettoyés. */
 (function(){
-  const BUILD='zf-20261110-combat-contact-v78';
+  const BUILD='zf-20261110-stage-clean-v79';
   window.ZikaFighterBuild=BUILD;
   try {
     const key='zikafighter-current-build';
@@ -323,7 +323,7 @@ function drawCombatEffect(fx){
 }
 function draw(now){ctx.clearRect(0,0,W,H);const bg=images[config.stage];if(bg&&bg.complete&&bg.naturalWidth&&bg.naturalHeight){const sw=Math.min(bg.naturalWidth,bg.naturalHeight*W/H)/1.18;const sh=sw*H/W;
  const sx=(bg.naturalWidth-sw)*(0.5+0.42*stageCameraPan);
- const sy=(bg.naturalHeight-sh)/2;ctx.drawImage(bg,sx,sy,sw,sh,0,0,W,H)}else{ctx.fillStyle='#2870bd';ctx.fillRect(0,0,W,H)}ctx.fillStyle='#05091e36';ctx.fillRect(0,floor-4,W,H-floor+4);ctx.fillStyle='#a3b2d733';ctx.fillRect(0,floor,W,3);
+ const sy=(bg.naturalHeight-sh)/2;ctx.drawImage(bg,sx,sy,sw,sh,0,0,W,H)}else{ctx.fillStyle='#2870bd';ctx.fillRect(0,0,W,H)}
 const duo=[p,e].sort((a,b)=>a.x-b.x);for(const f of duo)drawFigure(f,now);for(const fx of effects)drawCombatEffect(fx);}
 function end(winner){
   if(status!=='fight')return;
@@ -447,7 +447,7 @@ window.ZikaFighterBridge={
   getMatchState:()=>({status,roundNumber,roundWins:[...roundWins],player:p?.name||null,opponent:e?.name||null})
 };
 })();
-</script><script defer src="./pascal-animation.js?v=zf-20261110-combat-contact-v78"></script><script defer src="./arcade-audio.js?v=zf-20261109-pascal-v64"></script>
+</script><script defer src="./pascal-animation.js?v=zf-20261110-stage-clean-v79"></script><script defer src="./arcade-audio.js?v=zf-20261109-pascal-v64"></script>
 <script defer src="./screen-transitions.js?v=zf-20261109-pascal-v64"></script>
 <script defer src="./stage-audio.js?v=zf-20261109-pascal-v64"></script><script defer src="./stage-music.js?v=zf-20261108-stage-music-v1"></script>
 <script defer src="./data/approved-portrait-thumbs.js?v=zf-20261109-pascal-v64"></script>
