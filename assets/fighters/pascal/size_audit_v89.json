@@ -1,0 +1,579 @@
+{
+  "revision": "v89",
+  "method": "torso-only nearest-neighbor on walk outliers; translational airborne x anchor",
+  "sourceGeometry": "v88",
+  "frames": [
+    {
+      "file": "marche_avant/01.png",
+      "torsoWidth": 31.0,
+      "referenceWidth": 42.5,
+      "top": 120,
+      "alphaBounds": [
+        83,
+        120,
+        171,
+        227
+      ],
+      "bodyCenter": 129.0,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "marche_avant/02.png",
+      "torsoWidth": 45.0,
+      "referenceWidth": 42.5,
+      "top": 120,
+      "alphaBounds": [
+        77,
+        120,
+        176,
+        227
+      ],
+      "bodyCenter": 146.0,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "marche_avant/03.png",
+      "torsoWidth": 45.0,
+      "referenceWidth": 42.5,
+      "top": 123,
+      "alphaBounds": [
+        77,
+        123,
+        174,
+        227
+      ],
+      "bodyCenter": 145.0,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "marche_avant/04.png",
+      "torsoWidth": 44.0,
+      "referenceWidth": 42.5,
+      "top": 121,
+      "alphaBounds": [
+        81,
+        121,
+        170,
+        227
+      ],
+      "bodyCenter": 144.0,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "marche_avant/05.png",
+      "torsoWidth": 29.0,
+      "referenceWidth": 42.5,
+      "top": 120,
+      "alphaBounds": [
+        88,
+        120,
+        167,
+        227
+      ],
+      "bodyCenter": 128.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "marche_avant/06.png",
+      "torsoWidth": 41.0,
+      "referenceWidth": 42.5,
+      "top": 120,
+      "alphaBounds": [
+        91,
+        120,
+        164,
+        227
+      ],
+      "bodyCenter": 134.0,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "marche_arriere/01.png",
+      "torsoWidth": 28.0,
+      "referenceWidth": 30.5,
+      "top": 120,
+      "alphaBounds": [
+        91,
+        120,
+        166,
+        227
+      ],
+      "bodyCenter": 117.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "marche_arriere/02.png",
+      "torsoWidth": 30.0,
+      "referenceWidth": 30.5,
+      "top": 120,
+      "alphaBounds": [
+        95,
+        120,
+        162,
+        227
+      ],
+      "bodyCenter": 119.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "marche_arriere/03.png",
+      "torsoWidth": 34.0,
+      "referenceWidth": 30.5,
+      "top": 120,
+      "alphaBounds": [
+        99,
+        120,
+        161,
+        227
+      ],
+      "bodyCenter": 119.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "marche_arriere/04.png",
+      "torsoWidth": 28.0,
+      "referenceWidth": 30.5,
+      "top": 120,
+      "alphaBounds": [
+        95,
+        120,
+        162,
+        227
+      ],
+      "bodyCenter": 121.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "marche_arriere/05.png",
+      "torsoWidth": 31.0,
+      "referenceWidth": 30.5,
+      "top": 120,
+      "alphaBounds": [
+        99,
+        120,
+        159,
+        227
+      ],
+      "bodyCenter": 123.0,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "marche_arriere/06.png",
+      "torsoWidth": 31.0,
+      "referenceWidth": 30.5,
+      "top": 121,
+      "alphaBounds": [
+        94,
+        121,
+        164,
+        227
+      ],
+      "bodyCenter": 119.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "marche_arriere/07.png",
+      "torsoWidth": 32.0,
+      "referenceWidth": 30.5,
+      "top": 121,
+      "alphaBounds": [
+        98,
+        121,
+        160,
+        227
+      ],
+      "bodyCenter": 122.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "marche_arriere/08.png",
+      "torsoWidth": 28.0,
+      "referenceWidth": 30.5,
+      "top": 120,
+      "alphaBounds": [
+        95,
+        120,
+        161,
+        227
+      ],
+      "bodyCenter": 120.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_neutre/01.png",
+      "torsoWidth": 49.0,
+      "referenceWidth": 38.75,
+      "top": 170,
+      "alphaBounds": [
+        99,
+        170,
+        158,
+        227
+      ],
+      "bodyCenter": 126.75,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_neutre/02.png",
+      "torsoWidth": 38.0,
+      "referenceWidth": 38.75,
+      "top": 142,
+      "alphaBounds": [
+        96,
+        142,
+        161,
+        216
+      ],
+      "bodyCenter": 125.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_neutre/03.png",
+      "torsoWidth": 31.0,
+      "referenceWidth": 38.75,
+      "top": 142,
+      "alphaBounds": [
+        100,
+        142,
+        157,
+        227
+      ],
+      "bodyCenter": 126.0,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_neutre/04.png",
+      "torsoWidth": 31.0,
+      "referenceWidth": 38.75,
+      "top": 142,
+      "alphaBounds": [
+        102,
+        142,
+        154,
+        222
+      ],
+      "bodyCenter": 124.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_neutre/05.png",
+      "torsoWidth": 32.0,
+      "referenceWidth": 38.75,
+      "top": 142,
+      "alphaBounds": [
+        102,
+        142,
+        154,
+        221
+      ],
+      "bodyCenter": 127.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_neutre/06.png",
+      "torsoWidth": 39.5,
+      "referenceWidth": 38.75,
+      "top": 156,
+      "alphaBounds": [
+        100,
+        156,
+        157,
+        227
+      ],
+      "bodyCenter": 122.75,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_neutre/07.png",
+      "torsoWidth": 50.0,
+      "referenceWidth": 38.75,
+      "top": 169,
+      "alphaBounds": [
+        99,
+        169,
+        157,
+        227
+      ],
+      "bodyCenter": 126.0,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_neutre/08.png",
+      "torsoWidth": 45.0,
+      "referenceWidth": 38.75,
+      "top": 168,
+      "alphaBounds": [
+        100,
+        168,
+        157,
+        227
+      ],
+      "bodyCenter": 125.75,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_avant/01.png",
+      "torsoWidth": 54.0,
+      "referenceWidth": 48.0,
+      "top": 167,
+      "alphaBounds": [
+        95,
+        167,
+        161,
+        227
+      ],
+      "bodyCenter": 127.0,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_avant/02.png",
+      "torsoWidth": 37.0,
+      "referenceWidth": 48.0,
+      "top": 142,
+      "alphaBounds": [
+        89,
+        142,
+        167,
+        227
+      ],
+      "bodyCenter": 124.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_avant/03.png",
+      "torsoWidth": 40.0,
+      "referenceWidth": 48.0,
+      "top": 142,
+      "alphaBounds": [
+        87,
+        142,
+        170,
+        226
+      ],
+      "bodyCenter": 124.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_avant/04.png",
+      "torsoWidth": 38.0,
+      "referenceWidth": 48.0,
+      "top": 142,
+      "alphaBounds": [
+        87,
+        142,
+        170,
+        219
+      ],
+      "bodyCenter": 122.0,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_avant/05.png",
+      "torsoWidth": 53.0,
+      "referenceWidth": 48.0,
+      "top": 142,
+      "alphaBounds": [
+        87,
+        142,
+        171,
+        210
+      ],
+      "bodyCenter": 119.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_avant/06.png",
+      "torsoWidth": 45.0,
+      "referenceWidth": 48.0,
+      "top": 154,
+      "alphaBounds": [
+        91,
+        154,
+        164,
+        227
+      ],
+      "bodyCenter": 123.75,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_avant/07.png",
+      "torsoWidth": 51.0,
+      "referenceWidth": 48.0,
+      "top": 163,
+      "alphaBounds": [
+        89,
+        163,
+        167,
+        227
+      ],
+      "bodyCenter": 129.0,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_avant/08.png",
+      "torsoWidth": 52.0,
+      "referenceWidth": 48.0,
+      "top": 163,
+      "alphaBounds": [
+        97,
+        163,
+        160,
+        227
+      ],
+      "bodyCenter": 128.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_arriere/01.png",
+      "torsoWidth": 53.0,
+      "referenceWidth": 41.0,
+      "top": 162,
+      "alphaBounds": [
+        96,
+        162,
+        161,
+        227
+      ],
+      "bodyCenter": 129.0,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_arriere/02.png",
+      "torsoWidth": 40.0,
+      "referenceWidth": 41.0,
+      "top": 142,
+      "alphaBounds": [
+        91,
+        142,
+        164,
+        223
+      ],
+      "bodyCenter": 128.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_arriere/03.png",
+      "torsoWidth": 41.0,
+      "referenceWidth": 41.0,
+      "top": 142,
+      "alphaBounds": [
+        90,
+        142,
+        166,
+        221
+      ],
+      "bodyCenter": 132.0,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_arriere/04.png",
+      "torsoWidth": 38.0,
+      "referenceWidth": 41.0,
+      "top": 142,
+      "alphaBounds": [
+        93,
+        142,
+        164,
+        220
+      ],
+      "bodyCenter": 135.0,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_arriere/05.png",
+      "torsoWidth": 39.0,
+      "referenceWidth": 41.0,
+      "top": 142,
+      "alphaBounds": [
+        93,
+        142,
+        164,
+        227
+      ],
+      "bodyCenter": 134.0,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_arriere/06.png",
+      "torsoWidth": 41.0,
+      "referenceWidth": 41.0,
+      "top": 154,
+      "alphaBounds": [
+        95,
+        154,
+        162,
+        227
+      ],
+      "bodyCenter": 128.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_arriere/07.png",
+      "torsoWidth": 51.0,
+      "referenceWidth": 41.0,
+      "top": 164,
+      "alphaBounds": [
+        97,
+        164,
+        160,
+        227
+      ],
+      "bodyCenter": 127.75,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    },
+    {
+      "file": "saut_arriere/08.png",
+      "torsoWidth": 50.0,
+      "referenceWidth": 41.0,
+      "top": 163,
+      "alphaBounds": [
+        96,
+        163,
+        161,
+        227
+      ],
+      "bodyCenter": 127.5,
+      "proposedTorsoFactor": 1.0,
+      "proposedAirShift": 0
+    }
+  ],
+  "corrections": [],
+  "correctedFramesPerPalette": 0
+}
