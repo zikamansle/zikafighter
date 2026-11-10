@@ -54,7 +54,23 @@ jobs:
           print('VALIDATED 632 PNG, 14 slim profile originals + 14 blue matching sprites')
           PY
           node --check pascal-animation.js
-          node tests/smoke-static.mjs
+          node - <<'JS'
+          const fs=require('node:fs');
+          const assert=require('node:assert/strict');
+          const h=fs.readFileSync('index.html','utf8');
+          const start=h.lastIndexOf('<script>const ASSETS=');
+          assert.ok(start>0,'Embedded combat engine missing');
+          const end=h.indexOf('</script>',start);
+          new Function(h.slice(start+8,end));
+          assert.ok(h.includes('f.jumpStartedAt=now;f.landUntil=0;'),
+            'Takeoff animation must be locked when jump starts');
+          const src=fs.readFileSync('pascal-animation.js','utf8');
+          assert.ok(src.includes("if(pose.startsWith('saut_'))"),
+            'Jump poses must be mapped to flight phase');
+          assert.ok(src.includes("if(pose==='reception')"),
+            'Ground landing must be animated');
+          console.log('Jump and landing scripts validated.');
+          JS
       - name: Commit corrected source sprites
         run: |
           git config user.name "Zika Fighter pixel art QA"
