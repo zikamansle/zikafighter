@@ -25,9 +25,9 @@ const categoryLabels={
 const available=Object.create(null), objectUrls=[];
 const essentialPoses=Object.freeze([
  'attente','marche_avant','marche_arriere','saut_neutre','saut_avant','saut_arriere',
- 'garde_debout','jab','pied_moyen','charge_francaise','touche_moyen','ko'
+ 'garde_debout','garde_accroupie','jab','pied_moyen','charge_francaise','touche_moyen','ko'
 ]);
-const readyListeners=new Set();
+const readyListeners=new Set(), animationReadyListeners=new Set();
 let essentialReady=false;
 let idleReady=false;
 const allEssentialsLoaded=()=>essentialPoses.every(p=>available[p]?.length>0);
@@ -37,7 +37,7 @@ const oneShot=new Set(['descente_accroupie','retour_debout','reception','releve'
  'poings_aeriens','pieds_aeriens','charge_francaise','vague_de_paume','coup_de_boule',
  'prise_du_bricoleur','touche_leger','touche_moyen','touche_fort',
  'touche_accroupi','chute_arriere','chute_avant','ko','releve_apres_ko','victoire','victoire_alternative']);
-const speedFor=pose=>/marche/.test(pose)?12:/jab|direct|crochet|pied_|poing_|uppercut|balayage/.test(pose)?14:/charge|vague|boule|bricoleur/.test(pose)?12:9;
+const speedFor=pose=>/marche/.test(pose)?12:pose==='jab'?31:pose==='pied_moyen'?21:/jab|direct|crochet|pied_|poing_|uppercut|balayage/.test(pose)?14:/charge|vague|boule|bricoleur/.test(pose)?12:9;
 const counts=Object.create(null),fps=Object.create(null);
 Object.keys(categoryLabels).forEach(k=>{counts[k]=0;fps[k]=speedFor(k);});
 const url=(pose,i)=>'./assets/fighters/pascal/original/'+pose+'/'+String(i+1).padStart(2,'0')+'.png';
@@ -45,6 +45,11 @@ function install(pose,images){
  if(!categoryLabels[pose]||!Array.isArray(images)||images.length<1||
     !images.every(im=>im&&im.complete&&im.naturalWidth>0))return false;
  available[pose]=images.slice();counts[pose]=images.length;
+ if(allEssentialsLoaded()){
+  essentialReady=true;
+  for(const cb of animationReadyListeners)cb(true);
+  animationReadyListeners.clear();
+ }
  if(pose==='attente'&&images.length){
    idleReady=true;
    for(const callback of readyListeners){callback(true);}
@@ -64,17 +69,26 @@ function poseFor(f,now){
   const advance=(f.vx||0)*(f.dir||1);
   return Math.abs(advance)<20?'saut_neutre':advance>0?'saut_avant':'saut_arriere';
  }
- if(f.guard)return 'garde_debout';
+ if(f.guard)return 'garde_accroupie';
  if(Math.abs(f.vx||0)>8)return (f.vx||0)*(f.dir||1)>=0?'marche_avant':'marche_arriere';
  return 'attente';
 }
 function state(f,now){
- const pose=poseFor(f,now),list=available[pose];
- const old=lastPose.get(f);
- if(!old||old.pose!==pose){lastPose.set(f,{pose,start:now});return {pose,frame:0};}
- const count=list?.length||1;
- const current=Math.floor(Math.max(0,now-old.start)*speedFor(pose)/1000);
- return {pose,frame:oneShot.has(pose)?Math.min(count-1,current):current%count};
+ const target=poseFor(f,now);
+ let current=lastPose.get(f);
+ if(!current||current.target!==target){
+  const previous=current?.target;
+  let transition=null;
+  if(target==='garde_accroupie'&&previous&&previous!=='garde_accroupie'&&available.descente_accroupie)transition='descente_accroupie';
+  else if(previous==='garde_accroupie'&&target==='attente'&&available.retour_debout)transition='retour_debout';
+  current={target,pose:transition||target,start:now};lastPose.set(f,current);
+ }
+ let pose=current.pose,count=available[pose]?.length||1;
+ let index=Math.floor(Math.max(0,now-current.start)*speedFor(pose)/1000);
+ if((pose==='descente_accroupie'||pose==='retour_debout')&&index>=count){
+  pose=target;current.pose=target;current.start=now;count=available[pose]?.length||1;index=0;
+ }
+ return {pose,frame:oneShot.has(pose)?Math.min(count-1,index):index%count};
 }
 function waitForIdle(timeoutMs=14000){
  if(available.attente?.length)return Promise.resolve(true);
@@ -86,6 +100,16 @@ function waitForIdle(timeoutMs=14000){
    }
    const timer=setTimeout(()=>finish(false),timeoutMs);
    readyListeners.add(finish);
+ });
+}
+function waitForReady(timeoutMs=45000){
+ if(essentialReady)return Promise.resolve(true);
+ if(hostedStatus==='failed')return Promise.resolve(false);
+ return new Promise(resolve=>{
+  let finished=false;
+  function done(ok){if(finished)return;finished=true;clearTimeout(timer);animationReadyListeners.delete(done);resolve(!!ok);}
+  const timer=setTimeout(()=>done(false),timeoutMs);
+  animationReadyListeners.add(done);
  });
 }
 function draw(ctx,f,now){
@@ -188,6 +212,7 @@ async function savePack(blob){
  });
 }
 function mountControls(){
+ if(!new URLSearchParams(location.search).has('pascal-debug'))return;
  const host=document.getElementById('fight');
  if(!host)return;
  const panel=document.createElement('details');panel.id='pascal-sprite-test';
@@ -242,42 +267,46 @@ let hostedStatus='pending';
 async function preloadHostedSprites(){
  if(hostedStatus==='loading'||hostedStatus==='done')return;
  hostedStatus='loading';
- const status=document.querySelector('#pascal-sprite-test p:last-of-type');
+ const version=encodeURIComponent(window.ZikaFighterBuild||'zf-20261110-pascal-stable-v72');
  try{
-  const res=await fetch('./assets/fighters/pascal/manifest.json?v=zf-20261109-pascal-realtime-v70',{cache:'no-store'});
-  if(!res.ok)throw Error('Manifeste non publié (HTTP '+res.status+').');
+  const res=await fetch('./assets/fighters/pascal/manifest.json?v='+version,{cache:'no-store'});
+  if(!res.ok)throw Error('Manifeste Pascal non disponible : HTTP '+res.status);
   const manifest=await res.json();
-  if(manifest.character!=='Pascal'||!manifest.counts||manifest.normalized!==true)throw Error('Manifeste Pascal normalisé absent.');
-  const primary=essentialPoses;
+  if(manifest.character!=='Pascal'||manifest.normalized!==true||!manifest.counts)throw Error('Manifeste Pascal invalide.');
   const poses=Object.keys(manifest.counts).filter(k=>k in categoryLabels);
-  const order=[...primary.filter(k=>poses.includes(k)),...poses.filter(k=>!primary.includes(k))];
+  for(const pose of essentialPoses)if(!poses.includes(pose))throw Error('Animation principale absente : '+pose);
   let groups=0,frames=0;
-  for(const pose of order){
+  async function loadPose(pose){
    const n=Number(manifest.counts[pose]);
-   if(!Number.isInteger(n)||n<1||n>50)continue;
+   if(!Number.isInteger(n)||n<1||n>50)throw Error('Nombre de sprites invalide : '+pose);
    const images=await Promise.all(Array.from({length:n},(_,i)=>new Promise(resolve=>{
     const im=new Image();im.decoding='async';
     im.onload=()=>resolve(im);im.onerror=()=>resolve(null);
-    im.src=url(pose,i)+'?v=zf-20261109-pascal-normalized-v68';
+    im.src=url(pose,i)+'?v='+version;
    })));
-   if(images.every(im=>im&&im.naturalWidth>0)&&install(pose,images)){
-    groups++;frames+=n;
-    if(status)status.textContent='Pascal : '+groups+' animations chargées automatiquement ('+frames+' images).';
-   }
+   if(!images.every(im=>im&&im.naturalWidth>0)||!install(pose,images))throw Error('PNG absent : '+pose);
+   groups++;frames+=n;
   }
-  if(!allEssentialsLoaded())throw Error('Animations principales incomplètes : impossible d’éviter le changement d’échelle.');
-  essentialReady=true;
+  // Le jeu attend désormais toutes les animations de combat nécessaires.
+  await Promise.all(essentialPoses.map(loadPose));
+  if(!essentialReady)throw Error('Animations principales incomplètes.');
   hostedStatus='done';
   const zipInput=document.querySelector('#pascal-sprite-test input[type=file]');
   if(zipInput)zipInput.disabled=true;
-  window.dispatchEvent(new CustomEvent('zika:pascal-sprites-loaded',{detail:{accepted:groups,frames,source:'github'}}));
-  if(status)status.textContent='Pascal animé : '+groups+' animations et '+frames+' PNG. Taille de rendu fixe, aucun mélange avec l’ancien portrait.';
+  window.dispatchEvent(new CustomEvent('zika:pascal-sprites-loaded',{detail:{accepted:groups,frames,source:'github',ready:true}}));
+  // Charger les autres mouvements en parallèle sans bloquer le démarrage.
+  const queue=poses.filter(p=>!essentialPoses.includes(p));
+  await Promise.all(Array.from({length:5},async()=>{
+   while(queue.length){const pose=queue.shift();try{await loadPose(pose)}catch(err){console.warn('Pascal : pose secondaire',pose,err)}}
+  }));
+  console.info('Pascal : '+groups+' animations et '+frames+' PNG disponibles.');
  }catch(err){
-  hostedStatus='failed';console.warn('Pascal : téléchargement automatique',err);
-  if(status)status.textContent='Chargement des sprites indisponible : '+err.message;
+  hostedStatus='failed';
+  for(const cb of animationReadyListeners)cb(false);
+  animationReadyListeners.clear();
+  console.error('Pascal : sprites non chargés',err);
  }
 }
-
 if(document.readyState==='loading'){
  document.addEventListener('DOMContentLoaded',mountControls,{once:true});
  document.addEventListener('DOMContentLoaded',preloadHostedSprites,{once:true});
@@ -287,6 +316,7 @@ if(document.readyState==='loading'){
 }
 window.ZikaPascalAnimation=Object.freeze({
  counts,fps,url,install,state,draw,ready:()=>Object.keys(available),
- consistentSizeReady:()=>essentialReady,waitForIdle,loadPack
+ consistentSizeReady:()=>essentialReady,waitForIdle,waitForReady,loadPack,
+ diagnostics:()=>({hostedStatus,essentialReady,loaded:Object.keys(available),missing:essentialPoses.filter(p=>!available[p]?.length)})
 });
 })();
