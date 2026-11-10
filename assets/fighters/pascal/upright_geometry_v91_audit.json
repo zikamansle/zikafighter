@@ -1,0 +1,241 @@
+{
+  "revision": "v91",
+  "referenceHeadTop": 122,
+  "referenceFoot": 227,
+  "changedFramesPerPalette": 29,
+  "changed": [
+    {
+      "file": "attente/01.png",
+      "topBefore": 123,
+      "topAfter": 122,
+      "shiftFacePixels": -1,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "attente/02.png",
+      "topBefore": 123,
+      "topAfter": 122,
+      "shiftFacePixels": -1,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "marche_avant/01.png",
+      "topBefore": 120,
+      "topAfter": 122,
+      "shiftFacePixels": 2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "marche_avant/02.png",
+      "topBefore": 120,
+      "topAfter": 122,
+      "shiftFacePixels": 2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "marche_avant/03.png",
+      "topBefore": 123,
+      "topAfter": 122,
+      "shiftFacePixels": -1,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "marche_avant/04.png",
+      "topBefore": 121,
+      "topAfter": 122,
+      "shiftFacePixels": 1,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "marche_avant/05.png",
+      "topBefore": 120,
+      "topAfter": 122,
+      "shiftFacePixels": 2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "marche_avant/06.png",
+      "topBefore": 120,
+      "topAfter": 122,
+      "shiftFacePixels": 2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "marche_arriere/01.png",
+      "topBefore": 120,
+      "topAfter": 122,
+      "shiftFacePixels": 2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "marche_arriere/02.png",
+      "topBefore": 120,
+      "topAfter": 122,
+      "shiftFacePixels": 2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "marche_arriere/03.png",
+      "topBefore": 120,
+      "topAfter": 122,
+      "shiftFacePixels": 2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "marche_arriere/04.png",
+      "topBefore": 120,
+      "topAfter": 122,
+      "shiftFacePixels": 2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "marche_arriere/05.png",
+      "topBefore": 120,
+      "topAfter": 122,
+      "shiftFacePixels": 2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "marche_arriere/06.png",
+      "topBefore": 121,
+      "topAfter": 122,
+      "shiftFacePixels": 1,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "marche_arriere/07.png",
+      "topBefore": 121,
+      "topAfter": 122,
+      "shiftFacePixels": 1,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "marche_arriere/08.png",
+      "topBefore": 120,
+      "topAfter": 122,
+      "shiftFacePixels": 2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "garde_debout/01.png",
+      "topBefore": 123,
+      "topAfter": 122,
+      "shiftFacePixels": -1,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "garde_debout/02.png",
+      "topBefore": 123,
+      "topAfter": 122,
+      "shiftFacePixels": -1,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "pied_bas/01.png",
+      "topBefore": 124,
+      "topAfter": 122,
+      "shiftFacePixels": -2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "pied_bas/05.png",
+      "topBefore": 124,
+      "topAfter": 122,
+      "shiftFacePixels": -2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "pied_bas/06.png",
+      "topBefore": 124,
+      "topAfter": 122,
+      "shiftFacePixels": -2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "pied_bas/07.png",
+      "topBefore": 123,
+      "topAfter": 122,
+      "shiftFacePixels": -1,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "pied_moyen/01.png",
+      "topBefore": 124,
+      "topAfter": 122,
+      "shiftFacePixels": -2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "pied_moyen/02.png",
+      "topBefore": 124,
+      "topAfter": 122,
+      "shiftFacePixels": -2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "pied_moyen/03.png",
+      "topBefore": 123,
+      "topAfter": 122,
+      "shiftFacePixels": -1,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "pied_moyen/05.png",
+      "topBefore": 123,
+      "topAfter": 122,
+      "shiftFacePixels": -1,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "pied_moyen/06.png",
+      "topBefore": 124,
+      "topAfter": 122,
+      "shiftFacePixels": -2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "pied_moyen/07.png",
+      "topBefore": 124,
+      "topAfter": 122,
+      "shiftFacePixels": -2,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    },
+    {
+      "file": "pied_moyen/08.png",
+      "topBefore": 125,
+      "topAfter": 122,
+      "shiftFacePixels": -3,
+      "changedFaceGeometry": false,
+      "shoesOriginal": true
+    }
+  ],
+  "unchangedAnimations": "crouch, knockdown, airborne and body rotations"
+}

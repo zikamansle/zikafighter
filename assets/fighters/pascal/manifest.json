@@ -82,5 +82,9 @@
   "crouchRevision": "v88",
   "sizeCorrectionRevision": "v90",
   "sizeCorrectionMethod": "6 measured profile/jump body-width outliers corrected locally; face, hair, feet and control mappings preserved",
-  "sizeCorrectedFrames": 6
+  "sizeCorrectedFrames": 6,
+  "uprightSizeRevision": "v91",
+  "uprightReferenceTop": 122,
+  "uprightCorrectedFrames": 29,
+  "uprightSizeCorrection": "Align head position on all upright frames without resizing face, hands, feet or horizontal body"
 }
