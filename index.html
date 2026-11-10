@@ -2,7 +2,7 @@
 /* Chaque publication porte son numéro de version. Les réglages restent conservés,
    seuls les anciens fichiers/cache du jeu sont nettoyés. */
 (function(){
-  const BUILD='zf-20261110-pascal-stable-v72';
+  const BUILD='zf-20261110-pascal-crouch-ko-v73';
   window.ZikaFighterBuild=BUILD;
   try {
     const key='zikafighter-current-build';
@@ -252,9 +252,14 @@ function end(winner){
   if(winner&&p.health>=100)window.ZikaArcadeAudio?.playVoice('perfect');
   $('#round').style.display='none';
   $('#verdict').textContent=winner?'VICTOIRE !':'DÉFAITE';
-  const showVerdict=()=>{$('#end').hidden=false;};
-  if(window.ZikaFighterScreens)window.ZikaFighterScreens.change(showVerdict,{out:200,hold:35,in:200});
-  else showVerdict();
+  const verdictSession=battleMusicSession;
+  const showVerdict=()=>{if(status==='done'&&verdictSession===battleMusicSession)$('#end').hidden=false;};
+  // Laisser la chute de K.O. se dérouler jusqu'au sol avant le verdict.
+  setTimeout(()=>{
+    if(status!=='done'||verdictSession!==battleMusicSession)return;
+    if(window.ZikaFighterScreens)window.ZikaFighterScreens.change(showVerdict,{out:200,hold:35,in:200});
+    else showVerdict();
+  },800);
 }
 function frame(now){const dt=Math.min(.035,(now-last)/1000||.016);last=now;if(!p||!e)return;if(status==='between'&&now>=koTime){roundNumber++;beginRound();}if(status==='ready'&&now>=started){status='fight';$('#round').style.display='none';window.ZikaArcadeAudio?.playVoice('fight')}if(status==='fight'){
 clock=gameSettings.timeLimit?Math.max(0,99-(now-started)/1000):99;move(p,controls(),dt,now);move(e,gameSettings.players===2?controls2():ai(now),dt,now);if(Math.abs(p.x-e.x)<90){const delta=(90-Math.abs(p.x-e.x))/2;const sgn=p.x<e.x?1:-1;p.x-=delta*sgn;e.x+=delta*sgn;}
@@ -333,7 +338,7 @@ window.ZikaFighterBridge={
   getMatchState:()=>({status,roundNumber,roundWins:[...roundWins],player:p?.name||null,opponent:e?.name||null})
 };
 })();
-</script><script defer src="./pascal-animation.js?v=zf-20261110-pascal-stable-v72"></script><script defer src="./arcade-audio.js?v=zf-20261109-pascal-v64"></script>
+</script><script defer src="./pascal-animation.js?v=zf-20261110-pascal-crouch-ko-v73"></script><script defer src="./arcade-audio.js?v=zf-20261109-pascal-v64"></script>
 <script defer src="./screen-transitions.js?v=zf-20261109-pascal-v64"></script>
 <script defer src="./stage-audio.js?v=zf-20261109-pascal-v64"></script><script defer src="./stage-music.js?v=zf-20261108-stage-music-v1"></script>
 <script defer src="./data/approved-portrait-thumbs.js?v=zf-20261109-pascal-v64"></script>
