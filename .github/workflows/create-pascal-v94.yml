@@ -1,0 +1,59 @@
+name: Create 632 master-based individual Pascal v94 sprites
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/build_pascal_v94.py"
+      - ".github/workflows/create-pascal-v94.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: pascal-v94-master
+  cancel-in-progress: false
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install Pillow==11.3.0
+      - name: Individually create 316 Pascal frames in each palette
+        run: python tools/build_pascal_v94.py
+      - name: Validate every PNG, appearance and shared alpha
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          import json,hashlib
+          root=Path('assets/fighters/pascal/v94')
+          m=json.loads((root/'manifest.json').read_text())
+          audit=json.loads((root/'audit.json').read_text())
+          assert m['revision']=='v94' and m['normalized'] is True
+          assert len(m['counts'])==44 and sum(m['counts'].values())==316
+          assert audit['changedFromGuide']==316 and len(audit['individual'])==316
+          assert hashlib.sha256(Path('assets/fighters/pascal/reference/maitre-valide-256.png').read_bytes()).hexdigest()==m['masterSha256']
+          for pal in ('original','bleu'):
+            assert len(list((root/pal).glob('*/*.png')))==316
+          for p in (root/'original').glob('*/*.png'):
+            with Image.open(p) as a,Image.open(root/'bleu'/p.relative_to(root/'original')) as b:
+              x=a.convert('RGBA');y=b.convert('RGBA')
+              assert x.size==y.size==(256,256)
+              assert x.getchannel('A').tobytes()==y.getchannel('A').tobytes(),str(p)
+          print('PASS 632 PNG, 316 individual frames, source master locked; no sheet cropping.')
+          PY
+      - name: Commit new individual assets without touching old version
+        run: |
+          git config user.name "Zika Fighter Pascal animation"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/fighters/pascal/v94
+          if ! git diff --cached --quiet; then
+            git commit -m "Stage 316 individually re-rendered master-based Pascal v94 sprites in two palettes"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
