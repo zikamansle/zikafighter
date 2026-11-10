@@ -66,9 +66,13 @@ function poseFor(f,now){
   if(f.action==='punch')return 'jab';
  }
  if(f.y<754){
+  // La direction du saut est choisie au décollage et ne change pas en vol.
+  if(f.jumpPose?.startsWith('saut_'))return f.jumpPose;
   const advance=(f.vx||0)*(f.dir||1);
   return Math.abs(advance)<20?'saut_neutre':advance>0?'saut_avant':'saut_arriere';
  }
+ // La réception ne doit apparaître QUE lorsque les pieds touchent le sol.
+ if(now<(f.landUntil||0))return 'reception';
  if(f.guard)return 'garde_accroupie';
  if(Math.abs(f.vx||0)>8)return (f.vx||0)*(f.dir||1)>=0?'marche_avant':'marche_arriere';
  return 'attente';
@@ -111,6 +115,18 @@ function state(f,now){
   current.pose=target;current.start=now;
  }
  const pose=current.pose,count=available[pose]?.length||1;
+ if(pose.startsWith('saut_')){
+  // Les images 01 et 08 montrent des postures basses de préparation/réception.
+  // Ne pas les boucler en plein vol : n'utiliser que les images de vol 02 à 07.
+  const elapsed=Math.max(0,now-(f.jumpStartedAt||current.start));
+  const progress=Math.min(1,elapsed/842); // -640 puis gravité 1520 : vol ~842 ms.
+  const index=Math.min(count-2,Math.max(1,1+Math.floor(progress*(count-2))));
+  return {pose,frame:index};
+ }
+ if(pose==='reception'){
+  const elapsed=Math.max(0,now-(f.landingStartedAt||current.start));
+  return {pose,frame:Math.min(count-1,Math.floor(elapsed/38))};
+ }
  const index=Math.floor(Math.max(0,now-current.start)*speedFor(pose)/1000);
  return {pose,frame:oneShot.has(pose)?Math.min(count-1,index):index%count};
 }
